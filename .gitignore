@@ -25,3 +25,7 @@ _testmain.go
 *.test
 
 .godeps
+
+# Ignore env config files, except for the default one
+cfg/*.ini
+!cfg/config.ini

@@ -44,5 +44,12 @@ func init() {
 	stdlogger = log.New(os.Stdout, "", 0)
 	Log(fmt.Sprintf("Loading config with env set to %s", env))
 
-	reader, _ = config.ReadDefault("config.ini")
+	filePath := fmt.Sprintf("./cfg/%s.ini", env)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+	    Log(fmt.Sprintf("Loading config from ./cfg/config.ini"))
+		reader, _ = config.ReadDefault("./cfg/config.ini")
+	} else {
+		Log(fmt.Sprintf("Loading config from %s", filePath))
+		reader, _ = config.ReadDefault(filePath)
+	}
 }
