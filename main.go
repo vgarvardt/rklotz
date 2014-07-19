@@ -16,7 +16,7 @@ func main() {
 	})
 	r.GET("/", controller.FrontController)
 
-	r.Static("/static", "./static")
+	r.Static("/assets", "./assets")
 
 	addr := cfg.String("addr")
 	cfg.Log(fmt.Sprintf("Running @ %s", addr))

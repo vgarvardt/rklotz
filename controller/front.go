@@ -6,5 +6,5 @@ import (
 )
 
 func FrontController(c *gin.Context) {
-	pongo2Render(c, "./view/index.html", pongo2.Context{})
+	pongo2Render(c, "index.html", pongo2.Context{})
 }

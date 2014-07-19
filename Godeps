@@ -4,3 +4,4 @@ github.com/robfig/config
 github.com/boltdb/bolt
 github.com/IoSync/goptimist
 github.com/robfig/config
+github.com/russross/blackfriday

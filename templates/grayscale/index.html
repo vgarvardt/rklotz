@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 
 <head>
     <meta charset="utf-8">
@@ -8,17 +8,18 @@
     <meta name="author" content="">
 
     <title>{{ title|safe }}</title>
+    <link rel="shortcut icon" href="/assets/{{ theme }}/favicon.ico">
 
     <!-- Bootstrap Core CSS -->
-    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/{{ theme }}/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
     <!-- Fonts -->
-    <link href="/static/bootstrap/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/{{ theme }}/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 
     <!-- Custom Theme CSS -->
-    <link href="/static/bootstrap/css/grayscale.css" rel="stylesheet">
+    <link href="/assets/{{ theme }}/css/grayscale.css" rel="stylesheet">
 
 </head>
 
@@ -118,12 +119,12 @@
     </section>
 
     <!-- Core JavaScript Files -->
-    <script src="/static/bootstrap/js/jquery-1.11.1.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/bootstrap/js/jquery.easing.min.js"></script>
+    <script src="/assets/{{ theme }}/js/jquery-1.11.1.min.js"></script>
+    <script src="/assets/{{ theme }}/js/bootstrap.min.js"></script>
+    <script src="/assets/{{ theme }}/js/jquery.easing.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="/static/bootstrap/js/grayscale.js"></script>
+    <script src="/assets/{{ theme }}/js/grayscale.js"></script>
 
 </body>
 
