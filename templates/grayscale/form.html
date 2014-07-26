@@ -39,19 +39,21 @@
 	{% endif %}
 
 	<form class="form-horizontal" role="form" method="post" action="">
-		<div class="form-group">
+		<div class="form-group {% if errors.Title %}has-error{%endif%}">
 			<label for="id_title" class="col-sm-2 control-label">Title</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" id="id_title" name="Title" value="{{ post.Title }}">
+				<span class="label label-danger">{{ errors.Title }}</span>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group {% if errors.Body %}has-error{%endif%}">
 			<label for="id_body" class="col-sm-2 control-label">Body</label>
 			<div class="col-sm-10">
 				<textarea class="form-control" id="id_body" name="Body" rows="20">{{ post.Body }}</textarea>
+				<span class="label label-danger">{{ errors.Body }}</span>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group {% if errors.Format %}has-error{%endif%}">
 			<label for="id_format" class="col-sm-2 control-label">Format</label>
 			<div class="col-sm-10">
 				<select class="form-control" id="id_format" name="Format">
@@ -59,6 +61,7 @@
 					<option value="{{ f.Name }}" {% if f.Name == post.Format %}selected{% endif %}>{{ f.Title }}</option>
 					{% endfor %}
 				</select>
+				<span class="label label-danger">{{ errors.Format }}</span>
 			</div>
 		</div>
 		<div class="form-group">
@@ -67,10 +70,11 @@
 				<input type="text" class="form-control select2-choice" id="id_tags" name="Tags" value='{{ post.Tags|join:", " }}'>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group {% if errors.Path %}has-error{%endif%}">
 			<label for="id_path" class="col-sm-2 control-label">Path</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" id="id_path" name="Path" value="{{ post.Path }}">
+				<span class="label label-danger">{{ errors.Path }}</span>
 			</div>
 		</div>
 

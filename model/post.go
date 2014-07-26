@@ -2,6 +2,7 @@ package model
 
 import (
 	"time"
+	"strings"
 	"net/http"
 	"encoding/json"
 
@@ -108,4 +109,26 @@ func (post *Post) Load(uuid string) error {
 
 		return nil
 	})
+}
+
+func (post *Post) Validate() map[string]string {
+	var err map[string]string = make(map[string]string)
+
+	if strings.TrimSpace(post.Title) == "" {
+		err["Title"] = "Title can not be empty"
+	}
+
+	if strings.TrimSpace(post.Body) == "" {
+		err["Body"] = "Body can not be empty"
+	}
+
+	if strings.TrimSpace(post.Format) == "" {
+		err["Format"] = "Format can not be empty"
+	}
+
+	if strings.TrimSpace(post.Path) == "" {
+		err["Path"] = "Path can not be empty"
+	}
+
+	return err
 }

@@ -1,5 +1,6 @@
 github.com/gin-gonic/gin
 github.com/flosch/pongo2
+github.com/ngerakines/ginpongo2
 github.com/robfig/config
 github.com/boltdb/bolt
 github.com/IoSync/goptimist
