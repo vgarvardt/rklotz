@@ -12,6 +12,11 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 )
 
+const (
+	BUCKET_POSTS = "posts"
+	BUCKET_MAP = "path_map"
+)
+
 type Format struct {
 	Name    string
 	Title   string
@@ -57,7 +62,12 @@ type Post struct {
 }
 
 func (post *Post) Bind(req *http.Request) error {
-	return bindFormToStruct(req, post);
+	if err := bindFormToStruct(req, post); err != nil {
+		return err
+	}
+	post.Path = strings.Trim(post.Path, "/")
+
+	return nil
 }
 
 func (post *Post) ReFormat() string {
@@ -78,7 +88,7 @@ func (post *Post) Save(draft bool) error {
 	post.ReFormat()
 
 	return db.Update(func(tx *bolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists([]byte("posts"))
+		bucketPosts, err := tx.CreateBucketIfNotExists([]byte(BUCKET_POSTS))
 		if err != nil {
 			return err
 		}
@@ -89,7 +99,16 @@ func (post *Post) Save(draft bool) error {
 		}
 
 		jsonPost, _ := json.Marshal(post)
-		if err := bucket.Put([]byte(post.UUID), []byte(jsonPost)); err != nil {
+		if err := bucketPosts.Put([]byte(post.UUID), []byte(jsonPost)); err != nil {
+			return err
+		}
+
+		bucketMap, err := tx.CreateBucketIfNotExists([]byte(BUCKET_MAP))
+		if err != nil {
+			return err
+		}
+
+		if err := bucketMap.Put([]byte(post.Path), []byte(post.UUID)); err != nil {
 			return err
 		}
 
@@ -99,15 +118,27 @@ func (post *Post) Save(draft bool) error {
 
 func (post *Post) Load(uuid string) error {
 	return db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("posts"))
+		bucket := tx.Bucket([]byte([]byte(BUCKET_POSTS)))
 		if bucket == nil {
 			panic("Bucket posts not found!")
 		}
 
 		jsonPost := bucket.Get([]byte(uuid))
-		json.Unmarshal([]byte(jsonPost), &post)
+		json.Unmarshal(jsonPost, &post)
 
 		return nil
+	})
+}
+
+func (post *Post) LoadByPath(path string) error {
+	return db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(BUCKET_MAP))
+		if bucket == nil {
+			panic("Bucket path_map not found!")
+		}
+
+		uuid := bucket.Get([]byte(path))
+		return post.Load(string(uuid))
 	})
 }
 
