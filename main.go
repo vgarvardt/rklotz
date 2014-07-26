@@ -6,6 +6,7 @@ import (
 
 	"./cfg"
 	"./controller"
+	"./model"
 )
 
 func main() {
@@ -16,7 +17,14 @@ func main() {
 	})
 	r.GET("/", controller.FrontController)
 
+	r.GET("/new", controller.FormController)
+	r.POST("/new", controller.FormController)
+	r.GET("/edit/:uuid", controller.FormController)
+	r.POST("/edit/:uuid", controller.FormController)
+
 	r.Static("/assets", "./assets")
+
+	defer model.GetDB().Close()
 
 	addr := cfg.String("addr")
 	cfg.Log(fmt.Sprintf("Running @ %s", addr))

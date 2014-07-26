@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="{{ description }}">
 	<meta name="author" content="{{ author }}">
+	{% block head_meta %}{% endblock %}
 
 	<title>{{ title|safe }}</title>
 	<link rel="shortcut icon" href="/assets/{{ theme }}/favicon.ico">
@@ -21,6 +22,8 @@
 	<!-- Custom Theme CSS -->
 	<link href="/assets/{{ theme }}/css/grayscale.css" rel="stylesheet">
 	<link href="/assets/{{ theme }}/css/blogo.css" rel="stylesheet">
+	{% block head_link %}{% endblock %}
+
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -34,6 +37,7 @@
 
 	<!-- Custom Theme JavaScript -->
 	<script src="/assets/{{ theme }}/js/grayscale.js"></script>
+	{% block foot_js %}{% endblock %}
 
 </body>
 

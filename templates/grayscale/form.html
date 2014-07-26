@@ -1,0 +1,99 @@
+{% extends "./base.html" %}
+
+{% block head_link %}
+	<link href="/assets/select2/select2.css" rel="stylesheet">
+	<link href="/assets/select2/select2-bootstrap.css" rel="stylesheet">
+{% endblock %}
+
+{% block foot_js %}
+	<script src="/assets/select2/select2.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$("#id_tags").select2({tags:["red", "green", "blue"]});
+		});
+	</script>
+{% endblock %}
+
+{% block body %}
+<section class="container content-section">
+	<div class="row">
+		<div class="col-sm-offset-2">
+			<h1>
+				{% if post.UUID %}
+					Edit Post
+					{% if post.Draft %}<sup><small><span class="label label-success">Draft</span></small></sup>{% endif %}
+				{% else %}
+					New Post
+				{% endif %}
+			</h1>
+		</div>
+	</div>
+
+	{% include "./alert.html" %}
+
+	{% if preview %}
+	<div class="panel panel-default panel-preview">
+		<div class="panel-heading">{{ post.Title }}</div>
+		<div class="panel-body">{{ post.HTML|safe }}</div>
+	</div>
+	{% endif %}
+
+	<form class="form-horizontal" role="form" method="post" action="">
+		<div class="form-group">
+			<label for="id_title" class="col-sm-2 control-label">Title</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="id_title" name="Title" value="{{ post.Title }}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="id_body" class="col-sm-2 control-label">Body</label>
+			<div class="col-sm-10">
+				<textarea class="form-control" id="id_body" name="Body" rows="20">{{ post.Body }}</textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="id_format" class="col-sm-2 control-label">Format</label>
+			<div class="col-sm-10">
+				<select class="form-control" id="id_format" name="Format">
+					{% for f in formats %}
+					<option value="{{ f.Name }}" {% if f.Name == post.Format %}selected{% endif %}>{{ f.Title }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="id_tags" class="col-sm-2 control-label">Tags</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control select2-choice" id="id_tags" name="Tags" value='{{ post.Tags|join:", " }}'>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="id_path" class="col-sm-2 control-label">Path</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="id_path" name="Path" value="{{ post.Path }}">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<div class="">
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<input type="text" class="form-control" placeholder="Auth Name" name="AuthName">
+						</div>
+						<div class="col-sm-3">
+							<input type="password" class="form-control" placeholder="Auth Password" name="AuthPassword">
+						</div>
+						<div class="col-sm-6">
+							<input type="hidden" name="UUID" value="{{ post.UUID }}">
+							<button type="submit" class="btn btn-info btn-lg" name="op" value="preview">Preview</button>
+							<button type="submit" class="btn btn-success btn-lg" name="op" value="draft">Draft</button>
+							<button type="submit" class="btn btn-primary btn-lg" name="op" value="save">Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</section>
+{% endblock %}
