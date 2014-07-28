@@ -1,10 +1,11 @@
 package cfg
 
 import (
-	"os"
 	"fmt"
 	"log"
+	"os"
 	"time"
+
 	"github.com/IoSync/goptimist"
 	"github.com/robfig/config"
 )
@@ -30,7 +31,11 @@ func Bool(key string) bool {
 }
 
 func Log(msg string) {
-	stdlogger.Printf("[LOG] %v | %s\n", time.Now().Format("2006/01/02 - 15:04:05"), msg);
+	stdlogger.Printf("[LOG] %v | %s\n", time.Now().Format("2006/01/02 - 15:04:05"), msg)
+}
+
+func GetApp() map[string]interface{} {
+	return app
 }
 
 func init() {
@@ -46,7 +51,7 @@ func init() {
 
 	filePath := fmt.Sprintf("./cfg/%s.ini", env)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-	    Log(fmt.Sprintf("Loading config from ./cfg/config.ini"))
+		Log(fmt.Sprintf("Loading config from ./cfg/config.ini"))
 		reader, _ = config.ReadDefault("./cfg/config.ini")
 	} else {
 		Log(fmt.Sprintf("Loading config from %s", filePath))
