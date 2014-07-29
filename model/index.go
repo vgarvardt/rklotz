@@ -25,7 +25,7 @@ type Meta struct {
 func (meta *Meta) init() {
 	meta.Posts = 0
 	meta.PerPage = cfg.Int("ui.per_page")
-	meta.Pages = 1
+	meta.Pages = 0
 	meta.Drafts = 0
 	meta.UpdatedAt = time.Now()
 }
@@ -83,6 +83,10 @@ func RebuildIndex() error {
 		return nil
 	}); err != nil {
 		return err
+	}
+
+	if meta.Pages == 0 {
+		meta.Pages = 1
 	}
 
 	if err := db.Update(func(tx *bolt.Tx) error {
