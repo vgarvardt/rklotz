@@ -41,6 +41,7 @@ func bindFormToStruct(req *http.Request, obj interface{}) error {
 	}
 
 	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
 	if err := decoder.Decode(obj, req.PostForm); err != nil {
 		return err
 	}
@@ -66,6 +67,9 @@ func (post *Post) Bind(req *http.Request) error {
 		return err
 	}
 	post.Path = strings.Trim(post.Path, "/")
+	if len(post.Tags) > 0 {
+		post.Tags = strings.Split(post.Tags[0], ",")
+	}
 
 	return nil
 }
@@ -87,7 +91,7 @@ func (post *Post) Save(draft bool) error {
 	post.UpdatedAt = time.Now()
 	post.ReFormat()
 
-	return db.Update(func(tx *bolt.Tx) error {
+	if err := db.Update(func(tx *bolt.Tx) error {
 		bucketPosts, err := tx.CreateBucketIfNotExists([]byte(BUCKET_POSTS))
 		if err != nil {
 			return err
@@ -113,12 +117,17 @@ func (post *Post) Save(draft bool) error {
 		}
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
+
+	go RebuildIndex()
+	return nil
 }
 
 func (post *Post) Load(uuid string) error {
 	return db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte([]byte(BUCKET_POSTS)))
+		bucket := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucket == nil {
 			panic("Bucket posts not found!")
 		}

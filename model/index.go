@@ -22,10 +22,33 @@ type Meta struct {
 	UpdatedAt time.Time
 }
 
+func (meta *Meta) init() {
+	meta.Posts = 0
+	meta.PerPage = cfg.Int("ui.per_page")
+	meta.Pages = 1
+	meta.Drafts = 0
+	meta.UpdatedAt = time.Now()
+}
+
+func (meta *Meta) Load() {
+	meta.init()
+	db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte([]byte(BUCKET_INDEX)))
+		if bucket != nil {
+			jsonMeta := bucket.Get([]byte("meta"))
+			json.Unmarshal(jsonMeta, &meta)
+		}
+
+		return nil
+	})
+}
+
 func RebuildIndex() error {
 	cfg.Log("Rebuilding index...")
 
-	meta := Meta{PerPage: cfg.Int("ui.per_page"), UpdatedAt: time.Now(), Posts: 0, Pages: 1, Drafts: 0}
+	meta := new(Meta)
+	meta.init()
+
 	pathMap := make(map[string]string)
 	pageMap := make(map[string][]*Post)
 	var draftList []*Post
@@ -107,5 +130,27 @@ func RebuildIndex() error {
 		return err
 	}
 
+	cfg.Log("Index rebuilt!")
 	return nil
+}
+
+func GetPostsPage(page int) ([]Post, error) {
+	pageKey := fmt.Sprintf("page-%d", page)
+	var posts []Post
+
+	if err := db.View(func(tx *bolt.Tx) error {
+		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
+		if bucketIndex == nil {
+			panic("Bucket index not found!")
+		}
+
+		jsonPosts := bucketIndex.Get([]byte(pageKey))
+		json.Unmarshal(jsonPosts, &posts)
+
+		return nil
+	}); err != nil {
+		return posts, err
+	}
+
+	return posts, nil
 }

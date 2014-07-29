@@ -22,7 +22,9 @@ func FormController(c *gin.Context) {
 		auth := new(model.Auth)
 		auth.Bind(c.Request)
 
-		post.Bind(c.Request)
+		if err := post.Bind(c.Request); err != nil {
+			panic(err)
+		}
 		ctx["post"] = post
 
 		if c.Request.FormValue("op") == "preview" {

@@ -52,12 +52,19 @@
 
 <section id="content" class="container content-section">
     <div class="row">
-        <h2>About Grayscale</h2>
-        <p>Grayscale is a premium quality, free Bootstrap 3 theme created by Start Bootstrap. It can be yours right now, all you need to do is download the template on the preview page. You can use this template for any purpose, personal or commercial.</p>
-        <p>This striking, black and white theme features stock photographs by <a href="http://gratisography.com/">Gratisography</a> along with a custom Google Map skin courtesy of <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-        <p>With this template, just the slightest splash of color can make a huge impact on the overall presentation and design.</p>
+        {% if not meta.Posts %}
+            <h2>Nothing yet =( But you can <a href="/new">write your first post</a>!</h2>
+        {% else %}
+            {% for p in posts %}
+                <h2><a href="/{{ p.Path }}">{{ p.Title }}</a></h2>
+                {% include "./partial/info.html" with post=p %}
+                <p>{{ p.HTML|striptags|truncatechars:255 }}</p>
+                <hr>
+            {% endfor %}
+            <p class="text-center">Page {{ page + 1 }} of {{ meta.Pages }}</p>
+        {% endif %}
     </div>
 </section>
 
-{% include "./about.html" %}
+{% include "./partial/about.html" %}
 {% endblock %}

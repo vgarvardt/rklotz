@@ -2,12 +2,18 @@
 
 {% block body %}
 <section class="container content-section">
-	<h1>{{ post.Title }}</h1>
+	<h1>
+		<a href="/"><i class="fa fa-arrow-circle-o-left"></i></a>
+		{{ post.Title }}
+		<sup><small><a href="/edit/{{ post.UUID }}"><i class="fa fa-pencil"></i></a></small></sup>
+	</h1>
+
+	{% include "./partial/info.html" %}
 
 	<div>
 		{{ post.HTML|safe }}
 	</div>
 </section>
 
-{% include "./about.html" %}
+{% include "./partial/about.html" %}
 {% endblock %}
