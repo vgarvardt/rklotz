@@ -51,6 +51,7 @@ func RebuildIndex() error {
 
 	pathMap := make(map[string]string)
 	pageMap := make(map[string][]*Post)
+	tagMap := make(map[string][]*Post)
 	var draftList []*Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -74,6 +75,11 @@ func RebuildIndex() error {
 					currentPage++
 					meta.Pages++
 					pageKey = fmt.Sprintf("page-%d", currentPage)
+				}
+
+				for _, tag := range post.Tags {
+					tagKey := fmt.Sprintf("tag-%s", tag)
+					tagMap[tagKey] = append(tagMap[tagKey], post)
 				}
 			}
 
@@ -129,6 +135,13 @@ func RebuildIndex() error {
 			}
 		}
 
+		for tagKey, postsTag := range tagMap {
+			jsonPosts, _ := json.Marshal(postsTag)
+			if err := bucketIndex.Put([]byte(tagKey), []byte(jsonPosts)); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	}); err != nil {
 		return err
@@ -149,6 +162,27 @@ func GetPostsPage(page int) ([]Post, error) {
 		}
 
 		jsonPosts := bucketIndex.Get([]byte(pageKey))
+		json.Unmarshal(jsonPosts, &posts)
+
+		return nil
+	}); err != nil {
+		return posts, err
+	}
+
+	return posts, nil
+}
+
+func GetTagPosts(tag string) ([]Post, error) {
+	tagKey := fmt.Sprintf("tag-%s", tag)
+	var posts []Post
+
+	if err := db.View(func(tx *bolt.Tx) error {
+		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
+		if bucketIndex == nil {
+			panic("Bucket index not found!")
+		}
+
+		jsonPosts := bucketIndex.Get([]byte(tagKey))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil
