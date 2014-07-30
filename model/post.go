@@ -29,7 +29,7 @@ func GetAvailableFormats() []Format {
 			Name:  "md",
 			Title: "MarkDown",
 			Handler: (func(input string) string {
-				return string(blackfriday.MarkdownBasic([]byte(input)))
+				return string(blackfriday.MarkdownCommon([]byte(input)))
 			}),
 		},
 	}

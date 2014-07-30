@@ -1,86 +1,26 @@
-{% extends "./base.html" %}
+{% extends "./main.html" %}
 
-{% block body %}
-<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                <i class="fa fa-bars"></i>
-            </button>
-            <a class="navbar-brand" href="/">
-                <i class="fa fa-play-circle"></i>  <span class="light">Welcome to</span> {{ heading }}
-            </a>
-        </div>
+{% block content %}
+    {% if not meta.Posts %}
+        <h2>Nothing yet =( But you can <a href="/new">write your first post</a>!</h2>
+    {% else %}
+        {% include "./partial/posts.html" %}
+        <p class="text-center">Page {{ page + 1 }} of {{ meta.Pages }}</p>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-            <ul class="nav navbar-nav">
-                <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                <li class="hidden">
-                    <a href="#page-top"></a>
-                </li>
-                <li class="page-scroll">
-                    <a href="#content">Contents</a>
-                </li>
-                <li class="page-scroll">
-                    <a href="#about">About</a>
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container -->
-</nav>
-
-<section class="intro">
-    <div class="intro-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <h1 class="brand-heading">{{ heading }}</h1>
-                    <p class="intro-text">{{ intro }}</p>
-                    <div class="page-scroll">
-                        <a href="#content" class="btn btn-circle">
-                            <i class="fa fa-angle-double-down animated"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="content" class="container content-section">
-    <div class="row">
-        {% if not meta.Posts %}
-            <h2>Nothing yet =( But you can <a href="/new">write your first post</a>!</h2>
-        {% else %}
-            {% for p in posts %}
-                <h2><a href="/{{ p.Path }}">{{ p.Title }}</a></h2>
-                {% include "./partial/info.html" with post=p %}
-                <p>{{ p.HTML|striptags|truncatechars:255 }}</p>
-                <hr>
-            {% endfor %}
-            <p class="text-center">Page {{ page + 1 }} of {{ meta.Pages }}</p>
-
-            {% if meta.Pages > 1 %}
-            <ul class="pager">
-                {% if page == 0 %}
-                    <li class="previous disabled"><a href="#content">&larr; Newer</a></li>
-                {% else %}
-                    <li class="previous"><a href="/?page={{ page - 1 }}#content">&larr; Newer</a></li>
-                {% endif %}
-
-                {% if page + 1 >= meta.Pages %}
-                    <li class="next disabled"><a href="#content">Older &rarr;</a></li>
-                {% else %}
-                    <li class="next"><a href="/?page={{ page + 1 }}#content">Older &rarr;</a></li>
-                {% endif %}
-            </ul>
+        {% if meta.Pages > 1 %}
+        <ul class="pager">
+            {% if page == 0 %}
+                <li class="previous disabled"><a href="#content">&larr; Newer</a></li>
+            {% else %}
+                <li class="previous"><a href="/?page={{ page - 1 }}#content">&larr; Newer</a></li>
             {% endif %}
-        {% endif %}
-    </div>
-</section>
 
-{% include "./partial/about.html" %}
+            {% if page + 1 >= meta.Pages %}
+                <li class="next disabled"><a href="#content">Older &rarr;</a></li>
+            {% else %}
+                <li class="next"><a href="/?page={{ page + 1 }}#content">Older &rarr;</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    {% endif %}
 {% endblock %}

@@ -29,6 +29,9 @@ func main() {
 		r.GET("/edit/:uuid", controller.FormController)
 		r.POST("/edit/:uuid", controller.FormController)
 
+		r.GET("/drafts", controller.DraftsController)
+		r.GET("/tag/:tag", controller.TagController)
+
 		r.NoRoute(controller.PostController)
 
 		r.Static("/assets", "./assets")

@@ -14,7 +14,6 @@ func FormController(c *gin.Context) {
 	if len(uuid) > 0 {
 		post.Load(uuid)
 		ctx["post"] = post
-		//0dd9c29d-5fbc-472f-ab22-04562302dd28
 	}
 
 	ctx["formats"] = model.GetAvailableFormats()

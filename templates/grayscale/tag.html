@@ -1,0 +1,11 @@
+{% extends "./main.html" %}
+
+{% block content %}
+	<h2>Posts on "{{ tag }}"</h2>
+
+	{% if posts|length < 1 %}
+		<h2>Nothing yet =(</h2>
+	{% else %}
+		{% include "./partial/posts.html" %}
+	{% endif %}
+{% endblock %}

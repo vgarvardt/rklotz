@@ -3,7 +3,7 @@
 	{% if post.Tags %}
 	on
 		{% for t in post.Tags %}
-			<span class="label label-default">{{ t }}</span>
+			<span class="label label-default"><a href="/tag/{{ t }}#content">{{ t }}</a></span>
 		{% endfor %}
 	{% endif %}
 </p>

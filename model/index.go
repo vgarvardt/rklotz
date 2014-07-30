@@ -1,9 +1,10 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
+	"strings"
+	"encoding/json"
 
 	"github.com/boltdb/bolt"
 
@@ -56,10 +57,11 @@ func RebuildIndex() error {
 
 	if err := db.View(func(tx *bolt.Tx) error {
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
+		c := bucketPosts.Cursor()
 
 		currentPage := 0
 		pageKey := fmt.Sprintf("page-%d", currentPage)
-		bucketPosts.ForEach(func(k, v []byte) error {
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			post := new(Post)
 			json.Unmarshal(v, &post)
 
@@ -78,13 +80,11 @@ func RebuildIndex() error {
 				}
 
 				for _, tag := range post.Tags {
-					tagKey := fmt.Sprintf("tag-%s", tag)
+					tagKey := fmt.Sprintf("tag-%s", strings.ToLower(tag))
 					tagMap[tagKey] = append(tagMap[tagKey], post)
 				}
 			}
-
-			return nil
-		})
+		}
 
 		return nil
 	}); err != nil {
@@ -173,7 +173,7 @@ func GetPostsPage(page int) ([]Post, error) {
 }
 
 func GetTagPosts(tag string) ([]Post, error) {
-	tagKey := fmt.Sprintf("tag-%s", tag)
+	tagKey := fmt.Sprintf("tag-%s", strings.ToLower(tag))
 	var posts []Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -183,6 +183,26 @@ func GetTagPosts(tag string) ([]Post, error) {
 		}
 
 		jsonPosts := bucketIndex.Get([]byte(tagKey))
+		json.Unmarshal(jsonPosts, &posts)
+
+		return nil
+	}); err != nil {
+		return posts, err
+	}
+
+	return posts, nil
+}
+
+func GetDraftPosts() ([]Post, error) {
+	var posts []Post
+
+	if err := db.View(func(tx *bolt.Tx) error {
+		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
+		if bucketIndex == nil {
+			panic("Bucket index not found!")
+		}
+
+		jsonPosts := bucketIndex.Get([]byte("drafts"))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil
