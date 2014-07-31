@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -12,8 +13,9 @@ import (
 )
 
 const (
-	BUCKET_INDEX = "index"
-	BUCKET_TAGS  = "tags"
+	BUCKET_INDEX   = "index"
+	BUCKET_TAGS    = "tags"
+	BUCKET_TAG_MAP = "tag_map"
 )
 
 type Meta struct {
@@ -53,7 +55,8 @@ func RebuildIndex() error {
 
 	pathMap := make(map[string]string)
 	pageMap := make(map[string][]*Post)
-	tagMap := make(map[string][]*Post)
+	tags := make(map[string][]*Post)
+	tagMap := make(map[string]string)
 	var draftList []*Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -81,7 +84,9 @@ func RebuildIndex() error {
 				}
 
 				for _, tag := range post.Tags {
-					tagMap[strings.ToLower(tag)] = append(tagMap[strings.ToLower(tag)], post)
+					_tag := strings.ToLower(tag)
+					tags[_tag] = append(tags[_tag], post)
+					tagMap[_tag] = tag
 				}
 			}
 		}
@@ -111,6 +116,11 @@ func RebuildIndex() error {
 		if err != nil {
 			return err
 		}
+		tx.DeleteBucket([]byte(BUCKET_TAG_MAP))
+		bucketTagMap, err := tx.CreateBucketIfNotExists([]byte(BUCKET_TAG_MAP))
+		if err != nil {
+			return err
+		}
 
 		jsonMeta, _ := json.Marshal(meta)
 		cfg.Log(string(jsonMeta))
@@ -136,9 +146,15 @@ func RebuildIndex() error {
 			}
 		}
 
-		for tag, postsTag := range tagMap {
+		for tag, postsTag := range tags {
 			jsonPosts, _ := json.Marshal(postsTag)
 			if err := bucketTags.Put([]byte(tag), []byte(jsonPosts)); err != nil {
+				return err
+			}
+		}
+
+		for _tag, tag := range tagMap {
+			if err := bucketTagMap.Put([]byte(_tag), []byte(tag)); err != nil {
 				return err
 			}
 		}
@@ -177,12 +193,12 @@ func GetTagPosts(tag string) ([]Post, error) {
 	var posts []Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
-		bucketIndex := tx.Bucket([]byte(BUCKET_TAGS))
-		if bucketIndex == nil {
+		bucketTags := tx.Bucket([]byte(BUCKET_TAGS))
+		if bucketTags == nil {
 			panic("Bucket index not found!")
 		}
 
-		jsonPosts := bucketIndex.Get([]byte(strings.ToLower(tag)))
+		jsonPosts := bucketTags.Get([]byte(strings.ToLower(tag)))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil
@@ -191,6 +207,30 @@ func GetTagPosts(tag string) ([]Post, error) {
 	}
 
 	return posts, nil
+}
+
+func AutoCompleteTags(q string) []string {
+	var tags []string
+	db.View(func(tx *bolt.Tx) error {
+		bucketTags := tx.Bucket([]byte(BUCKET_TAGS))
+		if bucketTags == nil {
+			return nil
+		}
+		bucketTagMap := tx.Bucket([]byte(BUCKET_TAG_MAP))
+		if bucketTagMap == nil {
+			return nil
+		}
+		c := bucketTags.Cursor()
+
+		prefix := []byte(q)
+		for k, _ := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, _ = c.Next() {
+			tags = append(tags, string(bucketTagMap.Get(k)))
+		}
+
+		return nil
+	})
+
+	return tags
 }
 
 func GetDraftPosts() ([]Post, error) {

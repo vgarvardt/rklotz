@@ -31,6 +31,7 @@ func main() {
 
 		r.GET("/drafts", controller.DraftsController)
 		r.GET("/tag/:tag", controller.TagController)
+		r.GET("/autocomplete", controller.AutoComplete)
 
 		r.NoRoute(controller.PostController)
 

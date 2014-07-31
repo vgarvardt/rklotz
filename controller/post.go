@@ -21,3 +21,10 @@ func PostController(c *gin.Context) {
 		c.Data(404, gin.MIMEPlain, []byte("404 page not found"))
 	}
 }
+
+func AutoComplete(c *gin.Context) {
+	q := c.Request.URL.Query()["q"][0]
+	var tags []string
+	tags = append(tags, q)
+	c.JSON(200, gin.H{"tags": append(tags, model.AutoCompleteTags(q)...)})
+}

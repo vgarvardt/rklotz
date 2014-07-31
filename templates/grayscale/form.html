@@ -9,7 +9,36 @@
 	<script src="/assets/select2/select2.min.js"></script>
 	<script>
 		$(document).ready(function() {
-			$("#id_tags").select2({tags:["red", "green", "blue"]});
+			$("#id_tags").select2({
+				tags: [],
+				minimumInputLength: 2,
+				ajax: {
+					quietMillis: 400,
+					dataType: 'json',
+					url: "/autocomplete",
+					data: function (term) {
+						return {q: term}
+					},
+					results: function (data) {
+						var results = [];
+						var unique = {};
+						$.each(data.tags, function(k, v) {
+							if (!unique[v.toLowerCase()]) {
+								unique[v.toLowerCase()] = v;
+								results.push({id: v, text: v});
+							}
+						});
+						return {results: results}
+					}
+				},
+				initSelection: function(element, callback) {
+					var results = [];
+					$.each($(element).val().split(','), function(k, v) {
+						results.push({id: v, text: v});
+					});
+					callback(results);
+				}
+			});
 		});
 	</script>
 {% endblock %}
@@ -78,7 +107,7 @@
 		<div class="form-group">
 			<label for="id_tags" class="col-sm-2 control-label">Tags</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control select2-choice" id="id_tags" name="Tags" value='{{ post.Tags|join:"," }}'>
+				<input type="text" class="form-control" id="id_tags" name="Tags" value='{{ post.Tags|join:"," }}'>
 			</div>
 		</div>
 		<div class="form-group {% if errors.Path %}has-error{%endif%}">
