@@ -1,10 +1,10 @@
 package model
 
 import (
-	"fmt"
-	"time"
-	"strings"
 	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
 
 	"github.com/boltdb/bolt"
 
@@ -13,6 +13,7 @@ import (
 
 const (
 	BUCKET_INDEX = "index"
+	BUCKET_TAGS  = "tags"
 )
 
 type Meta struct {
@@ -80,8 +81,7 @@ func RebuildIndex() error {
 				}
 
 				for _, tag := range post.Tags {
-					tagKey := fmt.Sprintf("tag-%s", strings.ToLower(tag))
-					tagMap[tagKey] = append(tagMap[tagKey], post)
+					tagMap[strings.ToLower(tag)] = append(tagMap[strings.ToLower(tag)], post)
 				}
 			}
 		}
@@ -96,17 +96,18 @@ func RebuildIndex() error {
 	}
 
 	if err := db.Update(func(tx *bolt.Tx) error {
-		if err := tx.DeleteBucket([]byte(BUCKET_INDEX)); err != nil {
-			return err
-		}
+		tx.DeleteBucket([]byte(BUCKET_INDEX))
 		bucketIndex, err := tx.CreateBucketIfNotExists([]byte(BUCKET_INDEX))
 		if err != nil {
 			return err
 		}
-		if err := tx.DeleteBucket([]byte(BUCKET_MAP)); err != nil {
+		tx.DeleteBucket([]byte(BUCKET_MAP))
+		bucketMap, err := tx.CreateBucketIfNotExists([]byte(BUCKET_MAP))
+		if err != nil {
 			return err
 		}
-		bucketMap, err := tx.CreateBucketIfNotExists([]byte(BUCKET_MAP))
+		tx.DeleteBucket([]byte(BUCKET_TAGS))
+		bucketTags, err := tx.CreateBucketIfNotExists([]byte(BUCKET_TAGS))
 		if err != nil {
 			return err
 		}
@@ -135,9 +136,9 @@ func RebuildIndex() error {
 			}
 		}
 
-		for tagKey, postsTag := range tagMap {
+		for tag, postsTag := range tagMap {
 			jsonPosts, _ := json.Marshal(postsTag)
-			if err := bucketIndex.Put([]byte(tagKey), []byte(jsonPosts)); err != nil {
+			if err := bucketTags.Put([]byte(tag), []byte(jsonPosts)); err != nil {
 				return err
 			}
 		}
@@ -173,16 +174,15 @@ func GetPostsPage(page int) ([]Post, error) {
 }
 
 func GetTagPosts(tag string) ([]Post, error) {
-	tagKey := fmt.Sprintf("tag-%s", strings.ToLower(tag))
 	var posts []Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
-		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
+		bucketIndex := tx.Bucket([]byte(BUCKET_TAGS))
 		if bucketIndex == nil {
 			panic("Bucket index not found!")
 		}
 
-		jsonPosts := bucketIndex.Get([]byte(tagKey))
+		jsonPosts := bucketIndex.Get([]byte(strings.ToLower(tag)))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil
