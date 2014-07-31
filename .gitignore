@@ -28,5 +28,5 @@ _testmain.go
 data/*
 
 # Ignore env config files, except for the default one
-cfg/*.ini
-!cfg/config.ini
+*.ini
+!config.ini
