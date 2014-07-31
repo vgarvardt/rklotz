@@ -18,9 +18,6 @@ func FormController(c *gin.Context) {
 
 	ctx["formats"] = model.GetAvailableFormats()
 	if c.Request.Method == "POST" {
-		auth := new(model.Auth)
-		auth.Bind(c.Request)
-
 		if err := post.Bind(c.Request); err != nil {
 			panic(err)
 		}
@@ -31,17 +28,13 @@ func FormController(c *gin.Context) {
 			ctx["preview"] = true
 			ctx["post"] = post
 		} else {
-			if auth.IsValid() {
-				if formErrors := post.Validate(); len(formErrors) > 0 {
-					ctx["alert_warning"] = "Please fix form values"
-					ctx["errors"] = formErrors
-				} else {
-					post.Save(c.Request.FormValue("op") == "draft")
-					redirect(c, "/edit/" + post.UUID)
-					return
-				}
+			if formErrors := post.Validate(); len(formErrors) > 0 {
+				ctx["alert_warning"] = "Please fix form values"
+				ctx["errors"] = formErrors
 			} else {
-				ctx["alert_warning"] = "Failed to authenticate with given values"
+				post.Save(c.Request.FormValue("op") == "draft")
+				redirect(c, "/edit/" + post.UUID)
+				return
 			}
 		}
 	}

@@ -23,15 +23,17 @@ func main() {
 		r.Use(ginpongo2.Pongo2())
 
 		r.GET("/", controller.FrontController)
-
-		r.GET("/new", controller.FormController)
-		r.POST("/new", controller.FormController)
-		r.GET("/edit/:uuid", controller.FormController)
-		r.POST("/edit/:uuid", controller.FormController)
-
-		r.GET("/drafts", controller.DraftsController)
 		r.GET("/tag/:tag", controller.TagController)
 		r.GET("/autocomplete", controller.AutoComplete)
+
+		authorized := r.Group("/@", gin.BasicAuth(gin.Accounts{
+			cfg.String("auth.name"): cfg.String("auth.password"),
+		}))
+		authorized.GET("/new", controller.FormController)
+		authorized.POST("/new", controller.FormController)
+		authorized.GET("/edit/:uuid", controller.FormController)
+		authorized.POST("/edit/:uuid", controller.FormController)
+		authorized.GET("/drafts", controller.DraftsController)
 
 		r.NoRoute(controller.PostController)
 
