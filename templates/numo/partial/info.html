@@ -1,0 +1,9 @@
+<p class="small author">
+	<span class="green">{{ post.CreatedAt|date:"2 Jan 2006" }}</span>
+	{% if post.Tags %}
+	on
+		{% for t in post.Tags %}
+			<span class="label label-default"><a href="/tag/{{ t }}">{{ t }}</a></span>
+		{% endfor %}
+	{% endif %}
+</p>
