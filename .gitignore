@@ -24,8 +24,9 @@ _testmain.go
 *.exe
 *.test
 
-.godeps
+_vendor/*
 data/*
+
 
 # Ignore env config files, except for the default one
 *.ini

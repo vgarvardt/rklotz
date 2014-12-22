@@ -17,6 +17,8 @@ func render(c *gin.Context, template string, ctx map[string]interface{}) {
 		}
 	}
 
+	ctx["instanceId"] = cfg.GetInstanceId()
+
 	c.Set("template", fmt.Sprintf("./templates/%v/%s", ctx["theme"], template))
 	c.Set("data", ctx)
 	c.Writer.WriteHeader(200)

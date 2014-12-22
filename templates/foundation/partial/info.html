@@ -1,0 +1,9 @@
+<p>
+	{{ post.CreatedAt|date:"2 Jan 2006" }}
+	{% if post.Tags %}
+	on
+		{% for t in post.Tags %}
+			<a href="/tag/{{ t }}"><span class="label secondary radius">{{ t }}</span></a>
+		{% endfor %}
+	{% endif %}
+</p>

@@ -5,15 +5,20 @@ import (
 	"log"
 	"os"
 	"time"
+	"crypto/md5"
+	"encoding/hex"
 
 	"github.com/IoSync/goptimist"
 	"github.com/robfig/config"
 )
 
+const VERSION = "0.2"
+
 var app map[string]interface{}
 var reader *config.Config
 var env string
 var stdlogger *log.Logger
+var instanceId string
 
 func String(key string) string {
 	val, _ := reader.String(env, key)
@@ -38,6 +43,14 @@ func GetApp() map[string]interface{} {
 	return app
 }
 
+func GetInstanceId() string {
+	return instanceId
+}
+
+func GetVersion() string {
+	return VERSION
+}
+
 func init() {
 	app = goptimist.CliApp(os.Args)
 	if val, ok := app["env"]; !ok {
@@ -57,4 +70,9 @@ func init() {
 		Log(fmt.Sprintf("Loading config from %s", filePath))
 		reader, _ = config.ReadDefault(filePath)
 	}
+
+	hasher := md5.New()
+	hasher.Write([]byte(time.Now().Format("2006/01/02 - 15:04:05")))
+	instanceId = hex.EncodeToString(hasher.Sum(nil))[:5]
+	Log(fmt.Sprintf("Initialized App Instance ID %s", instanceId))
 }

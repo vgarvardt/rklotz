@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ngerakines/ginpongo2"
 
 	"./cfg"
 	"./controller"
@@ -20,7 +19,7 @@ func main() {
 
 	if _, ok := cfg.GetApp()["rebuild"]; !ok {
 		r := gin.Default()
-		r.Use(ginpongo2.Pongo2())
+		r.Use(cfg.Pongo2())
 
 		r.GET("/", controller.FrontController)
 		r.GET("/tag/:tag", controller.TagController)
@@ -37,7 +36,7 @@ func main() {
 
 		r.NoRoute(controller.PostController)
 
-		r.Static("/assets", "./assets")
+		r.Static("/static", "./static")
 
 		addr := cfg.String("addr")
 		cfg.Log(fmt.Sprintf("Running @ %s", addr))

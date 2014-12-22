@@ -9,19 +9,19 @@
 	{% block head_meta %}{% endblock %}
 
 	<title>{{ title|safe }}</title>
-	<link rel="shortcut icon" href="/assets/{{ theme }}/favicon.ico">
+	<link rel="shortcut icon" href="/static/{{ theme }}/favicon.ico">
 
 	<!-- Bootstrap Core CSS -->
-	<link href="/assets/{{ theme }}/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/static/{{ theme }}/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
 	<!-- Fonts -->
-	<link href="/assets/{{ theme }}/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="/static/{{ theme }}/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 
 	<!-- Custom Theme CSS -->
-	<link href="/assets/{{ theme }}/css/grayscale.css" rel="stylesheet">
-	<link href="/assets/{{ theme }}/css/blogo.css" rel="stylesheet">
+	<link href="/static/{{ theme }}/css/grayscale.css?{{ instanceId }}" rel="stylesheet">
+	<link href="/static/{{ theme }}/css/blogo.css?{{ instanceId }}" rel="stylesheet">
 	{% block head_link %}{% endblock %}
 
 </head>
@@ -31,12 +31,12 @@
 	{% block body %}{% endblock %}
 
 	<!-- Core JavaScript Files -->
-	<script src="/assets/{{ theme }}/js/jquery-1.11.1.min.js"></script>
-	<script src="/assets/{{ theme }}/js/bootstrap.min.js"></script>
-	<script src="/assets/{{ theme }}/js/jquery.easing.min.js"></script>
+	<script src="/static/{{ theme }}/js/jquery-1.11.1.min.js"></script>
+	<script src="/static/{{ theme }}/js/bootstrap.min.js"></script>
+	<script src="/static/{{ theme }}/js/jquery.easing.min.js"></script>
 
 	<!-- Custom Theme JavaScript -->
-	<script src="/assets/{{ theme }}/js/grayscale.js"></script>
+	<script src="/static/{{ theme }}/js/grayscale.js?{{ instanceId }}"></script>
 	{% block foot_js %}{% endblock %}
 
 </body>

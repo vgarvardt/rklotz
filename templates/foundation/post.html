@@ -1,0 +1,15 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<section class="container content-section">
+	<h1>{{ post.Title }}</h1>
+
+	{% include "./partial/info.html" %}
+
+	<div>
+		{{ post.HTML|safe }}
+	</div>
+</section>
+
+{% include "./partial/about.html" %}
+{% endblock %}

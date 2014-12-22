@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="{{ description }}">
+	<meta name="author" content="{{ author }}">
+	{% block head_meta %}{% endblock %}
+
+	<title>{{ title|safe }}</title>
+	<link rel="shortcut icon" href="/static/{{ theme }}/favicon.ico?{{ instanceId }}">
+
+	<link href="/static/{{ theme }}/lib/css/foundation.min.css?{{ instanceId }}" rel="stylesheet" type="text/css">
+
+	<!-- Fonts -->
+	<link href="/static/misc/font-awesome/css/font-awesome.min.css?{{ instanceId }}" rel="stylesheet" type="text/css">
+	{% block head_link %}{% endblock %}
+
+</head>
+
+<body>
+
+	<div class="row">
+		<div class="small-12 columns">
+
+			<div class="contain-to-grid sticky">
+				<nav class="top-bar" data-topbar role="navigation" data-options="sticky_on: large">
+					<ul class="title-area">
+						<li class="name">
+							<h1><a href="/">{{ heading }}</a></h1>
+						</li>
+						<!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+						<li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+					</ul>
+
+					<section class="top-bar-section">
+						<!-- Right Nav Section -->
+						<ul class="right">
+							<li class="divider"></li>
+							<li><a href="/">Home</a></li>
+							<li class="divider"></li>
+							<li><a href="#about">About</a></li>
+						</ul>
+					</section>
+				</nav>
+			</div>
+
+			<h1 class="text-center">{{ heading }} <small>{{ intro }}</small></h1>
+    		<hr>
+
+			{% block content %}{% endblock %}
+
+			<hr>
+			<p class="text-center">
+				<small>
+					built on top of <a href="https://github.com/vgarvardt/rklotz" target="_blank">rKlotz</a>
+					by <a href="http://itskrig.com" target="_blank">Vladimir Garvardt</a>
+				</small>
+			</p>
+		</div>
+	</div>
+
+</body>
+
+</html>

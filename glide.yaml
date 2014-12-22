@@ -1,0 +1,11 @@
+package: main
+
+import:
+  - package: github.com/gin-gonic/gin
+  - package: gopkg.in/flosch/pongo2.v3
+  - package: github.com/robfig/config
+  - package: github.com/boltdb/bolt
+  - package: github.com/IoSync/goptimist
+  - package: github.com/russross/blackfriday
+  - package: github.com/gorilla/schema
+  - package: code.google.com/p/go-uuid/uuid

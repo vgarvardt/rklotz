@@ -1,0 +1,28 @@
+{% extends "./base.html" %}
+
+{% block content %}
+    {% if not meta.Posts %}
+        <h2>Nothing yet =( But you can <a href="/new">write your first post</a>!</h2>
+    {% else %}
+        {% include "./partial/posts.html" %}
+        <p class="text-center">Page {{ page + 1 }} of {{ meta.Pages }}</p>
+
+        {% if meta.Pages > 1 %}
+        <ul class="pager">
+            {% if page == 0 %}
+                <li class="previous disabled"><a href="#content">&larr; Newer</a></li>
+            {% else %}
+                <li class="previous"><a href="/?page={{ page - 1 }}#content">&larr; Newer</a></li>
+            {% endif %}
+
+            {% if page + 1 >= meta.Pages %}
+                <li class="next disabled"><a href="#content">Older &rarr;</a></li>
+            {% else %}
+                <li class="next"><a href="/?page={{ page + 1 }}#content">Older &rarr;</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    {% endif %}
+
+    {% include "./partial/about.html" %}
+{% endblock %}
