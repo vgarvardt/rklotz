@@ -1,0 +1,135 @@
+{% extends "../base.html" %}
+
+{% block head_link %}
+	<link href="/static/misc/select2/select2.css?{{ instanceId }}" rel="stylesheet">
+	<link href="/static/misc/select2/select2-bootstrap.css?{{ instanceId }}" rel="stylesheet">
+{% endblock %}
+
+{% block foot_js %}
+	<script src="/static/misc/select2/select2.min.js?{{ instanceId }}"></script>
+	<script>
+		$(document).ready(function() {
+			$("#id_tags").select2({
+				tags: [],
+				minimumInputLength: 2,
+				ajax: {
+					quietMillis: 400,
+					dataType: 'json',
+					url: "/autocomplete",
+					data: function (term) {
+						return {q: term}
+					},
+					results: function (data) {
+						var results = [];
+						var unique = {};
+						$.each(data.tags, function(k, v) {
+							if (!unique[v.toLowerCase()]) {
+								unique[v.toLowerCase()] = v;
+								results.push({id: v, text: v});
+							}
+						});
+						return {results: results}
+					}
+				},
+				initSelection: function(element, callback) {
+					var results = [];
+					$.each($(element).val().split(','), function(k, v) {
+						results.push({id: v, text: v});
+					});
+					callback(results);
+				}
+			});
+		});
+	</script>
+{% endblock %}
+
+{% block content %}
+{% include "../partial/nav.html" %}
+
+<h1>{% if post.UUID %}Edit Post{% else %}New Post{% endif %}</h1>
+
+{% include "../partial/alert.html" %}
+
+{% if preview %}
+<div class="panel">
+	<h2>{{ post.Title }}</h2>
+	<div>{{ post.HTML|safe }}</div>
+</div>
+{% endif %}
+
+<form class="form-horizontal" role="form" method="post" action="">
+	{% if post.UUID %}
+	<div class="row">
+		<div class="small-2 columns">
+			<label class="right inline">Navigate</label>
+		</div>
+		<div class="small-10 columns">
+			{% if post.Draft %}
+				<a href="#" class="button disabled">Draft</a>
+			{% else %}
+				<a href="/{{ post.Path }}" class="button info" target="_blank">{{ post.Path }}</a>
+			{% endif %}
+		</div>
+	</div>
+	{% endif %}
+
+	<div class="row">
+		<div class="small-2 columns">
+			<label for="id_title" class="right inline {% if errors.Title %}error{% endif %}">Title</label>
+		</div>
+		<div class="small-10 columns">
+			<input type="text" class="{% if errors.Title %}error{% endif %}" id="id_title" name="Title" value="{{ post.Title }}">
+			{% if errors.Title %}<small class="error">{{ errors.Title }}</small>{% endif %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-12 columns">
+			<textarea class="{% if errors.Body %}error{% endif %}" id="id_body" placeholder="Body..." name="Body" rows="20">{{ post.Body }}</textarea>
+			{% if errors.Body %}<small class="error">{{ errors.Body }}</small>{% endif %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-2 columns">
+			<label for="id_format" class="right inline {% if errors.Format %}error{% endif %}">Format</label>
+		</div>
+		<div class="small-10 columns">
+			<select class="{% if errors.Format %}error{% endif %}" id="id_format" name="Format">
+				{% for f in formats %}
+				<option value="{{ f.Name }}" {% if f.Name == post.Format %}selected{% endif %}>{{ f.Title }}</option>
+				{% endfor %}
+			</select>
+			{% if errors.Format %}<small class="error">{{ errors.Format }}</small>{% endif %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-2 columns">
+			<label for="id_tags" class="right inline">Tags</label>
+		</div>
+		<div class="small-10 columns">
+			<input type="text" id="id_tags" name="Tags" value='{{ post.Tags|join:"," }}'>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-2 columns">
+			<label for="id_path" class="right inline {% if errors.Path %}error{% endif %}">Path</label>
+		</div>
+		<div class="small-10 columns">
+			<input type="text" class="{% if errors.Path %}error{% endif %}" id="id_path" name="Path" value="{{ post.Path }}">
+			{% if errors.Path %}<small class="error">{{ errors.Path }}</small>{% endif %}
+		</div>
+	</div>
+
+	<div class="form-group pull-right">
+		<div class="col-sm-12">
+			<input type="hidden" name="UUID" value="{{ post.UUID }}">
+			<button type="submit" class="button large secondary" name="op" value="preview">Preview</button>
+			<button type="submit" class="button large success" name="op" value="draft">Draft</button>
+			<button type="submit" class="button large" name="op" value="publish">Publish</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

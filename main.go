@@ -33,6 +33,7 @@ func main() {
 		authorized.GET("/edit/:uuid", controller.FormController)
 		authorized.POST("/edit/:uuid", controller.FormController)
 		authorized.GET("/drafts", controller.DraftsController)
+		authorized.GET("/published", controller.PublishedController)
 
 		r.NoRoute(controller.PostController)
 

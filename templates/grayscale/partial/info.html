@@ -1,9 +1,0 @@
-<p>
-	{{ post.CreatedAt|date:"2 Jan 2006" }}
-	{% if post.Tags %}
-	on
-		{% for t in post.Tags %}
-			<span class="label label-default"><a href="/tag/{{ t }}#content">{{ t }}</a></span>
-		{% endfor %}
-	{% endif %}
-</p>

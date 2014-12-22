@@ -33,11 +33,11 @@ func FormController(c *gin.Context) {
 				ctx["errors"] = formErrors
 			} else {
 				post.Save(c.Request.FormValue("op") == "draft")
-				redirect(c, "/edit/" + post.UUID)
+				redirect(c, "/@/edit/"+post.UUID)
 				return
 			}
 		}
 	}
 
-	render(c, "form.html", ctx)
+	render(c, "@/form.html", ctx)
 }

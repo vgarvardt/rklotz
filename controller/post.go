@@ -10,6 +10,11 @@ import (
 )
 
 func PostController(c *gin.Context) {
+	if strings.Trim(fmt.Sprintf("%v", c.Request.URL), "/") == "@" {
+		redirect(c, "/@/drafts")
+		return
+	}
+
 	post := new(model.Post)
 	post.LoadByPath(strings.Trim(fmt.Sprintf("%v", c.Request.URL), "/"))
 

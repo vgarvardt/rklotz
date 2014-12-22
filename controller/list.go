@@ -12,7 +12,16 @@ func DraftsController(c *gin.Context) {
 	posts, _ := model.GetDraftPosts()
 	ctx["posts"] = posts
 
-	render(c, "drafts.html", ctx)
+	render(c, "@/drafts.html", ctx)
+}
+
+func PublishedController(c *gin.Context) {
+	ctx := make(map[string]interface{})
+
+	posts, _ := model.GetPublishedPosts()
+	ctx["posts"] = posts
+
+	render(c, "@/published.html", ctx)
 }
 
 func TagController(c *gin.Context) {

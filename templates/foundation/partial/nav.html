@@ -1,0 +1,12 @@
+<dl class="sub-nav" style="background-color: #f2f2f2; padding: 10px 10px 10px 0;">
+	<dt>Posts:</dt>
+	<dd class='{% if url_path == "/@/drafts" %}active{% endif %}'>
+		<a href="/@/drafts">Drafts</a>
+	</dd>
+	<dd class='{% if url_path == "/@/published" %}active{% endif %}'>
+		<a href="/@/published">Published</a>
+	</dd>
+	<dd class='{% if url_path == "/@/new" %}active{% endif %}'>
+		<a href="/@/new">New</a>
+	</dd>
+</dl>

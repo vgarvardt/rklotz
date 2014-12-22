@@ -1,6 +1,0 @@
-{% for p in posts %}
-	<h2><a href="/{{ p.Path }}">{{ p.Title }}</a></h2>
-	{% include "./info.html" with post=p %}
-	<p>{{ p.HTML|striptags|truncatechars:255 }}</p>
-	<hr>
-{% endfor %}

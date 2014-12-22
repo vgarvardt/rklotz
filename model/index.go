@@ -58,6 +58,7 @@ func RebuildIndex() error {
 	tags := make(map[string][]*Post)
 	tagMap := make(map[string]string)
 	var draftList []*Post
+	var publishedList []*Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
@@ -74,6 +75,7 @@ func RebuildIndex() error {
 				draftList = append(draftList, post)
 			} else {
 				meta.Posts++
+				publishedList = append(publishedList, post)
 				pathMap[post.Path] = post.UUID
 
 				pageMap[pageKey] = append(pageMap[pageKey], post)
@@ -137,6 +139,11 @@ func RebuildIndex() error {
 
 		jsonDrafts, _ := json.Marshal(draftList)
 		if err := bucketIndex.Put([]byte("drafts"), []byte(jsonDrafts)); err != nil {
+			return err
+		}
+
+		jsonPublished, _ := json.Marshal(publishedList)
+		if err := bucketIndex.Put([]byte("published"), []byte(jsonPublished)); err != nil {
 			return err
 		}
 
@@ -243,6 +250,26 @@ func GetDraftPosts() ([]Post, error) {
 		}
 
 		jsonPosts := bucketIndex.Get([]byte("drafts"))
+		json.Unmarshal(jsonPosts, &posts)
+
+		return nil
+	}); err != nil {
+		return posts, err
+	}
+
+	return posts, nil
+}
+
+func GetPublishedPosts() ([]Post, error) {
+	var posts []Post
+
+	if err := db.View(func(tx *bolt.Tx) error {
+		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
+		if bucketIndex == nil {
+			panic("Bucket index not found!")
+		}
+
+		jsonPosts := bucketIndex.Get([]byte("published"))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil

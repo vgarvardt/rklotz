@@ -18,6 +18,7 @@ func render(c *gin.Context, template string, ctx map[string]interface{}) {
 	}
 
 	ctx["instanceId"] = cfg.GetInstanceId()
+	ctx["url_path"] = c.Request.URL.Path
 
 	c.Set("template", fmt.Sprintf("./templates/%v/%s", ctx["theme"], template))
 	c.Set("data", ctx)
