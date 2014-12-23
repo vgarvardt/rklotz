@@ -19,6 +19,6 @@ stuff:
 restart:
 	@make kill
 	@make stuff
-	@go run main.go --env=dev & echo $$! > $(PID)
+	@go run main.go --env dev & echo $$! > $(PID)
 
 .PHONY: serve restart kill stuff

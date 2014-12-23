@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	if _, ok := cfg.GetApp()["rebuild"]; !ok {
+	if !cfg.GetOptions().Rebuild {
 		r := gin.Default()
 		r.Use(cfg.Pongo2())
 
