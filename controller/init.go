@@ -10,7 +10,7 @@ import (
 )
 
 func render(c *gin.Context, template string, ctx map[string]interface{}) {
-	ui := []string{"lang", "title", "heading", "intro", "theme", "author", "description"}
+	ui := []string{"lang", "title", "heading", "intro", "theme", "author", "description", "date_format"}
 	for i := 0; i < len(ui); i++ {
 		if _, ok := ctx[ui[i]]; !ok {
 			ctx[ui[i]] = cfg.String("ui." + ui[i])

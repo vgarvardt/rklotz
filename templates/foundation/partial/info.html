@@ -1,5 +1,5 @@
 <p>
-	{{ post.CreatedAt|date:"2 Jan 2006" }}
+	{{ post.CreatedAt|date:date_format }}
 	{% if post.Tags %}
 	on
 		{% for t in post.Tags %}
