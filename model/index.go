@@ -16,6 +16,10 @@ const (
 	BUCKET_INDEX   = "index"
 	BUCKET_TAGS    = "tags"
 	BUCKET_TAG_MAP = "tag_map"
+
+	INDEX_META      = "meta"
+	INDEX_DRAFTS    = "drafts"
+	INDEX_PUBLISHED = "published"
 )
 
 type Meta struct {
@@ -39,7 +43,7 @@ func (meta *Meta) Load() {
 	db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte([]byte(BUCKET_INDEX)))
 		if bucket != nil {
-			jsonMeta := bucket.Get([]byte("meta"))
+			jsonMeta := bucket.Get([]byte(INDEX_META))
 			json.Unmarshal(jsonMeta, &meta)
 		}
 
@@ -127,7 +131,7 @@ func RebuildIndex() error {
 
 		jsonMeta, _ := json.Marshal(meta)
 		cfg.Log(string(jsonMeta))
-		if err := bucketIndex.Put([]byte("meta"), []byte(jsonMeta)); err != nil {
+		if err := bucketIndex.Put([]byte(INDEX_META), []byte(jsonMeta)); err != nil {
 			return err
 		}
 
@@ -139,12 +143,12 @@ func RebuildIndex() error {
 		}
 
 		jsonDrafts, _ := json.Marshal(draftList)
-		if err := bucketIndex.Put([]byte("drafts"), []byte(jsonDrafts)); err != nil {
+		if err := bucketIndex.Put([]byte(INDEX_DRAFTS), []byte(jsonDrafts)); err != nil {
 			return err
 		}
 
 		jsonPublished, _ := json.Marshal(publishedList)
-		if err := bucketIndex.Put([]byte("published"), []byte(jsonPublished)); err != nil {
+		if err := bucketIndex.Put([]byte(INDEX_PUBLISHED), []byte(jsonPublished)); err != nil {
 			return err
 		}
 
@@ -241,7 +245,7 @@ func AutoCompleteTags(q string) []string {
 	return tags
 }
 
-func GetDraftPosts() ([]Post, error) {
+func getIndexPosts(index string) ([]Post, error) {
 	var posts []Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -250,7 +254,7 @@ func GetDraftPosts() ([]Post, error) {
 			panic("Bucket index not found!")
 		}
 
-		jsonPosts := bucketIndex.Get([]byte("drafts"))
+		jsonPosts := bucketIndex.Get([]byte(index))
 		json.Unmarshal(jsonPosts, &posts)
 
 		return nil
@@ -261,22 +265,10 @@ func GetDraftPosts() ([]Post, error) {
 	return posts, nil
 }
 
+func GetDraftPosts() ([]Post, error) {
+	return getIndexPosts(INDEX_DRAFTS)
+}
+
 func GetPublishedPosts() ([]Post, error) {
-	var posts []Post
-
-	if err := db.View(func(tx *bolt.Tx) error {
-		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
-		if bucketIndex == nil {
-			panic("Bucket index not found!")
-		}
-
-		jsonPosts := bucketIndex.Get([]byte("published"))
-		json.Unmarshal(jsonPosts, &posts)
-
-		return nil
-	}); err != nil {
-		return posts, err
-	}
-
-	return posts, nil
+	return getIndexPosts(INDEX_PUBLISHED)
 }
