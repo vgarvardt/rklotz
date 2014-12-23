@@ -1,6 +1,30 @@
 {% for p in posts %}
 	<h2><a href="/{{ p.Path }}">{{ p.Title }}</a></h2>
-	{% include "./info.html" with post=p %}
+
+	<div class="clearfix">
+		{% if "disqus" in plugins %}
+			<p class="right">
+				<a href="/{{ p.Path }}#disqus_thread" data-disqus-identifier="{{ p.UUID }}">Comments</a>
+			</p>
+		{% endif %}
+
+		{% include "./info.html" with post=p %}
+	</div>
+
 	<p>{{ p.HTML|striptags|truncatechars:255 }}</p>
+
 	<hr>
 {% endfor %}
+
+{% if "disqus" in plugins %}
+<script type="text/javascript">
+    var disqus_shortname = '{{ plugin.disqus.shortname }}';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+{% endif %}

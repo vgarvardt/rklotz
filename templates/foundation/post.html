@@ -14,4 +14,7 @@
 </section>
 
 {% include about_path %}
+
+{% if "disqus" in plugins %}{% include "../plugins/disqus.html" %}{% endif %}
+
 {% endblock %}

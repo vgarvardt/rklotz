@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -26,6 +27,22 @@ func render(c *gin.Context, template string, ctx map[string]interface{}) {
 	} else {
 		ctx["about_path"] = "./partial/about.html"
 	}
+
+	// enabled plugins and their settings
+	enabledPlugins := strings.Split(cfg.String("plugins"), " ")
+	plugin := make(map[string]map[string]string)
+	plugins := make(map[string]bool)
+	for i := 0; i < len(enabledPlugins); i++ {
+		plugin[enabledPlugins[i]] = make(map[string]string)
+		plugins[enabledPlugins[i]] = true
+
+		pluginParams := strings.Split(cfg.String(fmt.Sprintf("plugin.%s._", enabledPlugins[i])), " ")
+		for j := 0; j < len(pluginParams); j++ {
+			plugin[enabledPlugins[i]][pluginParams[j]] = cfg.String(fmt.Sprintf("plugin.%s.%s", enabledPlugins[i], pluginParams[j]))
+		}
+	}
+	ctx["plugins"] = plugins
+	ctx["plugin"] = plugin
 
 	c.Set("template", fmt.Sprintf("./templates/%v/%s", ctx["theme"], template))
 	c.Set("data", ctx)
