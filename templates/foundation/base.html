@@ -8,7 +8,7 @@
 	<meta name="author" content="{{ author }}">
 	{% block head_meta %}{% endblock %}
 
-	<title>{{ title|safe }}</title>
+	<title>{{ title }} | {% block title %}{{ intro }}{% endblock %}</title>
 	<link rel="shortcut icon" href="/static/{{ theme }}/favicon.ico?{{ instanceId }}">
 
 	<link href="/static/{{ theme }}/lib/css/foundation.min.css?{{ instanceId }}" rel="stylesheet" type="text/css">

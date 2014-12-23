@@ -14,7 +14,7 @@ kill:
 	@kill `cat $(PID)` || true
 
 stuff:
-	@echo "Starting new instance..."
+	@echo ""
 
 restart:
 	@make kill
