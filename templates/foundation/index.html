@@ -1,7 +1,7 @@
 {% extends "./base.html" %}
 
 {% block content %}
-	{% include "./partial/about.html" %}
+	{% include about_path %}
 
 	{% if not meta.Posts %}
 		<h2>Nothing yet =( But you can <a href="/new">write your first post</a>!</h2>
