@@ -1,6 +1,8 @@
 {% extends "./base.html" %}
 
 {% block content %}
+	{% include "./partial/about.html" %}
+
 	<h2>Posts on <span class="label secondary radius" style="font-size: inherit;">{{ tag }}</span></h2>
 
 	{% if posts|length < 1 %}

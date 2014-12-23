@@ -29,7 +29,7 @@ type Meta struct {
 func (meta *Meta) init() {
 	meta.Posts = 0
 	meta.PerPage = cfg.Int("ui.per_page")
-	meta.Pages = 0
+	meta.Pages = 1
 	meta.Drafts = 0
 	meta.UpdatedAt = time.Now()
 }
@@ -93,13 +93,14 @@ func RebuildIndex() error {
 			}
 		}
 
+		// fix situation, when last page is empty
+		if len(pageMap[pageKey]) < 1 && meta.Pages > 0 {
+			meta.Pages--
+		}
+
 		return nil
 	}); err != nil {
 		return err
-	}
-
-	if meta.Pages == 0 {
-		meta.Pages = 1
 	}
 
 	if err := db.Update(func(tx *bolt.Tx) error {
