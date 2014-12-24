@@ -37,7 +37,7 @@ func main() {
 
 		r.NoRoute(controller.PostController)
 
-		r.Static("/static", "./static")
+		r.Static("/static", fmt.Sprintf("%s/static", cfg.GetRootDir()))
 
 		addr := cfg.String("addr")
 		cfg.Log(fmt.Sprintf("Running @ %s", addr))

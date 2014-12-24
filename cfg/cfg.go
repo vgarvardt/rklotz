@@ -73,14 +73,14 @@ func init() {
 	Log(fmt.Sprintf("Initializing application ver %s", VERSION))
 	Log(fmt.Sprintf("Loading config with env set to %s", options.Env))
 
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
+	var err error
+	if rootDir, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
 		panic(err)
 	}
 
-	filePath := fmt.Sprintf("%s/%s.ini", rootDir, options.Env)
+	filePath := fmt.Sprintf("%s/%s.ini", GetRootDir(), options.Env)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		filePath = fmt.Sprintf("%s/config.ini", rootDir)
+		filePath = fmt.Sprintf("%s/config.ini", GetRootDir())
 		Log(fmt.Sprintf("Loading config from %s", filePath))
 		reader, _ = config.ReadDefault(filePath)
 	} else {
