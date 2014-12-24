@@ -1,8 +1,11 @@
 package model
 
 import (
+	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+
 	"github.com/boltdb/bolt"
 
 	"../cfg"
@@ -11,8 +14,16 @@ import (
 var db *bolt.DB
 
 func init() {
-	os.MkdirAll(path.Dir(cfg.String("db.path")), 0755)
-	db, _ = bolt.Open(cfg.String("db.path"), 0644, nil)
+	// can not use cfg.GetRootDir() as it may be not initialized before this init
+	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		panic(err)
+	}
+
+	dbPath := fmt.Sprintf("%s/%s", rootDir, cfg.String("db.path"))
+	cfg.Log(fmt.Sprintf("DB path: %s", dbPath))
+	os.MkdirAll(path.Dir(dbPath), 0755)
+	db, _ = bolt.Open(dbPath, 0644, nil)
 }
 
 func GetDB() *bolt.DB {

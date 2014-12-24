@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/robfig/config"
@@ -24,6 +25,7 @@ var reader *config.Config
 var options Options
 var stdlogger *log.Logger
 var instanceId string
+var rootDir string
 
 func String(key string) string {
 	val, _ := reader.String(options.Env, key)
@@ -56,6 +58,10 @@ func GetVersion() string {
 	return VERSION
 }
 
+func GetRootDir() string {
+	return rootDir
+}
+
 func init() {
 	options = Options{
 		Env:     "prod",
@@ -67,10 +73,16 @@ func init() {
 	Log(fmt.Sprintf("Initializing application ver %s", VERSION))
 	Log(fmt.Sprintf("Loading config with env set to %s", options.Env))
 
-	filePath := fmt.Sprintf("./%s.ini", options.Env)
+	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		panic(err)
+	}
+
+	filePath := fmt.Sprintf("%s/%s.ini", rootDir, options.Env)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		Log(fmt.Sprintf("Loading config from ./config.ini"))
-		reader, _ = config.ReadDefault("./config.ini")
+		filePath = fmt.Sprintf("%s/config.ini", rootDir)
+		Log(fmt.Sprintf("Loading config from %s", filePath))
+		reader, _ = config.ReadDefault(filePath)
 	} else {
 		Log(fmt.Sprintf("Loading config from %s", filePath))
 		reader, _ = config.ReadDefault(filePath)
