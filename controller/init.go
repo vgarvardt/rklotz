@@ -44,7 +44,7 @@ func render(c *gin.Context, template string, ctx map[string]interface{}) {
 	ctx["plugins"] = plugins
 	ctx["plugin"] = plugin
 
-	c.Set("template", fmt.Sprintf("./templates/%v/%s", ctx["theme"], template))
+	c.Set("template", fmt.Sprintf("%s/templates/%v/%s", cfg.GetRootDir(), ctx["theme"], template))
 	c.Set("data", ctx)
 	c.Writer.WriteHeader(200)
 }
