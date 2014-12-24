@@ -14,11 +14,11 @@ kill:
 	@kill `cat $(PID)` || true
 
 stuff:
-	@echo ""
+	@echo "Current working directory: "`pwd`
 
 restart:
 	@make kill
 	@make stuff
-	@go run main.go --env dev & echo $$! > $(PID)
+	@go run main.go --env dev --root `pwd` & echo $$! > $(PID)
 
 .PHONY: serve restart kill stuff

@@ -18,6 +18,7 @@ const VERSION = "0.2"
 type Options struct {
 	Env     string        `goptions:"-e, --env, description='Application environment, defines config section'"`
 	Rebuild bool          `goptions:"-r, --rebuild, description='Rebuild index only, do not start web server'"`
+	RootDir string        `goptions:"-d, --root, description='Force set root dir'"`
 	Help    goptions.Help `goptions:"-h, --help, description='Show this help'"`
 }
 
@@ -66,6 +67,7 @@ func init() {
 	options = Options{
 		Env:     "prod",
 		Rebuild: false,
+		RootDir: "",
 	}
 	goptions.ParseAndFail(&options)
 
@@ -73,9 +75,14 @@ func init() {
 	Log(fmt.Sprintf("Initializing application ver %s", VERSION))
 	Log(fmt.Sprintf("Loading config with env set to %s", options.Env))
 
-	var err error
-	if rootDir, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
-		panic(err)
+	if len(options.RootDir) > 0 {
+		rootDir = options.RootDir
+	} else {
+		var err error
+		if rootDir, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
+			panic(err)
+		}
+		options.RootDir = rootDir
 	}
 
 	filePath := fmt.Sprintf("%s/%s.ini", GetRootDir(), options.Env)
