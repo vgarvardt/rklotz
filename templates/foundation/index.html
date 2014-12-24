@@ -1,6 +1,9 @@
 {% extends "./base.html" %}
 
 {% block content %}
+	<h1 class="text-center">{{ heading }} <small>{{ intro }}</small></h1>
+	<hr>
+
 	{% include about_path %}
 
 	{% if not meta.Posts %}
