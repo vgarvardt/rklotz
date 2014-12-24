@@ -65,40 +65,42 @@ func RebuildIndex() error {
 	var publishedList []*Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
-		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
-		c := bucketPosts.Cursor()
-
 		currentPage := 0
 		pageKey := fmt.Sprintf("page-%d", currentPage)
-		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			post := new(Post)
-			json.Unmarshal(v, &post)
 
-			if post.Draft {
-				meta.Drafts++
-				draftList = append(draftList, post)
-			} else {
-				meta.Posts++
-				publishedList = append(publishedList, post)
-				pathMap[post.Path] = post.UUID
+		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
+		if bucketPosts != nil {
+			c := bucketPosts.Cursor()
+			for k, v := c.Last(); k != nil; k, v = c.Prev() {
+				post := new(Post)
+				json.Unmarshal(v, &post)
 
-				pageMap[pageKey] = append(pageMap[pageKey], post)
-				if len(pageMap[pageKey]) >= meta.PerPage {
-					currentPage++
-					meta.Pages++
-					pageKey = fmt.Sprintf("page-%d", currentPage)
-				}
+				if post.Draft {
+					meta.Drafts++
+					draftList = append(draftList, post)
+				} else {
+					meta.Posts++
+					publishedList = append(publishedList, post)
+					pathMap[post.Path] = post.UUID
 
-				for _, tag := range post.Tags {
-					_tag := strings.ToLower(tag)
-					tags[_tag] = append(tags[_tag], post)
-					tagMap[_tag] = tag
+					pageMap[pageKey] = append(pageMap[pageKey], post)
+					if len(pageMap[pageKey]) >= meta.PerPage {
+						currentPage++
+						meta.Pages++
+						pageKey = fmt.Sprintf("page-%d", currentPage)
+					}
+
+					for _, tag := range post.Tags {
+						_tag := strings.ToLower(tag)
+						tags[_tag] = append(tags[_tag], post)
+						tagMap[_tag] = tag
+					}
 				}
 			}
 		}
 
 		// fix situation, when last page is empty
-		if len(pageMap[pageKey]) < 1 && meta.Pages > 0 {
+		if len(pageMap[pageKey]) < 1 && meta.Pages > 1 {
 			meta.Pages--
 		}
 
