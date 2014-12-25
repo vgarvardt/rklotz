@@ -3,9 +3,7 @@
 {% block title %}Posts on "{{ tag }}"{% endblock %}
 
 {% block content %}
-	<h1 class="text-center">{{ heading }} <small>{{ intro }}</small></h1>
-	<hr>
-	
+	{% include "./partial/heading.html" %}
 	{% include about_path %}
 
 	<h2>Posts on <span class="label secondary radius" style="font-size: inherit;">{{ tag }}</span></h2>
