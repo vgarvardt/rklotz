@@ -1,20 +1,24 @@
 package model
 
 import (
-	"time"
-	"strings"
-	"net/http"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
 
-	"github.com/russross/blackfriday"
-	"github.com/gorilla/schema"
-	"github.com/boltdb/bolt"
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/boltdb/bolt"
+	"github.com/gorilla/schema"
+	"github.com/russross/blackfriday"
+
+	"../cfg"
 )
 
 const (
 	BUCKET_POSTS = "posts"
-	BUCKET_MAP = "path_map"
+	BUCKET_MAP   = "path_map"
 )
 
 type Format struct {
@@ -50,16 +54,17 @@ func bindFormToStruct(req *http.Request, obj interface{}) error {
 }
 
 type Post struct {
-	UUID		string
-	Path		string
-	Title		string
-	Body		string
-	Format		string
-	HTML		string		`schema:"-"`
-	Tags		[]string
-	Draft		bool		`schema:"-"`
-	CreatedAt	time.Time	`schema:"-"`
-	UpdatedAt	time.Time	`schema:"-"`
+	UUID        string
+	Path        string
+	Title       string
+	Body        string
+	Format      string
+	HTML        string `schema:"-"`
+	Tags        []string
+	Draft       bool      `schema:"-"`
+	CreatedAt   time.Time `schema:"-"`
+	UpdatedAt   time.Time `schema:"-"`
+	PublishedAt time.Time `schema:"-"`
 }
 
 func (post *Post) Bind(req *http.Request) error {
@@ -69,6 +74,11 @@ func (post *Post) Bind(req *http.Request) error {
 	post.Path = strings.Trim(post.Path, "/")
 	if len(post.Tags) > 0 {
 		post.Tags = strings.Split(post.Tags[0], ",")
+	}
+
+	var err error
+	if post.PublishedAt, err = time.Parse(time.RFC3339, req.PostFormValue("PublishedAt")); err != nil {
+		post.PublishedAt = time.Now()
 	}
 
 	return nil
@@ -121,6 +131,7 @@ func (post *Post) Save(draft bool) error {
 		return err
 	}
 
+	cfg.Log(fmt.Sprintf("Saved post UUID %s", post.UUID))
 	go RebuildIndex()
 	return nil
 }
@@ -129,7 +140,7 @@ func (post *Post) Load(uuid string) error {
 	return db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucket == nil {
-			panic("Bucket posts not found!")
+			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))
 		}
 
 		jsonPost := bucket.Get([]byte(uuid))
@@ -143,7 +154,7 @@ func (post *Post) LoadByPath(path string) error {
 	return db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_MAP))
 		if bucket == nil {
-			panic("Bucket path_map not found!")
+			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_MAP))
 		}
 
 		uuid := bucket.Get([]byte(path))
@@ -171,4 +182,30 @@ func (post *Post) Validate() map[string]string {
 	}
 
 	return err
+}
+
+func UpdatePostField(uuid, field, value string) error {
+	post := new(Post)
+	if err := post.Load(uuid); err != nil {
+		return err
+	}
+
+	if len(post.UUID) < 1 {
+		return errors.New("Post could not be loaded")
+	}
+
+	switch {
+	case field == "PublishedAt":
+		var t time.Time
+		var err error
+		if t, err = time.Parse(time.RFC3339, value); err != nil {
+			return errors.New(fmt.Sprintf("Invalid value '%s' for '%s': %v (must be in '%s' format)", value, field, err, time.RFC3339))
+		}
+		post.PublishedAt = t
+		break
+	default:
+		return errors.New(fmt.Sprintf("Unknown field '%s'", field))
+	}
+
+	return post.Save(post.Draft)
 }

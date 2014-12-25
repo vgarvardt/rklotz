@@ -123,6 +123,16 @@
 		</div>
 	</div>
 
+	<div class="row">
+		<div class="small-2 columns">
+			<label for="id_published_at" class="right inline {% if errors.PublishedAt %}error{% endif %}">Published At</label>
+		</div>
+		<div class="small-10 columns">
+			<input type="datetime" class="{% if errors.PublishedAt %}error{% endif %}" id="id_published_at" name="PublishedAt" value="{{ post.PublishedAt|date:"2006-01-02T15:04:01Z" }}">
+			{% if errors.PublishedAt %}<small class="error">{{ errors.PublishedAt }}</small>{% endif %}
+		</div>
+	</div>
+
 	<div class="form-group pull-right">
 		<div class="col-sm-12">
 			<input type="hidden" name="UUID" value="{{ post.UUID }}">

@@ -16,9 +16,12 @@ import (
 const VERSION = "0.2"
 
 type Options struct {
-	Env     string        `goptions:"-e, --env, description='Application environment, defines config section'"`
-	Rebuild bool          `goptions:"-r, --rebuild, description='Rebuild index only, do not start web server'"`
-	RootDir string        `goptions:"-d, --root, description='Force set root dir'"`
+	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config section'"`
+	Rebuild bool          `goptions:"-r, --rebuild, description='Rebuild index only, do not run web server'"`
+	RootDir string        `goptions:"-d, --root, description='<dir> Force set root dir'"`
+	Update  string        `goptions:"-u, --update, description='<uuid> Update post UUID field with new value (works with --field and --value set), do not run web server'"`
+	Field   string        `goptions:"-f, --field, description='<field> Update post UUID field with new value (works with --update and --value set), do not run web server'"`
+	Value   string        `goptions:"-v, --value, description='<value> Update post UUID field with new value (works with --update and --field set), do not run web server'"`
 	Help    goptions.Help `goptions:"-h, --help, description='Show this help'"`
 }
 
@@ -27,6 +30,7 @@ var options Options
 var stdlogger *log.Logger
 var instanceId string
 var rootDir string
+var runWebServer bool
 
 func String(key string) string {
 	val, _ := reader.String(options.Env, key)
@@ -63,13 +67,18 @@ func GetRootDir() string {
 	return rootDir
 }
 
+func GetRunWebServer() bool {
+	return runWebServer
+}
+
 func init() {
 	options = Options{
 		Env:     "prod",
 		Rebuild: false,
-		RootDir: "",
 	}
 	goptions.ParseAndFail(&options)
+
+	runWebServer = !options.Rebuild && len(options.Update) < 1
 
 	stdlogger = log.New(os.Stdout, "", 0)
 	Log(fmt.Sprintf("Initializing application ver %s", VERSION))

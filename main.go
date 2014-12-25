@@ -13,11 +13,18 @@ import (
 func main() {
 	defer model.GetDB().Close()
 
+	if len(cfg.GetOptions().Update) > 0 {
+		cfg.Log(fmt.Sprintf("Trying to update post UUID %s", cfg.GetOptions().Update))
+		if err := model.UpdatePostField(cfg.GetOptions().Update, cfg.GetOptions().Field, cfg.GetOptions().Value); err != nil {
+			panic(err)
+		}
+	}
+
 	if err := model.RebuildIndex(); err != nil {
 		panic(err)
 	}
 
-	if !cfg.GetOptions().Rebuild {
+	if cfg.GetRunWebServer() {
 		r := gin.Default()
 		r.Use(cfg.Pongo2())
 

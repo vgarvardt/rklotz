@@ -1,5 +1,5 @@
 <p>
-	{{ post.CreatedAt|date:date_format }}
+	{{ post.PublishedAt|date:date_format }}
 	{% if post.Tags %}
 	on
 		{% for t in post.Tags %}

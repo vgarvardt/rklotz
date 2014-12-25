@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 
 	"../model"
@@ -13,8 +15,10 @@ func FormController(c *gin.Context) {
 	uuid := c.Params.ByName("uuid")
 	if len(uuid) > 0 {
 		post.Load(uuid)
-		ctx["post"] = post
+	} else {
+		post.PublishedAt = time.Now()
 	}
+	ctx["post"] = post
 
 	ctx["formats"] = model.GetAvailableFormats()
 	if c.Request.Method == "POST" {
