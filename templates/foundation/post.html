@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<section class="container content-section">
 	<h1 class="text-center">{{ post.Title }}</h1>
 
 	{% include "./partial/info.html" %}
@@ -15,10 +14,11 @@
 	<div>
 		{{ post.HTML|safe }}
 	</div>
-</section>
 
-{% include about_path %}
+	{% if "yasha" in plugins %}<p>{% include "../plugins/yasha.html" %}</p>{% endif %}
 
-{% if "disqus" in plugins %}{% include "../plugins/disqus.html" %}{% endif %}
+	{% include about_path %}
+
+	{% if "disqus" in plugins %}{% include "../plugins/disqus.html" %}{% endif %}
 
 {% endblock %}
