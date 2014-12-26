@@ -2,6 +2,10 @@
 
 {% block title %}{{ post.Title }}{% endblock %}
 
+{% block head_extra %}
+	{% if "highlightjs" in plugins %}{% include "../plugins/highlightjs.html" %}{% endif %}
+{% endblock %}
+
 {% block content %}
 <section class="container content-section">
 	<h1 class="text-center">{{ post.Title }}</h1>

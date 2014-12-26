@@ -1,11 +1,11 @@
 {% extends "../base.html" %}
 
-{% block head_link %}
+{% block head_extra %}
 	<link href="/static/misc/select2/select2.css?{{ instance_id }}" rel="stylesheet">
 	<link href="/static/misc/select2/select2-bootstrap.css?{{ instance_id }}" rel="stylesheet">
 {% endblock %}
 
-{% block foot_js %}
+{% block foot_extra %}
 	<script src="/static/misc/select2/select2.min.js?{{ instance_id }}"></script>
 	<script>
 		$(document).ready(function() {
