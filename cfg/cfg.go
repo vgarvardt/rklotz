@@ -9,14 +9,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/robfig/config"
 	"github.com/voxelbrain/goptions"
+	"gopkg.in/ini.v0"
 )
 
-const VERSION = "0.2"
+const VERSION = "0.1"
 
 type Options struct {
-	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config section'"`
+	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config'"`
 	Rebuild bool          `goptions:"-r, --rebuild, description='Rebuild index only, do not run web server'"`
 	RootDir string        `goptions:"-d, --root, description='<dir> Force set root dir'"`
 	Update  string        `goptions:"-u, --update, description='<uuid> Update post UUID field with new value (works with --field and --value set), do not run web server'"`
@@ -25,26 +25,35 @@ type Options struct {
 	Help    goptions.Help `goptions:"-h, --help, description='Show this help'"`
 }
 
-var reader *config.Config
+var config *ini.File
 var options Options
 var stdlogger *log.Logger
 var instanceId string
 var rootDir string
 var runWebServer bool
 
+func configKey(key string) *ini.Key {
+	return config.Section("").Key(key)
+}
+
 func String(key string) string {
-	val, _ := reader.String(options.Env, key)
-	return val
+	return configKey(key).String()
 }
 
 func Int(key string) int {
-	val, _ := reader.Int(options.Env, key)
-	return val
+	if val, err := configKey(key).Int(); err != nil {
+		panic(err)
+	} else {
+		return val
+	}
 }
 
 func Bool(key string) bool {
-	val, _ := reader.Bool(options.Env, key)
-	return val
+	if val, err := configKey(key).Bool(); err != nil {
+		panic(err)
+	} else {
+		return val
+	}
 }
 
 func Log(msg string) {
@@ -82,7 +91,6 @@ func init() {
 
 	stdlogger = log.New(os.Stdout, "", 0)
 	Log(fmt.Sprintf("Initializing application ver %s", VERSION))
-	Log(fmt.Sprintf("Loading config with env set to %s", options.Env))
 
 	if len(options.RootDir) > 0 {
 		rootDir = options.RootDir
@@ -94,14 +102,21 @@ func init() {
 		options.RootDir = rootDir
 	}
 
-	filePath := fmt.Sprintf("%s/%s.ini", GetRootDir(), options.Env)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		filePath = fmt.Sprintf("%s/config.ini", GetRootDir())
-		Log(fmt.Sprintf("Loading config from %s", filePath))
-		reader, _ = config.ReadDefault(filePath)
+	var err error
+	configPath := fmt.Sprintf("%s/config.ini", GetRootDir())
+	Log(fmt.Sprintf("Loading base config from %s", configPath))
+	if config, err = ini.Load(configPath); err != nil {
+		panic(err)
+	}
+
+	configPath = fmt.Sprintf("%s/%s.ini", GetRootDir(), options.Env)
+	Log(fmt.Sprintf("Loading env config from %s", configPath))
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		Log("Env config not found")
 	} else {
-		Log(fmt.Sprintf("Loading config from %s", filePath))
-		reader, _ = config.ReadDefault(filePath)
+		if err := config.Append(configPath); err != nil {
+			panic(err)
+		}
 	}
 
 	hasher := md5.New()
