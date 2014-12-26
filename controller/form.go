@@ -22,23 +22,33 @@ func FormController(c *gin.Context) {
 
 	ctx["formats"] = model.GetAvailableFormats()
 	if c.Request.Method == "POST" {
-		if err := post.Bind(c.Request); err != nil {
-			panic(err)
-		}
-		ctx["post"] = post
-
-		if c.Request.FormValue("op") == "preview" {
-			post.ReFormat()
-			ctx["preview"] = true
-			ctx["post"] = post
-		} else {
-			if formErrors := post.Validate(); len(formErrors) > 0 {
-				ctx["alert_warning"] = "Please fix form values"
-				ctx["errors"] = formErrors
+		if c.Request.FormValue("op") == "delete" {
+			post.Delete()
+			if post.Draft {
+				redirect(c, "/@/drafts")
 			} else {
-				post.Save(c.Request.FormValue("op") == "draft")
-				redirect(c, "/@/edit/"+post.UUID)
-				return
+				redirect(c, "/@/published")
+			}
+			return
+		} else {
+			if err := post.Bind(c.Request); err != nil {
+				panic(err)
+			}
+			ctx["post"] = post
+
+			if c.Request.FormValue("op") == "preview" {
+				post.ReFormat()
+				ctx["preview"] = true
+				ctx["post"] = post
+			} else {
+				if formErrors := post.Validate(); len(formErrors) > 0 {
+					ctx["alert_warning"] = "Please fix form values"
+					ctx["errors"] = formErrors
+				} else {
+					post.Save(c.Request.FormValue("op") == "draft")
+					redirect(c, "/@/edit/"+post.UUID)
+					return
+				}
 			}
 		}
 	}

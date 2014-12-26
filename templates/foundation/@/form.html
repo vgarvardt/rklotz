@@ -134,12 +134,16 @@
 	</div>
 
 	<div class="form-group pull-right">
-		<div class="col-sm-12">
-			<input type="hidden" name="UUID" value="{{ post.UUID }}">
-			<button type="submit" class="button secondary" name="op" value="preview">Preview</button>
-			<button type="submit" class="button success" name="op" value="draft">Draft</button>
-			<button type="submit" class="button" name="op" value="publish">Publish</button>
-		</div>
+		<input type="hidden" name="UUID" value="{{ post.UUID }}">
+		<button type="submit" class="button secondary" name="op" value="preview">Preview</button>
+		<button type="submit" class="button success" name="op" value="draft">Draft</button>
+		<button type="submit" class="button" name="op" value="publish">Publish</button>
 	</div>
+
+	{% if post.UUID %}
+	<div>
+		<button type="submit" class="button alert" name="op" value="delete" onclick="return confirm('Are you sure?');">Delete</button>
+	</div>
+	{% endif %}
 </form>
 {% endblock %}

@@ -209,3 +209,24 @@ func UpdatePostField(uuid, field, value string) error {
 
 	return post.Save(post.Draft)
 }
+
+func (post *Post) Delete() error {
+	if err := db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(BUCKET_POSTS))
+		if bucket == nil {
+			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))
+		}
+
+		if err := bucket.Delete([]byte(post.UUID)); err != nil {
+			panic(err)
+		}
+
+		return nil
+	}); err != nil {
+		panic(err)
+	}
+
+	cfg.Log(fmt.Sprintf("Removed post UUID %s", post.UUID))
+	go RebuildIndex()
+	return nil
+}
