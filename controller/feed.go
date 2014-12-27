@@ -59,7 +59,7 @@ func getFeed(c *gin.Context) *feeds.Feed {
 				Id:          post.UUID,
 				Title:       post.Title,
 				Link:        &feeds.Link{Href: rootUrl.String()},
-				Description: post.Body[0:255],
+				Description: post.Body[0:cfg.Min(len(post.Body), 255)],
 				Author:      &feeds.Author{cfg.String("ui.author"), cfg.String("ui.email")},
 				Created:     post.PublishedAt,
 			}
