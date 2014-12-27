@@ -11,7 +11,9 @@
 		{% include "./info.html" with post=p %}
 	</div>
 
-	<p>{{ p.HTML|striptags|truncatechars:255 }}</p>
+	<p>
+		{{ p.HTML|striptags|truncatechars:255 }} <a href="/{{ p.Path }}">[Read more]</a>
+	</p>
 
 	<hr>
 {% endfor %}
