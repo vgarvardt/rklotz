@@ -3,7 +3,9 @@ package model
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -17,9 +19,7 @@ const (
 	BUCKET_TAGS    = "tags"
 	BUCKET_TAG_MAP = "tag_map"
 
-	INDEX_META      = "meta"
-	INDEX_DRAFTS    = "drafts"
-	INDEX_PUBLISHED = "published"
+	INDEX_META = "meta"
 )
 
 type Meta struct {
@@ -54,20 +54,10 @@ func (meta *Meta) Load() {
 func RebuildIndex() error {
 	cfg.Log("Rebuilding index...")
 
-	meta := new(Meta)
-	meta.init()
-
-	pathMap := make(map[string]string)
-	pageMap := make(map[string][]*Post)
-	tags := make(map[string][]*Post)
-	tagMap := make(map[string]string)
-	var draftList []*Post
-	var publishedList []*Post
+	var publishedStamps []int
+	postsMap := make(map[int]string)
 
 	if err := db.View(func(tx *bolt.Tx) error {
-		currentPage := 0
-		pageKey := fmt.Sprintf("page-%d", currentPage)
-
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucketPosts != nil {
 			c := bucketPosts.Cursor()
@@ -75,12 +65,45 @@ func RebuildIndex() error {
 				post := new(Post)
 				json.Unmarshal(v, &post)
 
+				unixPublished := int(post.PublishedAt.Unix())
+				if _, exists := postsMap[unixPublished]; exists {
+					return errors.New(fmt.Sprintf("Duplicate published at date %v", post.PublishedAt))
+				}
+				publishedStamps = append(publishedStamps, unixPublished)
+				postsMap[unixPublished] = post.UUID
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	sort.Sort(sort.Reverse(sort.IntSlice(publishedStamps)))
+
+	if err := db.Update(func(tx *bolt.Tx) error {
+		meta := new(Meta)
+		meta.init()
+
+		pathMap := make(map[string]string)
+		pageMap := make(map[string][]*Post)
+		tags := make(map[string][]*Post)
+		tagMap := make(map[string]string)
+
+		currentPage := 0
+		pageKey := fmt.Sprintf("page-%d", currentPage)
+
+		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
+		if bucketPosts != nil {
+			for _, unixPublished := range publishedStamps {
+				post := new(Post)
+				jsonPost := bucketPosts.Get([]byte(postsMap[unixPublished]))
+				json.Unmarshal(jsonPost, &post)
+
 				if post.Draft {
 					meta.Drafts++
-					draftList = append(draftList, post)
 				} else {
 					meta.Posts++
-					publishedList = append(publishedList, post)
 					pathMap[post.Path] = post.UUID
 
 					pageMap[pageKey] = append(pageMap[pageKey], post)
@@ -97,19 +120,13 @@ func RebuildIndex() error {
 					}
 				}
 			}
+
+			// fix situation, when last page is empty
+			if len(pageMap[pageKey]) < 1 && meta.Pages > 1 {
+				meta.Pages--
+			}
 		}
 
-		// fix situation, when last page is empty
-		if len(pageMap[pageKey]) < 1 && meta.Pages > 1 {
-			meta.Pages--
-		}
-
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	if err := db.Update(func(tx *bolt.Tx) error {
 		tx.DeleteBucket([]byte(BUCKET_INDEX))
 		bucketIndex, err := tx.CreateBucketIfNotExists([]byte(BUCKET_INDEX))
 		if err != nil {
@@ -142,16 +159,6 @@ func RebuildIndex() error {
 			if err := bucketIndex.Put([]byte(pageKey), []byte(jsonPage)); err != nil {
 				return err
 			}
-		}
-
-		jsonDrafts, _ := json.Marshal(draftList)
-		if err := bucketIndex.Put([]byte(INDEX_DRAFTS), []byte(jsonDrafts)); err != nil {
-			return err
-		}
-
-		jsonPublished, _ := json.Marshal(publishedList)
-		if err := bucketIndex.Put([]byte(INDEX_PUBLISHED), []byte(jsonPublished)); err != nil {
-			return err
 		}
 
 		for path, uuid := range pathMap {
@@ -247,18 +254,21 @@ func AutoCompleteTags(q string) []string {
 	return tags
 }
 
-func getIndexPosts(index string) ([]Post, error) {
-	var posts []Post
+func getIndexPosts(draft bool) ([]*Post, error) {
+	var posts []*Post
 
 	if err := db.View(func(tx *bolt.Tx) error {
-		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
-		if bucketIndex == nil {
-			panic("Bucket index not found!")
+		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
+		if bucketPosts != nil {
+			c := bucketPosts.Cursor()
+			for k, v := c.Last(); k != nil; k, v = c.Prev() {
+				post := new(Post)
+				json.Unmarshal(v, &post)
+				if post.Draft == draft {
+					posts = append(posts, post)
+				}
+			}
 		}
-
-		jsonPosts := bucketIndex.Get([]byte(index))
-		json.Unmarshal(jsonPosts, &posts)
-
 		return nil
 	}); err != nil {
 		return posts, err
@@ -267,10 +277,10 @@ func getIndexPosts(index string) ([]Post, error) {
 	return posts, nil
 }
 
-func GetDraftPosts() ([]Post, error) {
-	return getIndexPosts(INDEX_DRAFTS)
+func GetDraftPosts() ([]*Post, error) {
+	return getIndexPosts(true)
 }
 
-func GetPublishedPosts() ([]Post, error) {
-	return getIndexPosts(INDEX_PUBLISHED)
+func GetPublishedPosts() ([]*Post, error) {
+	return getIndexPosts(false)
 }
