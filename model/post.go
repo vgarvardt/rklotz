@@ -91,8 +91,13 @@ func (post *Post) ReFormat() string {
 	for i := 0; i < len(formats); i++ {
 		if formats[i].Name == post.Format {
 			post.HTML = formats[i].Handler(post.Body)
+			break
 		}
 	}
+
+	// open all links in new tab
+	post.HTML = strings.Replace(post.HTML, `<a href=`, `<a target="_blank" href=`, -1)
+
 	return post.HTML
 }
 

@@ -100,6 +100,12 @@ func RebuildIndex() error {
 				jsonPost := bucketPosts.Get([]byte(postsMap[unixPublished]))
 				json.Unmarshal(jsonPost, &post)
 
+				post.ReFormat()
+				jsonPostReformatted, _ := json.Marshal(post)
+				if err := bucketPosts.Put([]byte(post.UUID), []byte(jsonPostReformatted)); err != nil {
+					return err
+				}
+
 				if post.Draft {
 					meta.Drafts++
 				} else {
