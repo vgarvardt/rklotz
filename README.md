@@ -1,6 +1,6 @@
 # rKlotz
 
-## Simple golang-driven blog engine on top of [Bolt DB](https://github.com/boltdb/bolt)
+## Simple golang-driven single-user blog engine on top of [Bolt DB](https://github.com/boltdb/bolt)
 
 ##### Install and run in dev env with automatic server reload on files change
 
@@ -11,8 +11,8 @@ $ brew install glide fswatch
 $ glide in
 $ glide install
 $ make serve
-$ open http://127.0.0.1:8080
 ```
+Then open `http://127.0.0.1:8080` in your browser. Admin area available at `http://127.0.0.1:8080/@`, login and password are both set to `q` by default, so don't forget to override and change it on production.
 
 ### Env and config values overriding
 
