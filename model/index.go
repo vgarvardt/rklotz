@@ -262,6 +262,9 @@ func AutoCompleteTags(q string) []string {
 
 func getIndexPosts(draft bool) ([]*Post, error) {
 	var posts []*Post
+	var result []*Post
+	var createdStamps []int
+	postsMap := make(map[int]int)
 
 	if err := db.View(func(tx *bolt.Tx) error {
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
@@ -272,6 +275,8 @@ func getIndexPosts(draft bool) ([]*Post, error) {
 				json.Unmarshal(v, &post)
 				if post.Draft == draft {
 					posts = append(posts, post)
+					createdStamps = append(createdStamps, int(post.CreatedAt.Unix()))
+					postsMap[createdStamps[len(createdStamps)-1]] = len(posts) - 1
 				}
 			}
 		}
@@ -280,7 +285,12 @@ func getIndexPosts(draft bool) ([]*Post, error) {
 		return posts, err
 	}
 
-	return posts, nil
+	sort.Sort(sort.Reverse(sort.IntSlice(createdStamps)))
+	for _, stamp := range createdStamps {
+		result = append(result, posts[postsMap[stamp]])
+	}
+
+	return result, nil
 }
 
 func GetDraftPosts() ([]*Post, error) {
