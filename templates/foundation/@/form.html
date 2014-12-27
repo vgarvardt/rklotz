@@ -87,14 +87,14 @@
 			<label for="id_title" class="right inline {% if errors.Title %}error{% endif %}">Title</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" class="{% if errors.Title %}error{% endif %}" id="id_title" name="Title" value="{{ post.Title }}">
+			<input type="text" class="{% if errors.Title %}error{% endif %}" id="id_title" name="title" value="{{ post.Title }}">
 			{% if errors.Title %}<small class="error">{{ errors.Title }}</small>{% endif %}
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-			<textarea class="{% if errors.Body %}error{% endif %}" id="id_body" placeholder="Body..." name="Body" rows="20">{{ post.Body }}</textarea>
+			<textarea class="{% if errors.Body %}error{% endif %}" id="id_body" placeholder="Body..." name="body" rows="20">{{ post.Body }}</textarea>
 			{% if errors.Body %}<small class="error">{{ errors.Body }}</small>{% endif %}
 		</div>
 	</div>
@@ -104,7 +104,7 @@
 			<label for="id_format" class="right inline {% if errors.Format %}error{% endif %}">Format</label>
 		</div>
 		<div class="small-10 columns">
-			<select class="{% if errors.Format %}error{% endif %}" id="id_format" name="Format">
+			<select class="{% if errors.Format %}error{% endif %}" id="id_format" name="format">
 				{% for f in formats %}
 				<option value="{{ f.Name }}" {% if f.Name == post.Format %}selected{% endif %}>{{ f.Title }}</option>
 				{% endfor %}
@@ -118,7 +118,7 @@
 			<label for="id_tags" class="right inline">Tags</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" id="id_tags" name="Tags" value='{{ post.Tags|join:"," }}'>
+			<input type="text" id="id_tags" name="tags" value='{{ post.Tags|join:"," }}'>
 		</div>
 	</div>
 
@@ -127,7 +127,7 @@
 			<label for="id_path" class="right inline {% if errors.Path %}error{% endif %}">Path</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" class="{% if errors.Path %}error{% endif %}" id="id_path" name="Path" value="{{ post.Path }}">
+			<input type="text" class="{% if errors.Path %}error{% endif %}" id="id_path" name="path" value="{{ post.Path }}">
 			{% if errors.Path %}<small class="error">{{ errors.Path }}</small>{% endif %}
 		</div>
 	</div>
@@ -137,13 +137,13 @@
 			<label for="id_published_at" class="right inline {% if errors.PublishedAt %}error{% endif %}">Published At</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="datetime" class="{% if errors.PublishedAt %}error{% endif %}" id="id_published_at" name="PublishedAt" value="{{ post.PublishedAt|date:"2006-01-02T15:04:01Z" }}">
+			<input type="datetime" class="{% if errors.PublishedAt %}error{% endif %}" id="id_published_at" name="published_at" value="{{ post.PublishedAt|date:"2006-01-02T15:04:01Z" }}">
 			{% if errors.PublishedAt %}<small class="error">{{ errors.PublishedAt }}</small>{% endif %}
 		</div>
 	</div>
 
 	<div class="form-group pull-right">
-		<input type="hidden" name="UUID" value="{{ post.UUID }}">
+		<input type="hidden" name="uuid" value="{{ post.UUID }}">
 		<button type="submit" class="button secondary" name="op" value="preview">Preview</button>
 		<button type="submit" class="button success" name="op" value="draft">Draft</button>
 		<button type="submit" class="button" name="op" value="publish">Publish</button>

@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/boltdb/bolt"
-	"github.com/gorilla/schema"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/russross/blackfriday"
 
 	"../cfg"
@@ -39,45 +39,27 @@ func GetAvailableFormats() []Format {
 	}
 }
 
-func bindFormToStruct(req *http.Request, obj interface{}) error {
-	if err := req.ParseForm(); err != nil {
-		return err
-	}
-
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	if err := decoder.Decode(obj, req.PostForm); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 type Post struct {
-	UUID        string
-	Path        string
-	Title       string
-	Body        string
-	Format      string
-	HTML        string `schema:"-"`
-	Tags        []string
-	Draft       bool      `schema:"-"`
-	CreatedAt   time.Time `schema:"-"`
-	UpdatedAt   time.Time `schema:"-"`
-	PublishedAt time.Time `schema:"-"`
+	UUID        string    `form:"uuid"`
+	Path        string    `form:"path"`
+	Title       string    `form:"title"`
+	Body        string    `form:"body"`
+	Format      string    `form:"format"`
+	HTML        string    `form:"-"`
+	Tags        []string  `form:"-"`
+	Draft       bool      `form:"-"`
+	CreatedAt   time.Time `form:"-"`
+	UpdatedAt   time.Time `form:"-"`
+	PublishedAt time.Time `form:"-"`
 }
 
-func (post *Post) Bind(req *http.Request) error {
-	if err := bindFormToStruct(req, post); err != nil {
-		return err
-	}
+func (post *Post) Bind(c *gin.Context) error {
+	c.BindWith(post, binding.Form)
 	post.Path = strings.Trim(post.Path, "/")
-	if len(post.Tags) > 0 {
-		post.Tags = strings.Split(post.Tags[0], ",")
-	}
+	post.Tags = strings.Split(c.Request.PostFormValue("tags"), ",")
 
 	var err error
-	if post.PublishedAt, err = time.Parse(time.RFC3339, req.PostFormValue("PublishedAt")); err != nil {
+	if post.PublishedAt, err = time.Parse(time.RFC3339, c.Request.PostFormValue("published_at")); err != nil {
 		post.PublishedAt = time.Now()
 	}
 

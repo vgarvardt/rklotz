@@ -7,6 +7,5 @@ import:
   - package: github.com/boltdb/bolt
   - package: github.com/voxelbrain/goptions
   - package: github.com/russross/blackfriday
-  - package: github.com/gorilla/schema
   - package: github.com/gorilla/feeds
   - package: code.google.com/p/go-uuid/uuid

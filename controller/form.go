@@ -31,9 +31,7 @@ func FormController(c *gin.Context) {
 			}
 			return
 		} else {
-			if err := post.Bind(c.Request); err != nil {
-				panic(err)
-			}
+			post.Bind(c)
 			ctx["post"] = post
 
 			if c.Request.FormValue("op") == "preview" {
