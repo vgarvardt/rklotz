@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"time"
@@ -74,6 +76,16 @@ func GetVersion() string {
 
 func GetRootDir() string {
 	return rootDir
+}
+
+func GetRootUrl(r *http.Request) *url.URL {
+	scheme := String("ui.root_url.scheme")
+	host := String("ui.root_url.host")
+	path := String("ui.root_url.path")
+	if len(host) < 1 {
+		host = r.Host
+	}
+	return &url.URL{Scheme: scheme, Host: host, Path: path}
 }
 
 func GetRunWebServer() bool {

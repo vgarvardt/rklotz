@@ -9,7 +9,10 @@
 	{% block head_meta %}{% endblock %}
 
 	<title>{{ title }} | {% block title %}{{ intro }}{% endblock %}</title>
-	
+
+	<link href="/feed/atom" type="application/atom+xml" rel="alternate" title="Posts (Atom feed)">
+	<link href="/feed/rss" type="application/rss+xml" rel="alternate" title="Posts (RSS feed)">
+
 	<link rel="shortcut icon" href="/static/{{ theme }}/favicon.ico?{{ instance_id }}">
 	<link href="/static/{{ theme }}/lib/css/foundation.min.css?{{ instance_id }}" rel="stylesheet" type="text/css">
 	<link href="/static/misc/font-awesome/css/font-awesome.min.css?{{ instance_id }}" rel="stylesheet" type="text/css">

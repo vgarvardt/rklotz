@@ -32,6 +32,10 @@ func main() {
 		r.GET("/tag/:tag", controller.TagController)
 		r.GET("/autocomplete", controller.AutoComplete)
 
+		feed := r.Group("/feed")
+		feed.GET("/atom", controller.AtomController)
+		feed.GET("/rss", controller.RssController)
+
 		authorized := r.Group("/@", gin.BasicAuth(gin.Accounts{
 			cfg.String("auth.name"): cfg.String("auth.password"),
 		}))
