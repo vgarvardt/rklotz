@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/feeds"
 
-	"../cfg"
-	"../model"
+	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/model"
 )
 
 func AtomController(c *gin.Context) {
 	feed := feeds.Atom{getFeed(c)}
 	atomFeed := feed.AtomFeed()
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
-		c.Abort(500)
+		c.Abort()
 	} else {
 		//c.Writer.Header().Set("Content-Type", "application/atom+xml")
 		c.Writer.Header().Set("Content-Type", "application/xml")
@@ -28,7 +28,7 @@ func RssController(c *gin.Context) {
 	feed := feeds.Rss{getFeed(c)}
 	rssFeed := feed.RssFeed()
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
-		c.Abort(500)
+		c.Abort()
 	} else {
 		c.Writer.Header().Set("Content-Type", "application/xml")
 		c.Writer.WriteHeader(200)

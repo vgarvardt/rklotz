@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"./cfg"
-	"./controller"
-	"./model"
+	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/controller"
+	"github.com/vgarvardt/rklotz/model"
 )
 
 func main() {
@@ -25,6 +25,12 @@ func main() {
 	}
 
 	if cfg.GetRunWebServer() {
+		if cfg.Bool("debug") {
+			gin.SetMode(gin.DebugMode)
+		} else {
+			gin.SetMode(gin.ReleaseMode)
+		}
+
 		r := gin.Default()
 		r.Use(cfg.Pongo2())
 

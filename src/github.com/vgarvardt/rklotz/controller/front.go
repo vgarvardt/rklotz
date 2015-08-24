@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"../model"
+	"github.com/vgarvardt/rklotz/model"
 )
 
 func FrontController(c *gin.Context) {

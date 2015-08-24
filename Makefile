@@ -2,9 +2,16 @@
 # https://medium.com/@olebedev/live-code-reloading-for-golang-web-projects-in-19-lines-8b2e8777b1ea
 PID = /tmp/rklotz.pid
 
+vendor:
+	@gb vendor update -all
+
+build:
+	@echo "Building..."
+	@gb build
+
 serve:
-	@make restart 
-	@fswatch -o -r . | xargs -n1 -I{}  make restart || make kill
+	@make restart
+	@fswatch -o -r ./src/ | xargs -n1 -I{}  make restart || make kill
 
 kill:
 	@echo ""
@@ -13,12 +20,9 @@ kill:
 	@echo "Trying to kill old instance..."
 	@kill `cat $(PID)` || true
 
-stuff:
-	@echo "Current working directory: "`pwd`
-
 restart:
 	@make kill
-	@make stuff
-	@go run main.go --env dev --root `pwd` & echo $$! > $(PID)
+	@make build
+	@bin/rklotz --env dev & echo $$! > $(PID)
 
-.PHONY: serve restart kill stuff
+.PHONY: vendor build serve kill restart

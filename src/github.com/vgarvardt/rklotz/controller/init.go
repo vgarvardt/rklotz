@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"../cfg"
+	"github.com/vgarvardt/rklotz/cfg"
 )
 
 func render(c *gin.Context, template string, ctx map[string]interface{}) {

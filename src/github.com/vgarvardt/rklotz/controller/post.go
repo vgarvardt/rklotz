@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"../model"
+	"github.com/vgarvardt/rklotz/model"
 )
 
 func PostController(c *gin.Context) {

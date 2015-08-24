@@ -1,0 +1,97 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "code.google.com/p/go-uuid/uuid",
+			"repository": "https://code.google.com/p/go-uuid",
+			"revision": "35bc42037350",
+			"branch": "default",
+			"path": "/uuid"
+		},
+		{
+			"importpath": "github.com/boltdb/bolt",
+			"repository": "https://github.com/boltdb/bolt",
+			"revision": "0f053fabc06119583d61937a0a06ef0ba0f1b301",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/dustin/go-broadcast",
+			"repository": "https://github.com/dustin/go-broadcast",
+			"revision": "3bdf6d4a7164a50bc19d5f230e2981d87d2584f1",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gin-gonic/gin",
+			"repository": "https://github.com/gin-gonic/gin",
+			"revision": "704d690ac0e25fcd060ff82f75f913e879e65a3c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gorilla/feeds",
+			"repository": "https://github.com/gorilla/feeds",
+			"revision": "e57da339f9ed44132e11cd0baf87ecbd88dda142",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/manucorporat/sse",
+			"repository": "https://github.com/manucorporat/sse",
+			"revision": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/manucorporat/stats",
+			"repository": "https://github.com/manucorporat/stats",
+			"revision": "8f2d6ace262eba462e9beb552382c98be51d807b",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"revision": "40e4aedc8fabf8c23e040057540867186712faa5",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/russross/blackfriday",
+			"repository": "https://github.com/russross/blackfriday",
+			"revision": "8cec3a854e68dba10faabbe31c089abf4a3e57a6",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/shurcooL/sanitized_anchor_name",
+			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
+			"revision": "244f5ac324cb97e1987ef901a0081a77bfd8e845",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/voxelbrain/goptions",
+			"repository": "https://github.com/voxelbrain/goptions",
+			"revision": "68583de33d9209ba795a0a334dad27418e4c18f5",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/net/context",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "7654728e381988afd88e58cabfd6363a5ea91810",
+			"branch": "master",
+			"path": "/context"
+		},
+		{
+			"importpath": "gopkg.in/bluesuncorp/validator.v5",
+			"repository": "https://gopkg.in/bluesuncorp/validator.v5",
+			"revision": "98121ac23ff3d764f525d18d8de944d150e3c0fe",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/flosch/pongo2.v3",
+			"repository": "https://gopkg.in/flosch/pongo2.v3",
+			"revision": "5e81b817a0c48c1c57cdf1a9056cf76bdee02ca9",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/ini.v0",
+			"repository": "https://gopkg.in/ini.v0",
+			"revision": "70a46eeb84707a1d77984c1a5b7af666063fc5e7",
+			"branch": "master"
+		}
+	]
+}

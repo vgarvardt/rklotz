@@ -7,17 +7,20 @@
 ```sh
 $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
-$ brew install glide fswatch
-$ glide in
-$ glide install
+$ go get github.com/constabulary/gb/...
+$ brew install fswatch
+$ make vendor
 $ make serve
 ```
-Then open `http://127.0.0.1:8080` in your browser. Admin area available at `http://127.0.0.1:8080/@`, login and password are both set to `q` by default, so don't forget to override and change it on production.
+
+Then open `http://127.0.0.1:8080` in your browser.
+Admin area available at `http://127.0.0.1:8080/@`, login and password are both set to `q` by default,
+so don't forget to override and change it on production.
 
 ### Env and config values overriding
 
 `./config.ini` is the base config file loaded every time when rKlotz server is started.
-Env can be used to override its values. E.g. for `dev` env create file `./env.ini`, put
+Env can be used to override its values. E.g. for `dev` env create file `./dev.ini`, put
 required parameters there and then start server with `env` parameter set to `dev`:
 
 ```sh

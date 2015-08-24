@@ -11,7 +11,7 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"../cfg"
+	"github.com/vgarvardt/rklotz/cfg"
 )
 
 const (

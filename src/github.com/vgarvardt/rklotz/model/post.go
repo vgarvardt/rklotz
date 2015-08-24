@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/russross/blackfriday"
 
-	"../cfg"
+	"github.com/vgarvardt/rklotz/cfg"
 )
 
 const (

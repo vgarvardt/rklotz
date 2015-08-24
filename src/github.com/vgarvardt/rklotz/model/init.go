@@ -7,7 +7,7 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"../cfg"
+	"github.com/vgarvardt/rklotz/cfg"
 )
 
 var db *bolt.DB

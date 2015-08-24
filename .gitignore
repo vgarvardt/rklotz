@@ -8,6 +8,7 @@ main
 _obj
 _test
 .DS_Store
+.idea/*
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -24,9 +25,9 @@ _testmain.go
 *.exe
 *.test
 
-_vendor/*
+vendor/src/*
 data/*
-
+bin/*
 
 # Ignore env config files, except for the default one
 *.ini
