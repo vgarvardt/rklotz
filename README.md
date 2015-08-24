@@ -24,7 +24,7 @@ Env can be used to override its values. E.g. for `dev` env create file `./dev.in
 required parameters there and then start server with `env` parameter set to `dev`:
 
 ```sh
-$ go run main.go --env dev --root /path/to/app/dir
+$ make build && ./bin/rklotz --env dev
 ```
 
 ### Plugins
