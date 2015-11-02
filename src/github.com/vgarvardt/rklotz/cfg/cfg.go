@@ -102,7 +102,7 @@ func init() {
 	runWebServer = !options.Rebuild && len(options.Update) < 1
 
 	stdLogger = log.New(os.Stdout, "", 0)
-	Log(fmt.Sprintf("Initializing application ver %s", VERSION))
+	Log(fmt.Sprintf("Initializing application ver %s", GetVersion()))
 
 	if len(options.RootDir) > 0 {
 		rootDir = options.RootDir
