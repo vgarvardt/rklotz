@@ -1,75 +1,76 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ .lang }}">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="{{ description }}">
-	<meta name="author" content="{{ author }}">
-	{% block head_meta %}{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ .description }}">
+    <meta name="author" content="{{ .author }}">
+    {{ block "head_meta" . }}{{ end }}
 
-	<title>{{ title }} | {% block title %}{{ intro }}{% endblock %}</title>
+    <title>{{ .title }} | {{ block "title" . }}{{ .intro }}{{ end }}</title>
 
-	<link href="/feed/atom" type="application/atom+xml" rel="alternate" title="Posts (Atom feed)">
-	<link href="/feed/rss" type="application/rss+xml" rel="alternate" title="Posts (RSS feed)">
+    <link href="/feed/atom" type="application/atom+xml" rel="alternate" title="Posts (Atom feed)">
+    <link href="/feed/rss" type="application/rss+xml" rel="alternate" title="Posts (RSS feed)">
 
-	<link rel="shortcut icon" href="/static/{{ theme }}/favicon.ico?{{ instance_id }}">
-	<link href="/static/{{ theme }}/lib/css/foundation.min.css?{{ instance_id }}" rel="stylesheet" type="text/css">
-	<link href="/static/misc/font-awesome/css/font-awesome.min.css?{{ instance_id }}" rel="stylesheet" type="text/css">
-	{% block head_extra %}{% endblock %}
+    <link rel="shortcut icon" href="/static/{{ .theme }}/favicon.ico?{{ .instance_id }}">
+    <link href="/static/{{ .theme }}/lib/css/foundation.min.css?{{ .instance_id }}" rel="stylesheet" type="text/css">
+    <link href="/static/misc/font-awesome/css/font-awesome.min.css?{{ .instance_id }}" rel="stylesheet" type="text/css">
+    {{ block "head_extra" . }}{{ end }}
 </head>
 
 <body>
 
-	<div class="row">
-		<div class="small-12 columns">
+<div class="row">
+    <div class="small-12 columns">
 
-			<div class="contain-to-grid">
-				<nav class="top-bar" data-topbar role="navigation">
-					<ul class="title-area">
-						<li class="name">
-							<h1>
-								<a href="/">
-									<img src="/static/{{ theme }}/favicon.png?{{ instance_id }}" style="max-height: 2.8125rem; width: auto; -webkit-filter: invert(100%); filter: invert(100%);">
-									{{ heading }}
-								</a>
-							</h1>
-						</li>
-						<!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-						<li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
-					</ul>
+        <div class="contain-to-grid">
+            <nav class="top-bar" data-topbar role="navigation">
+                <ul class="title-area">
+                    <li class="name">
+                        <h1>
+                            <a href="/">
+                                <img src="/static/{{ .theme }}/favicon.png?{{ .instance_id }}"
+                                     style="max-height: 2.8125rem; width: auto; -webkit-filter: invert(100%); filter: invert(100%);">
+                                {{ .heading }}
+                            </a>
+                        </h1>
+                    </li>
+                    <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+                    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+                </ul>
 
-					<section class="top-bar-section">
-						<!-- Right Nav Section -->
-						<ul class="right">
-							<li class="divider"></li>
-							<li><a href="/feed/rss">rss</a></li>
-							<li class="divider"></li>
-							<li><a href="/@">@</a></li>
-						</ul>
-					</section>
-				</nav>
-			</div>
+                <section class="top-bar-section">
+                    <!-- Right Nav Section -->
+                    <ul class="right">
+                        <li class="divider"></li>
+                        <li><a href="/feed/rss">rss</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/@">@</a></li>
+                    </ul>
+                </section>
+            </nav>
+        </div>
 
-			{% block content %}{% endblock %}
+        {{ block "content" . }}{{ end }}
 
-			<hr>
-			<p class="text-center">
-				<small>
-					built on top of <a href="https://github.com/vgarvardt/rklotz" target="_blank">rKlotz</a>
-					by <a href="http://itskrig.com" target="_blank">Vladimir Garvardt</a>
-				</small>
-			</p>
-		</div>
-	</div>
+        <hr>
+        <p class="text-center">
+            <small>
+                built on top of <a href="https://github.com/vgarvardt/rklotz" target="_blank">rKlotz</a>
+                by <a href="http://itskrig.com" target="_blank">Vladimir Garvardt</a>
+            </small>
+        </p>
+    </div>
+</div>
 
-	<script src="/static/misc/jquery-2.1.3.min.js"></script>
-	<script src="/static/{{ theme }}/lib/js/foundation.min.js?{{ instance_id }}"></script>
-	<script>$(document).foundation();</script>
-	{% block foot_extra %}{% endblock %}
+<script src="/static/misc/jquery-2.1.3.min.js"></script>
+<script src="/static/{{ .theme }}/lib/js/foundation.min.js?{{ .instance_id }}"></script>
+<script>$(document).foundation();</script>
+{{ block "foot_extra" . }}{{ end }}
 
-	{% if "ga" in plugins %}{% include "../plugins/ga.html" %}{% endif %}
-	{% if "yamka" in plugins %}{% include "../plugins/yamka.html" %}{% endif %}
+{{ if .plugins.ga }}{{ template "plugins/ga.html" . }}{{ end }}
+{{ if .plugins.yamka }}{{ template "plugins/yamka.html" . }}{{ end }}
 
 </body>
 

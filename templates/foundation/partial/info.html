@@ -1,9 +1,11 @@
+{{ define "partial/info.html" }}
 <p>
-	{{ post.PublishedAt|date:date_format }}
-	{% if post.Tags %}
-	on
-		{% for t in post.Tags %}
-			<a href="/tag/{{ t }}"><span class="label secondary radius">{{ t }}</span></a>
-		{% endfor %}
-	{% endif %}
+    {{ .PublishedAt | format_date }}
+    {{ if gt (len .Tags) 0 }}
+        on
+        {{ range .Tags }}
+            <a href="/tag/{{ . }}"><span class="label secondary radius">{{ . }}</span></a>
+        {{ end }}
+    {{ end }}
 </p>
+{{ end }}

@@ -1,12 +1,14 @@
+{{ define "partial/nav.html" }}
 <dl class="sub-nav" style="background-color: #f2f2f2; padding: 10px 10px 10px 0;">
 	<dt>Posts:</dt>
-	<dd class='{% if url_path == "/@/drafts" %}active{% endif %}'>
+	<dd class='{{ if eq .url_path "/@/drafts" }}active{{ end }}'>
 		<a href="/@/drafts">Drafts</a>
 	</dd>
-	<dd class='{% if url_path == "/@/published" %}active{% endif %}'>
+	<dd class='{{ if eq .url_path "/@/published" }}active{{ end }}'>
 		<a href="/@/published">Published</a>
 	</dd>
-	<dd class='{% if url_path == "/@/new" %}active{% endif %}'>
+	<dd class='{{ if eq .url_path "/@/new" }}active{{ end }}'>
 		<a href="/@/new">New</a>
 	</dd>
 </dl>
+{{ end }}

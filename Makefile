@@ -11,7 +11,7 @@ build:
 
 serve:
 	@make restart
-	@fswatch -o -r ./src/ | xargs -n1 -I{}  make restart || make kill
+	@fswatch -o -r ./src/ -r ./templates/ | xargs -n1 -I{}  make restart || make kill
 
 kill:
 	@echo ""

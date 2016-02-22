@@ -1,16 +1,14 @@
-{% extends "./base.html" %}
+{{ define "title" }}Posts on "{{ .tag }}"{{ end }}
 
-{% block title %}Posts on "{{ tag }}"{% endblock %}
+{{ define "content" }}
+	{{ template "partial/heading.html" . }}
+	{{ template "partial/about.html" . }}
 
-{% block content %}
-	{% include "./partial/heading.html" %}
-	{% include about_path %}
+	<h2>Posts on <span class="label secondary radius" style="font-size: inherit;">{{ .tag }}</span></h2>
 
-	<h2>Posts on <span class="label secondary radius" style="font-size: inherit;">{{ tag }}</span></h2>
-
-	{% if posts|length < 1 %}
+	{{ if lt (len .posts)  1 }}
 		<h2>Nothing yet =(</h2>
-	{% else %}
-		{% include "./partial/posts.html" %}
-	{% endif %}
-{% endblock %}
+	{{ else }}
+		{{ template "partial/posts.html" . }}
+	{{ end }}
+{{ end }}

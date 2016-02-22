@@ -19,9 +19,7 @@ func PostController(c *gin.Context) {
 	post.LoadByPath(strings.Trim(fmt.Sprintf("%v", c.Request.URL), "/"))
 
 	if len(post.UUID) > 0 {
-		ctx := make(map[string]interface{})
-		ctx["post"] = post
-		render(c, "post.html", ctx)
+		render(c, "post.html", gin.H{"post": post})
 	} else {
 		c.Data(404, gin.MIMEPlain, []byte("404 page not found"))
 	}

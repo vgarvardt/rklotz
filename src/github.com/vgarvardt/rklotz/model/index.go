@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	BUCKET_INDEX   = "index"
-	BUCKET_TAGS    = "tags"
+	BUCKET_INDEX = "index"
+	BUCKET_TAGS = "tags"
 	BUCKET_TAG_MAP = "tag_map"
 
 	INDEX_META = "meta"
@@ -49,6 +49,12 @@ func (meta *Meta) Load() {
 
 		return nil
 	})
+}
+
+func NewLoadedMeta() *Meta {
+	meta := new(Meta)
+	meta.Load()
+	return meta
 }
 
 func RebuildIndex() error {
@@ -276,7 +282,7 @@ func getIndexPosts(draft bool) ([]*Post, error) {
 				if post.Draft == draft {
 					posts = append(posts, post)
 					createdStamps = append(createdStamps, int(post.CreatedAt.Unix()))
-					postsMap[createdStamps[len(createdStamps)-1]] = len(posts) - 1
+					postsMap[createdStamps[len(createdStamps) - 1]] = len(posts) - 1
 				}
 			}
 		}

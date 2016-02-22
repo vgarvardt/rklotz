@@ -33,6 +33,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/leekchan/gtf",
+			"repository": "https://github.com/leekchan/gtf",
+			"revision": "882e96b937c8506c67b5adf98ff1f84cd7b7b93a",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/manucorporat/sse",
 			"repository": "https://github.com/manucorporat/sse",
 			"revision": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15",
@@ -79,12 +85,6 @@
 			"importpath": "gopkg.in/bluesuncorp/validator.v5",
 			"repository": "https://gopkg.in/bluesuncorp/validator.v5",
 			"revision": "98121ac23ff3d764f525d18d8de944d150e3c0fe",
-			"branch": "master"
-		},
-		{
-			"importpath": "gopkg.in/flosch/pongo2.v3",
-			"repository": "https://gopkg.in/flosch/pongo2.v3",
-			"revision": "5e81b817a0c48c1c57cdf1a9056cf76bdee02ca9",
 			"branch": "master"
 		},
 		{

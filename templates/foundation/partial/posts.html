@@ -1,32 +1,36 @@
-{% for p in posts %}
-	<h2><a href="/{{ p.Path }}">{{ p.Title }}</a></h2>
+{{ define "partial/posts.html" }}
 
-	<div class="clearfix">
-		{% if "disqus" in plugins %}
-			<p class="right">
-				<a href="/{{ p.Path }}#disqus_thread" data-disqus-identifier="{{ p.UUID }}">Comments</a>
-			</p>
-		{% endif %}
+{{ range .posts }}
+    <h2><a href="/{{ .Path }}">{{ .Title }}</a></h2>
 
-		{% include "./info.html" with post=p %}
-	</div>
+    <div class="clearfix">
+        {{ if $.plugins.disqus }}
+        <p class="right">
+            <a href="/{{ .Path }}#disqus_thread" data-disqus-identifier="{{ .UUID }}">Comments</a>
+        </p>
+        {{ end }}
 
-	<p>
-		{{ p.HTML|striptags|truncatechars:255 }} <a href="/{{ p.Path }}">[Read more]</a>
-	</p>
+        {{ template "partial/info.html" . }}
+    </div>
 
-	<hr>
-{% endfor %}
+    <p>
+        {{ .HTML | striptags | truncatechars 255 }} <a href="/{{ .Path }}">[Read more]</a>
+    </p>
 
-{% if "disqus" in plugins %}
+    <hr>
+{{ end }}
+
+{{ if $.plugins.disqus }}
 <script type="text/javascript">
-    var disqus_shortname = '{{ plugin.disqus.shortname }}';
-    /* * * DON'T EDIT BELOW THIS LINE * * */
+    var disqus_shortname = '{{ .plugin.disqus.shortname }}';
     (function () {
-        var s = document.createElement('script'); s.async = true;
+        var s = document.createElement('script');
+        s.async = true;
         s.type = 'text/javascript';
         s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-{% endif %}
+{{ end }}
+
+{{ end }}

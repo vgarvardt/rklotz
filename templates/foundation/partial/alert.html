@@ -1,4 +1,6 @@
-{% if alert_success %}<div data-alert class="alert-box success radius">{{ alert_success|safe }}</div>{% endif %}
-{% if alert_info %}<div data-alert class="alert-box info radius">{{ alert_info|safe }}</div>{% endif %}
-{% if alert_warning %}<div data-alert class="alert-box warning radius">{{ alert_warning|safe }}</div>{% endif %}
-{% if alert_alert %}<div data-alert class="alert-box alert radius">{{ alert_alert|safe }}</div>{% endif %}
+{{ define "partial/alert.html" }}
+    {{ if .alert_success }}<div data-alert class="alert-box success radius">{{ .alert_success }}</div>{{ end }}
+    {{ if .alert_info }}<div data-alert class="alert-box info radius">{{ .alert_info }}</div>{{ end }}
+    {{ if .alert_warning }}<div data-alert class="alert-box warning radius">{{ .alert_warning }}</div>{{ end }}
+    {{ if .alert_alert }}<div data-alert class="alert-box alert radius">{{ .alert_alert }}</div>{{ end }}
+{{ end }}

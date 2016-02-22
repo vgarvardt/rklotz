@@ -1,24 +1,24 @@
-{% extends "./base.html" %}
+{{ define "content" }}
 
-{% block content %}
-	{% include "./partial/heading.html" %}
-	{% include about_path %}
+{{ template "partial/heading.html" . }}
+{{ template "partial/about.html" . }}
 
-	{% if not meta.Posts %}
-		<h2>Nothing yet =( But you can <a href="/@/new">write your first post</a>!</h2>
-	{% else %}
-		{% include "./partial/posts.html" %}
+{{ if lt .meta.Posts 1 }}
+    <h2>Nothing yet =( But you can <a href="/@/new">write your first post</a>!</h2>
+{{ else }}
+    {{ template "partial/posts.html" . }}
 
-		<div class="pagination-centered">
-			<ul class="pagination" role="menubar" aria-label="Pagination">
-				{% if page != 0 %}
-					<li class="arrow"><a href="/?page={{ page - 1 }}">&laquo; Newer</a></li>
-				{% endif %}
-				<li class="unavailable" aria-disabled="true"><a>Page {{ page + 1 }} of {{ meta.Pages }}</a></li>
-				{% if page + 1 < meta.Pages %}
-					<li class="arrow"><a href="/?page={{ page + 1 }}">Older &raquo;</a></li>
-				{% endif %}
-			</ul>
-		</div>
-	{% endif %}
-{% endblock %}
+    <div class="pagination-centered">
+        <ul class="pagination" role="menubar" aria-label="Pagination">
+            {{ if ne .page 0 }}
+            <li class="arrow"><a href="/?page={{ .page | add -1 }}">&laquo; Newer</a></li>
+            {{ end }}
+            <li class="unavailable" aria-disabled="true"><a>Page {{ .page | add 1 }} of {{ .meta.Pages }}</a></li>
+            {{ if lt (.page | add 1) $.meta.Pages }}
+            <li class="arrow"><a href="/?page={{ .page | add 1 }}">Older &raquo;</a></li>
+            {{ end }}
+        </ul>
+    </div>
+{{ end }}
+
+{{ end }}

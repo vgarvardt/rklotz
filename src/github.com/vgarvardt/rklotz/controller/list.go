@@ -7,30 +7,20 @@ import (
 )
 
 func DraftsController(c *gin.Context) {
-	ctx := make(map[string]interface{})
-
 	posts, _ := model.GetDraftPosts()
-	ctx["posts"] = posts
 
-	render(c, "@/drafts.html", ctx)
+	render(c, "@/drafts.html", gin.H{"posts": posts})
 }
 
 func PublishedController(c *gin.Context) {
-	ctx := make(map[string]interface{})
-
 	posts, _ := model.GetPublishedPosts()
-	ctx["posts"] = posts
 
-	render(c, "@/published.html", ctx)
+	render(c, "@/published.html", gin.H{"posts": posts})
 }
 
 func TagController(c *gin.Context) {
-	ctx := make(map[string]interface{})
-
 	tag := c.Params.ByName("tag")
 	posts, _ := model.GetTagPosts(tag)
-	ctx["tag"] = tag
-	ctx["posts"] = posts
 
-	render(c, "tag.html", ctx)
+	render(c, "tag.html", gin.H{"tag": tag, "posts": posts})
 }

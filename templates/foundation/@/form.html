@@ -1,8 +1,6 @@
-{% extends "../base.html" %}
-
-{% block head_extra %}
-	<link href="/static/misc/select2/select2.css?{{ instance_id }}" rel="stylesheet">
-	<link href="/static/misc/select2/select2-bootstrap.css?{{ instance_id }}" rel="stylesheet">
+{{ define "head_extra" }}
+	<link href="/static/misc/select2/select2.css?{{ .instance_id }}" rel="stylesheet">
+	<link href="/static/misc/select2/select2-bootstrap.css?{{ .instance_id }}" rel="stylesheet">
 	<style>
 		#s2id_id_tags {
 			width: 100%;
@@ -12,10 +10,10 @@
 			width: 100%;
 		}
 	</style>
-{% endblock %}
+{{ end }}
 
-{% block foot_extra %}
-	<script src="/static/misc/select2/select2.min.js?{{ instance_id }}"></script>
+{{ define "foot_extra" }}
+	<script src="/static/misc/select2/select2.min.js?{{ .instance_id }}"></script>
 	<script>
 		$(document).ready(function() {
 			$("#id_tags").select2({
@@ -50,66 +48,66 @@
 			});
 		});
 	</script>
-{% endblock %}
+{{ end }}
 
-{% block content %}
-{% include "../partial/nav.html" %}
+{{ define "content" }}
+{{ template "partial/nav.html" . }}
 
-<h1>{% if post.UUID %}Edit Post{% else %}New Post{% endif %}</h1>
+<h1>{{ if .post.UUID }}Edit Post{{ else }}New Post{{ end}}</h1>
 
-{% include "../partial/alert.html" %}
+{{ template "partial/alert.html" . }}
 
-{% if preview %}
+{{ if .preview }}
 <div class="panel">
-	<h2>{{ post.Title }}</h2>
-	<div>{{ post.HTML|safe }}</div>
+	<h2>{{ .post.Title }}</h2>
+	<div>{{ .post.HTML | safe }}</div>
 </div>
-{% endif %}
+{{ end }}
 
 <form class="form-horizontal" role="form" method="post" action="">
-	{% if post.UUID %}
+    {{ if .post.UUID }}
 	<div class="row">
 		<div class="small-2 columns">
 			<label class="right inline">Navigate</label>
 		</div>
 		<div class="small-10 columns">
-			{% if post.Draft %}
+            {{ if .post.Draft }}
 				<a href="#" class="button disabled">Draft</a>
-			{% else %}
-				<a href="/{{ post.Path }}" class="button info" target="_blank">{{ post.Path }}</a>
-			{% endif %}
+			{{ else }}
+				<a href="/{{ .post.Path }}" class="button info" target="_blank">{{ .post.Path }}</a>
+			{{ end }}
 		</div>
 	</div>
-	{% endif %}
+	{{ end }}
 
 	<div class="row">
 		<div class="small-2 columns">
-			<label for="id_title" class="right inline {% if errors.Title %}error{% endif %}">Title</label>
+			<label for="id_title" class="right inline {{ if .errors.Title }}error{{ end }}">Title</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" class="{% if errors.Title %}error{% endif %}" id="id_title" name="title" value="{{ post.Title }}">
-			{% if errors.Title %}<small class="error">{{ errors.Title }}</small>{% endif %}
+			<input type="text" class="{{ if .errors.Title }}error{{ end }}" id="id_title" name="title" value="{{ .post.Title }}">
+			{{ if .errors.Title }}<small class="error">{{ .errors.Title }}</small>{{ end }}
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-			<textarea class="{% if errors.Body %}error{% endif %}" id="id_body" placeholder="Body..." name="body" rows="20">{{ post.Body }}</textarea>
-			{% if errors.Body %}<small class="error">{{ errors.Body }}</small>{% endif %}
+			<textarea class="{{ if .errors.Body }}error{{ end }}" id="id_body" placeholder="Body..." name="body" rows="20">{{ .post.Body }}</textarea>
+			{{ if .errors.Body }}<small class="error">{{ .errors.Body }}</small>{{ end }}
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-2 columns">
-			<label for="id_format" class="right inline {% if errors.Format %}error{% endif %}">Format</label>
+			<label for="id_format" class="right inline {{ if .errors.Format }}error{{ end }}">Format</label>
 		</div>
 		<div class="small-10 columns">
-			<select class="{% if errors.Format %}error{% endif %}" id="id_format" name="format">
-				{% for f in formats %}
-				<option value="{{ f.Name }}" {% if f.Name == post.Format %}selected{% endif %}>{{ f.Title }}</option>
-				{% endfor %}
+			<select class="{{ if .errors.Format }}error{{ end }}" id="id_format" name="format">
+                {{ range .formats }}
+				<option value="{{ .Name }}" {{ if eq .Name $.post.Format }}selected{{ end }}>{{ .Title }}</option>
+				{{ end }}
 			</select>
-			{% if errors.Format %}<small class="error">{{ errors.Format }}</small>{% endif %}
+			{{ if .errors.Format }}<small class="error">{{ .errors.Format }}</small>{{ end }}
 		</div>
 	</div>
 
@@ -118,41 +116,41 @@
 			<label for="id_tags" class="right inline">Tags</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" id="id_tags" name="tags" value='{{ post.Tags|join:"," }}'>
+			<input type="text" id="id_tags" name="tags" value='{{ .post.Tags | join "," }}'>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-2 columns">
-			<label for="id_path" class="right inline {% if errors.Path %}error{% endif %}">Path</label>
+			<label for="id_path" class="right inline {{ if .errors.Path }}error{{ end }}">Path</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" class="{% if errors.Path %}error{% endif %}" id="id_path" name="path" value="{{ post.Path }}">
-			{% if errors.Path %}<small class="error">{{ errors.Path }}</small>{% endif %}
+			<input type="text" class="{{ if .errors.Path }}error{{ end }}" id="id_path" name="path" value="{{ .post.Path }}">
+			{{ if .errors.Path }}<small class="error">{{ .errors.Path }}</small>{{ end }}
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-2 columns">
-			<label for="id_published_at" class="right inline {% if errors.PublishedAt %}error{% endif %}">Published At</label>
+			<label for="id_published_at" class="right inline {{ if .errors.PublishedAt }}error{{ end }}">Published At</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="datetime" class="{% if errors.PublishedAt %}error{% endif %}" id="id_published_at" name="published_at" value="{{ post.PublishedAt|date:"2006-01-02T15:04:01Z" }}">
-			{% if errors.PublishedAt %}<small class="error">{{ errors.PublishedAt }}</small>{% endif %}
+			<input type="datetime" class="{{ if .errors.PublishedAt }}error{{ end }}" id="id_published_at" name="published_at" value="{{ .post.PublishedAt | date "2006-01-02T15:04:01Z" }}">
+			{{ if .errors.PublishedAt }}<small class="error">{{ .errors.PublishedAt }}</small>{{ end }}
 		</div>
 	</div>
 
 	<div class="form-group pull-right">
-		<input type="hidden" name="uuid" value="{{ post.UUID }}">
+		<input type="hidden" name="uuid" value="{{ .post.UUID }}">
 		<button type="submit" class="button secondary" name="op" value="preview">Preview</button>
 		<button type="submit" class="button success" name="op" value="draft">Draft</button>
 		<button type="submit" class="button" name="op" value="publish">Publish</button>
 	</div>
 
-	{% if post.UUID %}
+    {{ if .post.UUID }}
 	<div>
 		<button type="submit" class="button alert" name="op" value="delete" onclick="return confirm('Are you sure?');">Delete</button>
 	</div>
-	{% endif %}
+    {{ end }}
 </form>
-{% endblock %}
+{{ end }}

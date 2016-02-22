@@ -31,18 +31,17 @@ func main() {
 			gin.SetMode(gin.ReleaseMode)
 		}
 
-		r := gin.Default()
-		r.Use(cfg.Pongo2())
+		router := gin.Default()
 
-		r.GET("/", controller.FrontController)
-		r.GET("/tag/:tag", controller.TagController)
-		r.GET("/autocomplete", controller.AutoComplete)
+		router.GET("/", controller.FrontController)
+		router.GET("/tag/:tag", controller.TagController)
+		router.GET("/autocomplete", controller.AutoComplete)
 
-		feed := r.Group("/feed")
+		feed := router.Group("/feed")
 		feed.GET("/atom", controller.AtomController)
 		feed.GET("/rss", controller.RssController)
 
-		authorized := r.Group("/@", gin.BasicAuth(gin.Accounts{
+		authorized := router.Group("/@", gin.BasicAuth(gin.Accounts{
 			cfg.String("auth.name"): cfg.String("auth.password"),
 		}))
 		authorized.GET("/new", controller.FormController)
@@ -52,12 +51,12 @@ func main() {
 		authorized.GET("/drafts", controller.DraftsController)
 		authorized.GET("/published", controller.PublishedController)
 
-		r.NoRoute(controller.PostController)
+		router.NoRoute(controller.PostController)
 
-		r.Static("/static", fmt.Sprintf("%s/static", cfg.GetRootDir()))
+		router.Static("/static", fmt.Sprintf("%s/static", cfg.GetRootDir()))
 
 		addr := cfg.String("addr")
 		cfg.Log(fmt.Sprintf("Running @ %s", addr))
-		r.Run(addr)
+		router.Run(addr)
 	}
 }

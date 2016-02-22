@@ -9,11 +9,8 @@ import (
 )
 
 func FrontController(c *gin.Context) {
-	ctx := make(map[string]interface{})
-
-	meta := new(model.Meta)
-	meta.Load()
-	ctx["meta"] = meta
+	meta := model.NewLoadedMeta()
+	ctx := gin.H{"meta": meta}
 
 	if meta.Posts > 0 {
 		page := 0

@@ -9,8 +9,6 @@ import (
 )
 
 func FormController(c *gin.Context) {
-	ctx := make(map[string]interface{})
-
 	post := new(model.Post)
 	uuid := c.Params.ByName("uuid")
 	if len(uuid) > 0 {
@@ -18,7 +16,7 @@ func FormController(c *gin.Context) {
 	} else {
 		post.PublishedAt = time.Now()
 	}
-	ctx["post"] = post
+	ctx := gin.H{"post": post}
 
 	ctx["formats"] = model.GetAvailableFormats()
 	if c.Request.Method == "POST" {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	_ "encoding/xml"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,9 +18,10 @@ func AtomController(c *gin.Context) {
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
 		c.Abort()
 	} else {
-		//c.Writer.Header().Set("Content-Type", "application/atom+xml")
-		c.Writer.Header().Set("Content-Type", "application/xml")
-		c.Writer.WriteHeader(200)
+		// tried c.XML(...) but browser detect it as XML,
+		// with this custom code browser detects it as feed
+		c.Writer.Header().Set("Content-Type", "application/xml; charset=utf-8")
+		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Write([]byte(atom))
 	}
 }
@@ -30,8 +32,8 @@ func RssController(c *gin.Context) {
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
 		c.Abort()
 	} else {
-		c.Writer.Header().Set("Content-Type", "application/xml")
-		c.Writer.WriteHeader(200)
+		c.Writer.Header().Set("Content-Type", "application/xml; charset=utf-8")
+		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Write([]byte(rss))
 	}
 }
@@ -46,8 +48,7 @@ func getFeed(c *gin.Context) *feeds.Feed {
 		Copyright:   "This work is copyright © " + cfg.String("ui.author"),
 	}
 
-	meta := new(model.Meta)
-	meta.Load()
+	meta := model.NewLoadedMeta()
 
 	var items []*feeds.Item
 	if meta.Posts > 0 {

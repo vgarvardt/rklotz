@@ -1,1 +1,3 @@
-<script type="text/javascript" src="//yastatic.net/share/share.js" charset="utf-8"></script><div class="yashare-auto-init" data-yashareL10n="{{ plugin.yasha.l10n }}" data-yashareType="{{ plugin.yasha.type }}" data-yashareQuickServices="{{ plugin.yasha.services }}" data-yashareTitle="{{ post.Title }}"></div>
+{{ define "plugins/yasha.html" }}
+<script type="text/javascript" src="//yastatic.net/share/share.js" charset="utf-8"></script><div class="yashare-auto-init" data-yashareL10n="{{ .plugin.yasha.l10n }}" data-yashareType="{{ .plugin.yasha.type }}" data-yashareQuickServices="{{ .plugin.yasha.services }}" data-yashareTitle="{{ .post.Title }}"></div>
+{{ end }}

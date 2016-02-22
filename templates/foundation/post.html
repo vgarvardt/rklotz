@@ -1,24 +1,22 @@
-{% extends "./base.html" %}
+{{ define "title" }}{{ .post.Title }}{{ end }}
 
-{% block title %}{{ post.Title }}{% endblock %}
+{{ define "head_extra" }}
+    {{ if .plugins.highlightjs }}{{ template "plugins/highlightjs.html" . }}{{ end }}
+{{ end }}
 
-{% block head_extra %}
-	{% if "highlightjs" in plugins %}{% include "../plugins/highlightjs.html" %}{% endif %}
-{% endblock %}
+{{ define "content" }}
+	<h1 class="text-center">{{ .post.Title }}</h1>
 
-{% block content %}
-	<h1 class="text-center">{{ post.Title }}</h1>
-
-	{% include "./partial/info.html" %}
+	{{ template "partial/info.html" .post }}
 
 	<div>
-		{{ post.HTML|safe }}
+		{{ .post.HTML | safe }}
 	</div>
 
-	{% if "yasha" in plugins %}<p>{% include "../plugins/yasha.html" %}</p>{% endif %}
+	{{ if .plugins.yasha }}<p>{{ template "plugins/yasha.html" . }}</p>{{ end }}
 
-	{% include about_path %}
+    {{ template "partial/about.html" . }}
 
-	{% if "disqus" in plugins %}{% include "../plugins/disqus.html" %}{% endif %}
+    {{ if .plugins.disqus }}{{ template "plugins/disqus.html" . }}{{ end }}
 
-{% endblock %}
+{{ end }}
