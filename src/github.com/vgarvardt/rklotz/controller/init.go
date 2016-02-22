@@ -89,7 +89,10 @@ func init() {
 
 	uiAbout := strings.TrimSpace(cfg.String("ui.about"))
 	if len(uiAbout) < 1 {
+		cfg.Log("Loading default theme about panel")
 		uiAbout = fmt.Sprintf("%s/templates/%s/partial/about.html", cfg.GetRootDir(), cfg.String("ui.theme"))
+	} else {
+		cfg.Log(fmt.Sprintf("Loading custom about panel @ %s", uiAbout))
 	}
 
 	partials = append(partials, uiAbout)

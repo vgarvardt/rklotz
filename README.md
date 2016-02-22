@@ -47,3 +47,13 @@ plugin.disqus.shortname=<shortname>
 
 Do not override plugin values like this `plugin.<plugin>._=...` - it lists all available plugin options
 and used for internal plugin routines.
+
+### About panel
+
+About (author) panel can be overridden with `ui.about` option. File must have the following structure:
+
+```html
+{{ define "partial/about.html" }}
+    Content goes here. html/template is used for rendering.
+{{ end }}
+```
