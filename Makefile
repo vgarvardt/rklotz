@@ -3,7 +3,7 @@
 PID = /tmp/rklotz.pid
 
 vendor:
-	@gb vendor update -all
+	@gb vendor restore
 
 build:
 	@echo "Building..."
