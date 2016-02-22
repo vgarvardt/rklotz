@@ -2,6 +2,10 @@
 
 ## Simple golang-driven single-user blog engine on top of [Bolt DB](https://github.com/boltdb/bolt)
 
+### Requirements
+
+As of version 0.3 rKlotz requires Go >= 1.6
+
 ##### Install and run in dev env with automatic server reload on files change
 
 ```sh
