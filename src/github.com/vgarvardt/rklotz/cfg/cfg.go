@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/voxelbrain/goptions"
-	"gopkg.in/ini.v0"
+	"gopkg.in/ini.v1"
 )
 
-const VERSION = "0.3"
+const VERSION = "0.3.1"
 
 type Options struct {
 	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config'"`
