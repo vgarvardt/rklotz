@@ -2,13 +2,6 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "code.google.com/p/go-uuid/uuid",
-			"repository": "https://code.google.com/p/go-uuid",
-			"revision": "35bc42037350",
-			"branch": "default",
-			"path": "/uuid"
-		},
-		{
 			"importpath": "github.com/boltdb/bolt",
 			"repository": "https://github.com/boltdb/bolt",
 			"revision": "2f846c3551b76d7710f159be840d66c3d064abbe",
@@ -50,6 +43,12 @@
 			"importpath": "github.com/manucorporat/sse",
 			"repository": "https://github.com/manucorporat/sse",
 			"revision": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pborman/uuid",
+			"repository": "https://github.com/pborman/uuid",
+			"revision": "c55201b036063326c5b1b89ccfe45a184973d073",
 			"branch": "master"
 		},
 		{

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"code.google.com/p/go-uuid/uuid"
 	"github.com/boltdb/bolt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
 
 	"github.com/vgarvardt/rklotz/cfg"
@@ -18,7 +18,7 @@ import (
 
 const (
 	BUCKET_POSTS = "posts"
-	BUCKET_MAP   = "path_map"
+	BUCKET_MAP = "path_map"
 )
 
 type Format struct {
