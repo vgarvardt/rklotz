@@ -47,9 +47,21 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/manucorporat/sse",
+			"repository": "https://github.com/manucorporat/sse",
+			"revision": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/russross/blackfriday",
 			"repository": "https://github.com/russross/blackfriday",
 			"revision": "006144af03eeeff1037240a71865a9fd61f1c25f",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/shurcooL/sanitized_anchor_name",
+			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
+			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
 			"branch": "master"
 		},
 		{
@@ -57,6 +69,13 @@
 			"repository": "https://github.com/voxelbrain/goptions",
 			"revision": "26cb8b04692384f4dc269de3b5fcf3e2ef78573e",
 			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/net/context",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "9e1fb3c175ff45534627a851fb970ae64f1ddb41",
+			"branch": "master",
+			"path": "/context"
 		},
 		{
 			"importpath": "gopkg.in/go-playground/validator.v8",
