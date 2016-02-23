@@ -29,6 +29,9 @@ vendor/src/*
 data/*
 bin/*
 
+static/3rd-party/*
+!static/3rd-party/.placeholder
+
 # Ignore env config files, except for the default one
 *.ini
 !config.ini

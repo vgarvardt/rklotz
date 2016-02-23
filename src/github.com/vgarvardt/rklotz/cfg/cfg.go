@@ -15,7 +15,7 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const VERSION = "0.3.1"
+const VERSION = "0.3.2"
 
 type Options struct {
 	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config'"`

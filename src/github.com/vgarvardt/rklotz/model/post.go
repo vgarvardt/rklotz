@@ -56,7 +56,7 @@ type Post struct {
 func (post *Post) Bind(c *gin.Context) error {
 	c.BindWith(post, binding.Form)
 	post.Path = strings.Trim(post.Path, "/")
-	post.Tags = strings.Split(c.Request.PostFormValue("tags"), ",")
+	post.Tags = c.Request.PostForm["tags"]
 
 	var err error
 	if post.PublishedAt, err = time.Parse(time.RFC3339, c.Request.PostFormValue("published_at")); err != nil {

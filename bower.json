@@ -1,0 +1,16 @@
+{
+  "name": "rKlotz",
+  "version": "0.3.2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation": "~5.5.3",
+    "select2": "^4.0.1"
+  }
+}

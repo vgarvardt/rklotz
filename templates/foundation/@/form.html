@@ -1,52 +1,43 @@
 {{ define "head_extra" }}
-	<link href="/static/misc/select2/select2.css?{{ .instance_id }}" rel="stylesheet">
-	<link href="/static/misc/select2/select2-bootstrap.css?{{ .instance_id }}" rel="stylesheet">
-	<style>
-		#s2id_id_tags {
-			width: 100%;
-		}
-
-		#s2id_autogen1 {
-			width: 100%;
-		}
-	</style>
+	<link href="/static/3rd-party/select2/dist/css/select2.min.css?{{ .instance_id }}" rel="stylesheet">
+    <style>
+        .select2-container .select2-selection--multiple .select2-selection__rendered .select2-search__field {
+            height: 2rem;
+            margin: 0 5px;
+        }
+    </style>
 {{ end }}
 
 {{ define "foot_extra" }}
-	<script src="/static/misc/select2/select2.min.js?{{ .instance_id }}"></script>
-	<script>
-		$(document).ready(function() {
-			$("#id_tags").select2({
-				tags: [],
-				minimumInputLength: 2,
-				ajax: {
-					quietMillis: 400,
-					dataType: 'json',
-					url: "/autocomplete",
-					data: function (term) {
-						return {q: term}
-					},
-					results: function (data) {
-						var results = [];
-						var unique = {};
-						$.each(data.tags, function(k, v) {
-							if (!unique[v.toLowerCase()]) {
-								unique[v.toLowerCase()] = v;
-								results.push({id: v, text: v});
-							}
-						});
-						return {results: results}
-					}
-				},
-				initSelection: function(element, callback) {
-					var results = [];
-					$.each($(element).val().split(','), function(k, v) {
-						results.push({id: v, text: v});
-					});
-					callback(results);
-				}
-			});
-		});
+    <script src="/static/3rd-party/select2/dist/js/select2.min.js?{{ .instance_id }}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#id_tags").select2({
+                ajax: {
+                    url: "/autocomplete",
+                    dataType: 'json',
+                    delay: 400,
+                    cache: false,
+                    data: function (params) {
+                        return {q: params.term}
+                    },
+                    processResults: function (data) {
+                        var results = [];
+                        var unique = {};
+                        $.each(data.tags, function (k, v) {
+                            if (!unique[v.toLowerCase()]) {
+                                unique[v.toLowerCase()] = v;
+                                results.push({id: v, text: v});
+                            }
+                        });
+                        return {results: results}
+                    }
+                },
+                tags: true,
+                tokenSeparators: [','],
+                minimumInputLength: 2
+            });
+        });
 	</script>
 {{ end }}
 
@@ -60,6 +51,11 @@
 {{ if .preview }}
 <div class="panel">
 	<h2>{{ .post.Title }}</h2>
+    <p>
+        {{ range .post.Tags }}
+                <span class="label secondary radius">{{ . }}</span>
+        {{ end }}
+    </p>
 	<div>{{ .post.HTML | safe }}</div>
 </div>
 {{ end }}
@@ -116,7 +112,11 @@
 			<label for="id_tags" class="right inline">Tags</label>
 		</div>
 		<div class="small-10 columns">
-			<input type="text" id="id_tags" name="tags" value='{{ .post.Tags | join "," }}'>
+            <select id="id_tags" name="tags" multiple="multiple">
+                {{ range .post.Tags }}
+                <option selected="selected">{{ . }}</option>
+                {{ end }}
+            </select>
 		</div>
 	</div>
 

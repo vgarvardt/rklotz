@@ -12,7 +12,8 @@ As of version 0.3 rKlotz requires Go >= 1.6
 $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
 $ go get github.com/constabulary/gb/...
-$ brew install fswatch
+$ brew install fswatch npm
+$ npm install -g bower
 $ make vendor
 $ make serve
 ```

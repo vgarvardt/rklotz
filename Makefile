@@ -4,6 +4,7 @@ PID = /tmp/rklotz.pid
 
 vendor:
 	@gb vendor restore
+	@bower install
 
 build:
 	@echo "Building..."
