@@ -11,28 +11,43 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/voxelbrain/goptions"
+	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/ini.v1"
 )
 
-const VERSION = "0.3.2"
+const VERSION = "0.3.3"
+const (
+	COMMAND_RUN = "run"
+	COMMAND_REBUILD = "rebuild"
+	COMMAND_UPDATE = "update"
+)
 
-type Options struct {
-	Env     string        `goptions:"-e, --env, description='<env> Application environment, defines config'"`
-	Rebuild bool          `goptions:"-r, --rebuild, description='Rebuild index only, do not run web server'"`
-	RootDir string        `goptions:"-d, --root, description='<dir> Force set root dir'"`
-	Update  string        `goptions:"-u, --update, description='<uuid> Update post UUID field with new value (works with --field and --value set), do not run web server'"`
-	Field   string        `goptions:"-f, --field, description='<field> Update post UUID field with new value (works with --update and --value set), do not run web server'"`
-	Value   string        `goptions:"-v, --value, description='<value> Update post UUID field with new value (works with --update and --field set), do not run web server'"`
-	Help    goptions.Help `goptions:"-h, --help, description='Show this help'"`
+var (
+	env = kingpin.Flag("env", "Application environment, defines config").Default("prod").String()
+	rootDir = kingpin.Flag("root", "Force set root dir").Default(".").String()
+
+	run = kingpin.Command(COMMAND_RUN, "Run application").Default()
+
+	rebuild = kingpin.Command(COMMAND_REBUILD, "Rebuild index only, do not run web server")
+
+	update = kingpin.Command(COMMAND_UPDATE, "Update post UUID field with new value")
+	updateUUID = update.Arg("UUID", "Post UUID").Required().String()
+	updateField = update.Arg("field", "Post field name").Required().String()
+	updateValue = update.Arg("value", "Post field value").Required().String()
+
+	version = kingpin.Version(VERSION)
+)
+
+type UpdateParams struct {
+	UUID  string
+	Field string
+	Value string
 }
 
 var config *ini.File
-var options Options
+var command string
 var stdLogger *log.Logger
 var instanceId string
-var rootDir string
-var runWebServer bool
 
 func configKey(key string) *ini.Key {
 	return config.Section("").Key(key)
@@ -62,10 +77,6 @@ func Log(msg string) {
 	stdLogger.Printf("[LOG] %v | %s\n", time.Now().Format("2006/01/02 - 15:04:05"), msg)
 }
 
-func GetOptions() Options {
-	return options
-}
-
 func GetInstanceId() string {
 	return instanceId
 }
@@ -75,7 +86,15 @@ func GetVersion() string {
 }
 
 func GetRootDir() string {
-	return rootDir
+	return *rootDir
+}
+
+func GetCommand() string {
+	return command
+}
+
+func GetUpdateParams() UpdateParams {
+	return UpdateParams{UUID: *updateUUID, Field: *updateField, Value: *updateValue}
 }
 
 func GetRootUrl(r *http.Request) *url.URL {
@@ -88,30 +107,20 @@ func GetRootUrl(r *http.Request) *url.URL {
 	return &url.URL{Scheme: scheme, Host: host, Path: path}
 }
 
-func GetRunWebServer() bool {
-	return runWebServer
-}
-
 func init() {
-	options = Options{
-		Env:     "prod",
-		Rebuild: false,
-	}
-	goptions.ParseAndFail(&options)
-
-	runWebServer = !options.Rebuild && len(options.Update) < 1
+	command = kingpin.Parse()
 
 	stdLogger = log.New(os.Stdout, "", 0)
 	Log(fmt.Sprintf("Initializing application ver %s", GetVersion()))
 
-	if len(options.RootDir) > 0 {
-		rootDir = options.RootDir
-	} else {
-		var err error
-		if rootDir, err = filepath.Abs(fmt.Sprintf("%s/../", filepath.Dir(os.Args[0]))); err != nil {
+	Log(fmt.Sprintf("Root dir parameter value: %s", *rootDir))
+	if *rootDir == "." {
+		if rootDirPath, err := filepath.Abs(fmt.Sprintf("%s/../", filepath.Dir(os.Args[0]))); err != nil {
 			panic(err)
+		} else {
+			rootDir = &rootDirPath
 		}
-		options.RootDir = rootDir
+		Log(fmt.Sprintf("Root dir absolute path: %s", *rootDir))
 	}
 
 	var err error
@@ -121,7 +130,7 @@ func init() {
 		panic(err)
 	}
 
-	configPath = fmt.Sprintf("%s/%s.ini", GetRootDir(), options.Env)
+	configPath = fmt.Sprintf("%s/%s.ini", GetRootDir(), *env)
 	Log(fmt.Sprintf("Loading env config from %s", configPath))
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		Log("Env config not found")

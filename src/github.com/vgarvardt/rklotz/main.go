@@ -13,18 +13,20 @@ import (
 func main() {
 	defer model.GetDB().Close()
 
-	if len(cfg.GetOptions().Update) > 0 {
-		cfg.Log(fmt.Sprintf("Trying to update post UUID %s", cfg.GetOptions().Update))
-		if err := model.UpdatePostField(cfg.GetOptions().Update, cfg.GetOptions().Field, cfg.GetOptions().Value); err != nil {
+	switch cfg.GetCommand() {
+	case cfg.COMMAND_UPDATE:
+		updateParams := cfg.GetUpdateParams()
+		cfg.Log(fmt.Sprintf("Trying to update post UUID %s", updateParams.UUID))
+		if err := model.UpdatePostField(updateParams.UUID, updateParams.Field, updateParams.Value); err != nil {
 			panic(err)
 		}
-	}
 
-	if err := model.RebuildIndex(); err != nil {
-		panic(err)
-	}
+	case cfg.COMMAND_REBUILD:
+		if err := model.RebuildIndex(); err != nil {
+			panic(err)
+		}
 
-	if cfg.GetRunWebServer() {
+	case cfg.COMMAND_RUN:
 		if cfg.Bool("debug") {
 			gin.SetMode(gin.DebugMode)
 		} else {

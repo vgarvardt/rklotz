@@ -2,6 +2,18 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/alecthomas/template",
+			"repository": "https://github.com/alecthomas/template",
+			"revision": "14fd436dd20c3cc65242a9f396b61bfc8a3926fc",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/alecthomas/units",
+			"repository": "https://github.com/alecthomas/units",
+			"revision": "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/boltdb/bolt",
 			"repository": "https://github.com/boltdb/bolt",
 			"revision": "2f846c3551b76d7710f159be840d66c3d064abbe",
@@ -64,17 +76,17 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/voxelbrain/goptions",
-			"repository": "https://github.com/voxelbrain/goptions",
-			"revision": "26cb8b04692384f4dc269de3b5fcf3e2ef78573e",
-			"branch": "master"
-		},
-		{
 			"importpath": "golang.org/x/net/context",
 			"repository": "https://go.googlesource.com/net",
 			"revision": "9e1fb3c175ff45534627a851fb970ae64f1ddb41",
 			"branch": "master",
 			"path": "/context"
+		},
+		{
+			"importpath": "gopkg.in/alecthomas/kingpin.v2",
+			"repository": "https://gopkg.in/alecthomas/kingpin.v2",
+			"revision": "8cccfa8eb2e3183254457fb1749b2667fbc364c7",
+			"branch": "master"
 		},
 		{
 			"importpath": "gopkg.in/go-playground/validator.v8",
