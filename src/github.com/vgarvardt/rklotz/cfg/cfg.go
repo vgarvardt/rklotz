@@ -15,7 +15,7 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const VERSION = "0.3.3"
+const VERSION = "0.3.4"
 const (
 	COMMAND_RUN = "run"
 	COMMAND_REBUILD = "rebuild"

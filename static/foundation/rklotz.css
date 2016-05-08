@@ -1,0 +1,16 @@
+/* Basic Typography */
+html, body {
+    font-size: 1.0em;
+    line-height: 1.65em;
+    font-family: "Play", serif;
+    font-weight: 300;
+    color: #333;
+}
+
+html *, .label, .top-bar-section ul li > a {
+    font-family: "Play", serif;
+}
+
+html pre, pre *, html code, code * {
+    font-family: 'Roboto Mono', monospace;
+}
