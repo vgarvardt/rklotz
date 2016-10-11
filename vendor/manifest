@@ -58,6 +58,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/jtolds/gls",
+			"repository": "https://github.com/jtolds/gls",
+			"revision": "8ddce2a84170772b95dd5d576c48d517b22cac63",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/leekchan/gtf",
 			"repository": "https://github.com/leekchan/gtf",
 			"revision": "882e96b937c8506c67b5adf98ff1f84cd7b7b93a",
@@ -85,6 +91,18 @@
 			"importpath": "github.com/shurcooL/sanitized_anchor_name",
 			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
 			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/smartystreets/assertions",
+			"repository": "https://github.com/smartystreets/assertions",
+			"revision": "2063fd1cc7c975db70502811a34b06ad034ccdf2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/smartystreets/goconvey",
+			"repository": "https://github.com/smartystreets/goconvey",
+			"revision": "7befa7fd6e2e8ca28d2b94f2d39111929904b08d",
 			"branch": "master"
 		},
 		{

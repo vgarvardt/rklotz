@@ -70,6 +70,7 @@ About (author) panel can be overridden with `ui.about` option. File must have th
 - [ ] Dockerize deployment
 - [ ] Get config values from os env 
 - [ ] Implement Material Design Lite theme
-- [ ] Write some tests
+- [x] Write some tests
+- [ ] Cover reindex logic with tests
 - [ ] Migrate to another Web Framework (maybe echo)
 - [ ] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)
