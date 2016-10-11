@@ -62,3 +62,13 @@ About (author) panel can be overridden with `ui.about` option. File must have th
     Content goes here. html/template is used for rendering.
 {{ end }}
 ```
+
+## TODO
+
+- [ ] Config loader as interface in DI container (+configs from os env)
+- [ ] Dockerize development (move from gb to glide)
+- [ ] Dockerize deployment
+- [ ] Implement Material Design Lite theme
+- [ ] Write some tests
+- [ ] Migrate to another Web Framework (maybe echo)
+- [ ] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)

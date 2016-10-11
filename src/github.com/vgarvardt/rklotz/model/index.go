@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/svc"
 )
 
 const (
@@ -58,7 +60,9 @@ func NewLoadedMeta() *Meta {
 }
 
 func RebuildIndex() error {
-	cfg.Log("Rebuilding index...")
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+
+	logger.Info("Rebuilding index...")
 
 	var publishedStamps []int
 	postsMap := make(map[int]string)
@@ -161,7 +165,7 @@ func RebuildIndex() error {
 		}
 
 		jsonMeta, _ := json.Marshal(meta)
-		cfg.Log(string(jsonMeta))
+		logger.WithField("meta", string(jsonMeta)).Debug("Meta data")
 		if err := bucketIndex.Put([]byte(INDEX_META), []byte(jsonMeta)); err != nil {
 			return err
 		}
@@ -197,7 +201,7 @@ func RebuildIndex() error {
 		return err
 	}
 
-	cfg.Log("Index rebuilt!")
+	logger.Info("Index rebuilt!")
 	return nil
 }
 

@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,9 +12,12 @@ import (
 
 	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/ini.v1"
+	log "github.com/Sirupsen/logrus"
+
+	"github.com/vgarvardt/rklotz/svc"
 )
 
-const VERSION = "0.3.4"
+const VERSION = "0.3.5"
 const (
 	COMMAND_RUN = "run"
 	COMMAND_REBUILD = "rebuild"
@@ -26,16 +28,16 @@ var (
 	env = kingpin.Flag("env", "Application environment, defines config").Default("prod").String()
 	rootDir = kingpin.Flag("root", "Force set root dir").Default(".").String()
 
-	run = kingpin.Command(COMMAND_RUN, "Run application").Default()
+	_ = kingpin.Command(COMMAND_RUN, "Run application").Default()
 
-	rebuild = kingpin.Command(COMMAND_REBUILD, "Rebuild index only, do not run web server")
+	_ = kingpin.Command(COMMAND_REBUILD, "Rebuild index only, do not run web server")
 
 	update = kingpin.Command(COMMAND_UPDATE, "Update post UUID field with new value")
 	updateUUID = update.Arg("UUID", "Post UUID").Required().String()
 	updateField = update.Arg("field", "Post field name").Required().String()
 	updateValue = update.Arg("value", "Post field value").Required().String()
 
-	version = kingpin.Version(VERSION)
+	_ = kingpin.Version(VERSION)
 )
 
 type UpdateParams struct {
@@ -46,7 +48,6 @@ type UpdateParams struct {
 
 var config *ini.File
 var command string
-var stdLogger *log.Logger
 var instanceId string
 
 func configKey(key string) *ini.Key {
@@ -71,10 +72,6 @@ func Bool(key string) bool {
 	} else {
 		return val
 	}
-}
-
-func Log(msg string) {
-	stdLogger.Printf("[LOG] %v | %s\n", time.Now().Format("2006/01/02 - 15:04:05"), msg)
 }
 
 func GetInstanceId() string {
@@ -110,38 +107,39 @@ func GetRootUrl(r *http.Request) *url.URL {
 func init() {
 	command = kingpin.Parse()
 
-	stdLogger = log.New(os.Stdout, "", 0)
-	Log(fmt.Sprintf("Initializing application ver %s", GetVersion()))
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 
-	Log(fmt.Sprintf("Root dir parameter value: %s", *rootDir))
+	logger.WithField("version", GetVersion()).Info("Initializing application")
+
+	logger.WithField("path", *rootDir).Info("Root dir parameter value")
 	if *rootDir == "." {
 		if rootDirPath, err := filepath.Abs(fmt.Sprintf("%s/../", filepath.Dir(os.Args[0]))); err != nil {
 			panic(err)
 		} else {
 			rootDir = &rootDirPath
 		}
-		Log(fmt.Sprintf("Root dir absolute path: %s", *rootDir))
+		logger.WithField("path", *rootDir).Info("Root dir absolute path")
 	}
 
 	var err error
 	configPath := fmt.Sprintf("%s/config.ini", GetRootDir())
-	Log(fmt.Sprintf("Loading base config from %s", configPath))
+	logger.WithField("path", configPath).Info("Loading base config")
 	if config, err = ini.Load(configPath); err != nil {
 		panic(err)
 	}
 
 	configPath = fmt.Sprintf("%s/%s.ini", GetRootDir(), *env)
-	Log(fmt.Sprintf("Loading env config from %s", configPath))
+	logger.WithField("path", configPath).Info("Loading env config")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		Log("Env config not found")
+		logger.WithField("path", configPath).Warn("Env config not found")
 	} else {
 		if err := config.Append(configPath); err != nil {
-			panic(err)
+			logger.WithField("err", err).Fatal("Failed to append env config")
 		}
 	}
 
 	hasher := md5.New()
 	hasher.Write([]byte(time.Now().Format("2006/01/02 - 15:04:05")))
 	instanceId = hex.EncodeToString(hasher.Sum(nil))[:5]
-	Log(fmt.Sprintf("Initialized application instance ID %s", instanceId))
+	logger.WithField("ID", instanceId).Info("Initialized application instance")
 }

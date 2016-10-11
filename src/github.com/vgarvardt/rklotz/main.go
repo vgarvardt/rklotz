@@ -4,19 +4,23 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/cfg"
 	"github.com/vgarvardt/rklotz/controller"
 	"github.com/vgarvardt/rklotz/model"
+	"github.com/vgarvardt/rklotz/svc"
 )
 
 func main() {
 	defer model.GetDB().Close()
 
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+
 	switch cfg.GetCommand() {
 	case cfg.COMMAND_UPDATE:
 		updateParams := cfg.GetUpdateParams()
-		cfg.Log(fmt.Sprintf("Trying to update post UUID %s", updateParams.UUID))
+		logger.WithField("UUID", updateParams.UUID).Info("Trying to update post")
 		if err := model.UpdatePostField(updateParams.UUID, updateParams.Field, updateParams.Value); err != nil {
 			panic(err)
 		}
@@ -58,7 +62,7 @@ func main() {
 		router.Static("/static", fmt.Sprintf("%s/static", cfg.GetRootDir()))
 
 		addr := cfg.String("addr")
-		cfg.Log(fmt.Sprintf("Running @ %s", addr))
+		logger.WithField("address", addr).Info("Running...")
 		router.Run(addr)
 	}
 }

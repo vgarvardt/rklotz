@@ -12,8 +12,9 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
+	log "github.com/Sirupsen/logrus"
 
-	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/svc"
 )
 
 const (
@@ -29,7 +30,7 @@ type Format struct {
 
 func GetAvailableFormats() []Format {
 	return []Format{
-		Format{
+		{
 			Name:  "md",
 			Title: "MarkDown",
 			Handler: (func(input string) string {
@@ -118,7 +119,8 @@ func (post *Post) Save(draft bool) error {
 		return err
 	}
 
-	cfg.Log(fmt.Sprintf("Saved post UUID %s", post.UUID))
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+	logger.WithField("UUID", post.UUID).Info("Saved post")
 	go RebuildIndex()
 	return nil
 }
@@ -144,8 +146,8 @@ func (post *Post) LoadByPath(path string) error {
 			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_MAP))
 		}
 
-		uuid := bucket.Get([]byte(path))
-		return post.Load(string(uuid))
+		postUUID := bucket.Get([]byte(path))
+		return post.Load(string(postUUID))
 	})
 }
 
@@ -213,7 +215,9 @@ func (post *Post) Delete() error {
 		panic(err)
 	}
 
-	cfg.Log(fmt.Sprintf("Removed post UUID %s", post.UUID))
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+
+	logger.WithField("UUID", post.UUID).Info("Removed post")
 	go RebuildIndex()
 	return nil
 }

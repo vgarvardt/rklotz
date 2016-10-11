@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "3ec0642a7fb6488f65b06f9040adc67e3990296a",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/alecthomas/template",
 			"repository": "https://github.com/alecthomas/template",
 			"revision": "14fd436dd20c3cc65242a9f396b61bfc8a3926fc",
@@ -18,6 +24,12 @@
 			"repository": "https://github.com/boltdb/bolt",
 			"revision": "2f846c3551b76d7710f159be840d66c3d064abbe",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/drgomesp/cargo",
+			"repository": "https://github.com/drgomesp/cargo",
+			"revision": "15ee1230837b6b28f05cdaf7f0d760ec0a0b3632",
+			"branch": "develop"
 		},
 		{
 			"importpath": "github.com/gin-gonic/gin",

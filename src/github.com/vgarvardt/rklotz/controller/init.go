@@ -9,8 +9,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/leekchan/gtf"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/svc"
 )
 
 var templates map[string]*template.Template
@@ -87,12 +89,14 @@ func init() {
 		fmt.Sprintf("%s/templates/plugins/yasha.html", cfg.GetRootDir()),
 	}
 
+	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+
 	uiAbout := strings.TrimSpace(cfg.String("ui.about"))
 	if len(uiAbout) < 1 {
-		cfg.Log("Loading default theme about panel")
+		logger.Info("Loading default theme about panel")
 		uiAbout = fmt.Sprintf("%s/templates/%s/partial/about.html", cfg.GetRootDir(), cfg.String("ui.theme"))
 	} else {
-		cfg.Log(fmt.Sprintf("Loading custom about panel @ %s", uiAbout))
+		logger.WithField("path", uiAbout).Info("Loading custom about panel")
 	}
 
 	partials = append(partials, uiAbout)
