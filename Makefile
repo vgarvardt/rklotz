@@ -26,4 +26,7 @@ restart:
 	@make build
 	@bin/rklotz --env=dev & echo $$! > $(PID)
 
-.PHONY: vendor build serve kill restart
+test:
+	@gb test
+
+.PHONY: vendor build serve kill restart test
