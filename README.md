@@ -65,9 +65,10 @@ About (author) panel can be overridden with `ui.about` option. File must have th
 
 ## TODO
 
-- [ ] Config loader as interface in DI container (+configs from os env)
+- [x] Config loader as interface in DI container
 - [ ] Dockerize development (move from gb to glide)
 - [ ] Dockerize deployment
+- [ ] Get config values from os env 
 - [ ] Implement Material Design Lite theme
 - [ ] Write some tests
 - [ ] Migrate to another Web Framework (maybe echo)

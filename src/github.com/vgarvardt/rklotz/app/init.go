@@ -1,4 +1,4 @@
-package cfg
+package app
 
 import (
 	"crypto/md5"
@@ -11,13 +11,12 @@ import (
 	"time"
 
 	"gopkg.in/alecthomas/kingpin.v2"
-	"gopkg.in/ini.v1"
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/svc"
 )
 
-const VERSION = "0.3.5"
+const VERSION = "0.3.6"
 const (
 	COMMAND_RUN = "run"
 	COMMAND_REBUILD = "rebuild"
@@ -46,47 +45,22 @@ type UpdateParams struct {
 	Value string
 }
 
-var config *ini.File
 var command string
 var instanceId string
 
-func configKey(key string) *ini.Key {
-	return config.Section("").Key(key)
-}
-
-func String(key string) string {
-	return configKey(key).String()
-}
-
-func Int(key string) int {
-	if val, err := configKey(key).Int(); err != nil {
-		panic(err)
-	} else {
-		return val
-	}
-}
-
-func Bool(key string) bool {
-	if val, err := configKey(key).Bool(); err != nil {
-		panic(err)
-	} else {
-		return val
-	}
-}
-
-func GetInstanceId() string {
+func InstanceId() string {
 	return instanceId
 }
 
-func GetVersion() string {
+func Version() string {
 	return VERSION
 }
 
-func GetRootDir() string {
+func RootDir() string {
 	return *rootDir
 }
 
-func GetCommand() string {
+func Command() string {
 	return command
 }
 
@@ -94,10 +68,12 @@ func GetUpdateParams() UpdateParams {
 	return UpdateParams{UUID: *updateUUID, Field: *updateField, Value: *updateValue}
 }
 
-func GetRootUrl(r *http.Request) *url.URL {
-	scheme := String("ui.root_url.scheme")
-	host := String("ui.root_url.host")
-	path := String("ui.root_url.path")
+func RootUrl(r *http.Request) *url.URL {
+	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
+
+	scheme := config.String("ui.root_url.scheme")
+	host := config.String("ui.root_url.host")
+	path := config.String("ui.root_url.path")
 	if len(host) < 1 {
 		host = r.Host
 	}
@@ -109,7 +85,7 @@ func init() {
 
 	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 
-	logger.WithField("version", GetVersion()).Info("Initializing application")
+	logger.WithField("version", Version()).Info("Initializing application")
 
 	logger.WithField("path", *rootDir).Info("Root dir parameter value")
 	if *rootDir == "." {
@@ -121,22 +97,8 @@ func init() {
 		logger.WithField("path", *rootDir).Info("Root dir absolute path")
 	}
 
-	var err error
-	configPath := fmt.Sprintf("%s/config.ini", GetRootDir())
-	logger.WithField("path", configPath).Info("Loading base config")
-	if config, err = ini.Load(configPath); err != nil {
-		panic(err)
-	}
-
-	configPath = fmt.Sprintf("%s/%s.ini", GetRootDir(), *env)
-	logger.WithField("path", configPath).Info("Loading env config")
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		logger.WithField("path", configPath).Warn("Env config not found")
-	} else {
-		if err := config.Append(configPath); err != nil {
-			logger.WithField("err", err).Fatal("Failed to append env config")
-		}
-	}
+	config := svc.NewIniConfig(fmt.Sprintf("%s/config.ini", RootDir()), fmt.Sprintf("%s/%s.ini", RootDir(), *env))
+	svc.Container.Set(svc.DI_CONFIG, config)
 
 	hasher := md5.New()
 	hasher.Write([]byte(time.Now().Format("2006/01/02 - 15:04:05")))

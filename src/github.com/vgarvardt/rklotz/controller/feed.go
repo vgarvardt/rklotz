@@ -8,12 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/feeds"
 
-	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/app"
 	"github.com/vgarvardt/rklotz/model"
+	"github.com/vgarvardt/rklotz/svc"
+	"github.com/vgarvardt/rklotz/utils"
 )
 
 func AtomController(c *gin.Context) {
-	feed := feeds.Atom{getFeed(c)}
+	feed := feeds.Atom{Feed: getFeed(c)}
 	atomFeed := feed.AtomFeed()
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
 		c.Abort()
@@ -27,7 +29,7 @@ func AtomController(c *gin.Context) {
 }
 
 func RssController(c *gin.Context) {
-	feed := feeds.Rss{getFeed(c)}
+	feed := feeds.Rss{Feed: getFeed(c)}
 	rssFeed := feed.RssFeed()
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
 		c.Abort()
@@ -39,13 +41,15 @@ func RssController(c *gin.Context) {
 }
 
 func getFeed(c *gin.Context) *feeds.Feed {
-	rootUrl := cfg.GetRootUrl(c.Request)
+	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
+
+	rootUrl := app.RootUrl(c.Request)
 	feed := &feeds.Feed{
-		Title:       cfg.String("ui.title"),
+		Title:       config.String("ui.title"),
 		Link:        &feeds.Link{Href: rootUrl.String()},
-		Description: cfg.String("ui.description"),
-		Author:      &feeds.Author{cfg.String("ui.author"), cfg.String("ui.email")},
-		Copyright:   "This work is copyright © " + cfg.String("ui.author"),
+		Description: config.String("ui.description"),
+		Author:      &feeds.Author{Name: config.String("ui.author"), Email: config.String("ui.email")},
+		Copyright:   "This work is copyright © " + config.String("ui.author"),
 	}
 
 	meta := model.NewLoadedMeta()
@@ -60,8 +64,8 @@ func getFeed(c *gin.Context) *feeds.Feed {
 				Id:          post.UUID,
 				Title:       post.Title,
 				Link:        &feeds.Link{Href: rootUrl.String()},
-				Description: post.Body[0:cfg.Min(len(post.Body), 255)],
-				Author:      &feeds.Author{cfg.String("ui.author"), cfg.String("ui.email")},
+				Description: post.Body[0:utils.Min(len(post.Body), 255)],
+				Author:      &feeds.Author{Name: config.String("ui.author"), Email: config.String("ui.email")},
 				Created:     post.PublishedAt,
 			}
 			items = append(items, item)

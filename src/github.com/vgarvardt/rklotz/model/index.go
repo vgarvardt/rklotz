@@ -12,7 +12,6 @@ import (
 	"github.com/boltdb/bolt"
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/vgarvardt/rklotz/cfg"
 	"github.com/vgarvardt/rklotz/svc"
 )
 
@@ -33,8 +32,10 @@ type Meta struct {
 }
 
 func (meta *Meta) init() {
+	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
+
 	meta.Posts = 0
-	meta.PerPage = cfg.Int("ui.per_page")
+	meta.PerPage = config.Int("ui.per_page")
 	meta.Pages = 1
 	meta.Drafts = 0
 	meta.UpdatedAt = time.Now()

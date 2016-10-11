@@ -8,7 +8,7 @@ import (
 	"github.com/boltdb/bolt"
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/vgarvardt/rklotz/cfg"
+	"github.com/vgarvardt/rklotz/app"
 	"github.com/vgarvardt/rklotz/svc"
 )
 
@@ -16,8 +16,9 @@ var db *bolt.DB
 
 func init() {
 	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
+	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
 
-	dbPath := fmt.Sprintf("%s/%s", cfg.GetRootDir(), cfg.String("db.path"))
+	dbPath := fmt.Sprintf("%s/%s", app.RootDir(), config.String("db.path"))
 	logger.WithField("path", dbPath).Info("Openning DB")
 	os.MkdirAll(path.Dir(dbPath), 0755)
 	db, _ = bolt.Open(dbPath, 0644, nil)
