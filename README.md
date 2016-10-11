@@ -74,3 +74,7 @@ About (author) panel can be overridden with `ui.about` option. File must have th
 - [ ] Cover reindex logic with tests
 - [ ] Migrate to another Web Framework (maybe echo)
 - [ ] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)
+- [ ] Replace raw validation with govalidator - https://github.com/asaskevich/govalidator
+- [ ] Post attachments (at least images) support
+- [ ] Paths history with permanent redirects from old paths to new
+- [ ] SemVer versioning
