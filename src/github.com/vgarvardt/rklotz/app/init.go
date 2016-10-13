@@ -16,7 +16,7 @@ import (
 	"github.com/vgarvardt/rklotz/svc"
 )
 
-const VERSION = "0.3.6"
+var version = "0.0.0-dev"
 const (
 	COMMAND_RUN = "run"
 	COMMAND_REBUILD = "rebuild"
@@ -24,7 +24,6 @@ const (
 )
 
 var (
-	env = kingpin.Flag("env", "Application environment, defines config").Default("prod").String()
 	rootDir = kingpin.Flag("root", "Force set root dir").Default(".").String()
 
 	_ = kingpin.Command(COMMAND_RUN, "Run application").Default()
@@ -36,7 +35,7 @@ var (
 	updateField = update.Arg("field", "Post field name").Required().String()
 	updateValue = update.Arg("value", "Post field value").Required().String()
 
-	_ = kingpin.Version(VERSION)
+	_ = kingpin.Version(version)
 )
 
 type UpdateParams struct {
@@ -53,7 +52,7 @@ func InstanceId() string {
 }
 
 func Version() string {
-	return VERSION
+	return version
 }
 
 func RootDir() string {
@@ -86,18 +85,18 @@ func init() {
 	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 
 	logger.WithField("version", Version()).Info("Initializing application")
-
 	logger.WithField("path", *rootDir).Info("Root dir parameter value")
+
 	if *rootDir == "." {
 		if rootDirPath, err := filepath.Abs(fmt.Sprintf("%s/../", filepath.Dir(os.Args[0]))); err != nil {
 			panic(err)
 		} else {
 			rootDir = &rootDirPath
 		}
-		logger.WithField("path", *rootDir).Info("Root dir absolute path")
+		logger.WithField("path", rootDir).Info("Root dir absolute path")
 	}
 
-	config := svc.NewIniConfig(fmt.Sprintf("%s/config.ini", RootDir()), fmt.Sprintf("%s/%s.ini", RootDir(), *env))
+	config := svc.NewIniConfig(fmt.Sprintf("%s/db/config.ini", RootDir()), "")
 	svc.Container.Set(svc.DI_CONFIG, config)
 
 	hasher := md5.New()

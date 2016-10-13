@@ -10,28 +10,13 @@ _test
 .DS_Store
 .idea/*
 
-# Architecture specific extensions/prefixes
-*.[568vq]
-[568vq].out
-
-*.cgo1.go
-*.cgo2.c
-_cgo_defun.c
-_cgo_gotypes.go
-_cgo_export.*
-
-_testmain.go
-
-*.exe
-*.test
-
-vendor/src/*
-data/*
+db/*
+!db/config.ini
 bin/*
+!bin/.gitkeep
+
+src/github.com/vgarvardt/rklotz/vendor/*
+src/github.com/vgarvardt/rklotz/.glide/*
 
 static/3rd-party/*
 !static/3rd-party/.placeholder
-
-# Ignore env config files, except for the default one
-*.ini
-!config.ini
