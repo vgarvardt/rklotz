@@ -1,5 +1,5 @@
-hash: eb3485063bd953e5b80c648654bdc10c7e90500c954c52d236dde0f3dd4295ba
-updated: 2016-10-13T20:09:31.055150222Z
+hash: 9e1f044c62a760311aabcf655bf0a7fd181c2c1b7466638490b1a22e91fe447c
+updated: 2016-10-14T12:28:28.519716926Z
 imports:
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
@@ -42,6 +42,12 @@ imports:
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
   subpackages:
   - hooks/test
+- name: github.com/smartystreets/goconvey
+  version: 7befa7fd6e2e8ca28d2b94f2d39111929904b08d
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
 - name: golang.org/x/net
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:
@@ -70,9 +76,3 @@ testImports:
   subpackages:
   - internal/go-render/render
   - internal/oglematchers
-- name: github.com/smartystreets/goconvey
-  version: 7befa7fd6e2e8ca28d2b94f2d39111929904b08d
-  subpackages:
-  - convey
-  - convey/gotest
-  - convey/reporting

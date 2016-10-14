@@ -2,12 +2,14 @@ FROM golang:1.7-alpine
 
 # Install base packages
 RUN apk update && apk upgrade && apk add \
+    bash \
     curl \
     git \
-    bash \
+    nodejs \
     vim
 
 RUN curl https://glide.sh/get | sh
+RUN npm install -g bower
 
 RUN mkdir -p /go/src/github.com/vgarvardt/rklotz
 RUN mkdir -p /data/bin

@@ -2,19 +2,14 @@
 
 ## Simple golang-driven single-user blog engine on top of [Bolt DB](https://github.com/boltdb/bolt)
 
-### Requirements
-
-As of version 0.3 rKlotz requires Go >= 1.6
-
-##### Install and run in dev env with automatic server reload on files change
+### Install and run in dev env with automatic server reload on files change
 
 ```sh
 $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
-$ go get github.com/constabulary/gb/...
-$ brew install fswatch npm
-$ npm install -g bower
-$ make vendor
+$ brew install fswatch
+$ make init
+$ make test
 $ make serve
 ```
 
@@ -24,7 +19,7 @@ so don't forget to override and change it on production.
 
 ### Env and config values overriding
 
-`./config.ini` is the base config file loaded every time when rKlotz server is started.
+`./db/config.ini` is the base config file loaded every time when rKlotz server is started.
 Env can be used to override its values. E.g. for `dev` env create file `./dev.ini`, put
 required parameters there and then start server with `env` parameter set to `dev`:
 

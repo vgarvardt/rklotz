@@ -9,8 +9,9 @@ VOLUMES=--volume "${VOLSRC}" --volume "${VOLBIN}" --volume "${VOLDB}" --volume "
 
 
 init:
-	@docker build -t ${APPTAG} .
+	@docker build -f ./Dockerfile.dev -t ${APPTAG} .
 	@docker run ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} glide install
+	@docker run ${VOLUMES} --workdir "/data/static" ${APPTAG} bower --allow-root install
 
 cli:
 	@docker run --interactive --tty ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} /bin/bash
@@ -65,6 +66,6 @@ restart:
 	@make rund
 
 test:
-	@docker run --tty ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} go test
+	@docker run --tty ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} /bin/bash -c "go list ./... | grep -v /vendor/ | xargs go test"
 
 .PHONY: init cli build run rund serve kill restart test

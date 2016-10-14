@@ -16,7 +16,6 @@ import:
 - package: github.com/russross/blackfriday
 - package: gopkg.in/alecthomas/kingpin.v2
 - package: gopkg.in/ini.v1
-testImport:
 - package: github.com/smartystreets/goconvey
   subpackages:
   - convey
