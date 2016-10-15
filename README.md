@@ -37,11 +37,11 @@ rKlots supports plugins. Currently the following are implemented:
 * [Yandex Share](https://tech.yandex.ru/share/) (`yasha`) - share post buttons from Yandex
 
 To enable some of them override `plugins` option. E.g., to enable comments, code highlighting
-and share buttons for your blog put the following lines into your env config:
+and share buttons for your blog set the following env variables:
 
 ```ini
-plugins=disqus highlightjs yasha
-plugin.disqus.shortname=<shortname>
+RKLOTZ_plugins=disqus highlightjs yasha
+RKLOTZ_plugin.disqus.shortname=<shortname>
 ```
 
 Do not override plugin values like this `plugin.<plugin>._=...` - it lists all available plugin options
