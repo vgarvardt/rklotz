@@ -38,6 +38,7 @@ run:
 		--workdir "${WORKDIR}" \
 		--publish 8080:8080 \
 		--hostname 127.0.0.1 \
+		--env-file ./env.dev.txt \
 		${APPTAG} \
 		go run main.go --root="/data"
 
@@ -47,6 +48,7 @@ rund:
 		--workdir "${WORKDIR}" \
 		--publish 8080:8080 \
 		--hostname 127.0.0.1 \
+		--env-file ./env.dev.txt \
 		${APPTAG} \
 		go run main.go --root="/data"
 
@@ -66,6 +68,11 @@ restart:
 	@make rund
 
 test:
-	@docker run --tty ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} /bin/bash -c "go list ./... | grep -v /vendor/ | xargs go test"
+	@docker run --tty \
+	${VOLUMES} \
+	--workdir "${WORKDIR}" \
+	--env-file ./env.dev.txt \
+	${APPTAG} \
+	/bin/bash -c "go list ./... | grep -v /vendor/ | xargs go test"
 
 .PHONY: init cli build run rund serve kill restart test

@@ -17,15 +17,14 @@ Then open `http://127.0.0.1:8080` in your browser.
 Admin area available at `http://127.0.0.1:8080/@`, login and password are both set to `q` by default,
 so don't forget to override and change it on production.
 
-### Env and config values overriding
+### Base config and values overriding
 
 `./db/config.ini` is the base config file loaded every time when rKlotz server is started.
-Env can be used to override its values. E.g. for `dev` env create file `./dev.ini`, put
-required parameters there and then start server with `env` parameter set to `dev`:
+Environment variables can be used to override its values. To override default config value
+create env value with name `RKLOTZ_<config_section>`, e.g. `RKLOTZ_<ui.title>=My Blog`.
 
-```sh
-$ make build && ./bin/rklotz --env dev
-```
+To override config value for development environment set values in `./env.dev.txt` - file
+is loaded as env file to docker.
 
 ### Plugins
 
@@ -63,7 +62,7 @@ About (author) panel can be overridden with `ui.about` option. File must have th
 - [x] Config loader as interface in DI container
 - [x] Dockerize development (move from gb to glide)
 - [ ] Dockerize deployment
-- [ ] Get config values from os env
+- [x] Get config values from os env
 - [ ] Implement Material Design Lite theme
 - [x] Write some tests
 - [ ] Cover reindex logic with tests

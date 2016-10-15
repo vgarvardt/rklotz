@@ -16,12 +16,14 @@ import (
 	"github.com/vgarvardt/rklotz/svc"
 )
 
-var version = "0.0.0-dev"
+
 const (
 	COMMAND_RUN = "run"
 	COMMAND_REBUILD = "rebuild"
 	COMMAND_UPDATE = "update"
 )
+
+var version = "0.0.0-dev"
 
 var (
 	rootDir = kingpin.Flag("root", "Force set root dir").Default(".").String()
@@ -96,7 +98,7 @@ func init() {
 		logger.WithField("path", rootDir).Info("Root dir absolute path")
 	}
 
-	config := svc.NewIniConfig(fmt.Sprintf("%s/db/config.ini", RootDir()), "")
+	config := svc.NewIniEnvConfig(fmt.Sprintf("%s/db/config.ini", RootDir()), svc.ENV_PREFIX)
 	svc.Container.Set(svc.DI_CONFIG, config)
 
 	hasher := md5.New()
