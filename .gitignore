@@ -10,8 +10,8 @@ _test
 .DS_Store
 .idea/*
 
-db/*
-!db/config.ini
+var/*
+!var/config.ini
 bin/*
 !bin/.gitkeep
 

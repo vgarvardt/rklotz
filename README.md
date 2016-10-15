@@ -49,7 +49,8 @@ and used for internal plugin routines.
 
 ### About panel
 
-About (author) panel can be overridden with `ui.about` option. File must have the following structure:
+About (author) panel can be overridden with `./var/about.html` template file.
+Template must have the following structure:
 
 ```html
 {{ define "partial/about.html" }}

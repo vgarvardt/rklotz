@@ -2,10 +2,10 @@ APPTAG="rklotz/dev:latest"
 WORKDIR="/go/src/github.com/vgarvardt/rklotz"
 VOLSRC="`pwd`/src:/go/src"
 VOLBIN="`pwd`/bin:/data/bin"
-VOLDB="`pwd`/db:/data/db"
+VOLVAR="`pwd`/var:/data/var"
 VOLTPL="`pwd`/templates:/data/templates"
 VOLSTC="`pwd`/static:/data/static"
-VOLUMES=--volume "${VOLSRC}" --volume "${VOLBIN}" --volume "${VOLDB}" --volume "${VOLTPL}" --volume "${VOLSTC}"
+VOLUMES=--volume "${VOLSRC}" --volume "${VOLBIN}" --volume "${VOLVAR}" --volume "${VOLTPL}" --volume "${VOLSTC}"
 
 
 init:

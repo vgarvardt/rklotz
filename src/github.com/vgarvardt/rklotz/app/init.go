@@ -98,7 +98,7 @@ func init() {
 		logger.WithField("path", rootDir).Info("Root dir absolute path")
 	}
 
-	config := svc.NewIniEnvConfig(fmt.Sprintf("%s/db/config.ini", RootDir()), svc.ENV_PREFIX)
+	config := svc.NewIniEnvConfig(fmt.Sprintf("%s/var/config.ini", RootDir()), svc.ENV_PREFIX)
 	svc.Container.Set(svc.DI_CONFIG, config)
 
 	hasher := md5.New()

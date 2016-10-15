@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -97,8 +98,8 @@ func init() {
 
 	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 
-	uiAbout := strings.TrimSpace(config.String("ui.about"))
-	if len(uiAbout) < 1 {
+	uiAbout := fmt.Sprintf("%s/var/about.html", app.RootDir())
+	if _, err := os.Stat(uiAbout); os.IsNotExist(err) {
 		logger.Info("Loading default theme about panel")
 		uiAbout = fmt.Sprintf("%s/templates/%s/partial/about.html", app.RootDir(), config.String("ui.theme"))
 	} else {
