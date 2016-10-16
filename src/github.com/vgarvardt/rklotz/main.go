@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/app"
@@ -13,7 +15,7 @@ import (
 )
 
 func main() {
-	defer model.GetDB().Close()
+	defer model.DB.Close()
 
 	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
@@ -32,25 +34,27 @@ func main() {
 		}
 
 	case app.COMMAND_RUN:
-		if config.Bool("debug") {
-			gin.SetMode(gin.DebugMode)
-		} else {
-			gin.SetMode(gin.ReleaseMode)
-		}
+		e := echo.New()
+		e.SetDebug(config.Bool("debug"))
 
-		router := gin.Default()
+		e.Use(middleware.Logger())
+		e.Use(middleware.Recover())
 
-		router.GET("/", controller.FrontController)
-		router.GET("/tag/:tag", controller.TagController)
-		router.GET("/autocomplete", controller.AutoComplete)
+		e.SetRenderer(svc.Renderer(app.RootDir(), app.InstanceId()))
 
-		feed := router.Group("/feed")
+		e.GET("/", controller.FrontController)
+		e.GET("/tag/:tag", controller.TagController)
+		e.GET("/autocomplete", controller.AutoComplete)
+		e.GET("/*", controller.PostController)
+
+		feed := e.Group("/feed")
 		feed.GET("/atom", controller.AtomController)
 		feed.GET("/rss", controller.RssController)
 
-		authorized := router.Group("/@", gin.BasicAuth(gin.Accounts{
-			config.String("auth.name"): config.String("auth.password"),
+		authorized := e.Group("/@", middleware.BasicAuth(func(username, password string) bool {
+			return username == config.String("auth.name") && password == config.String("auth.password")
 		}))
+		authorized.GET("/", controller.AdmFrontController)
 		authorized.GET("/new", controller.FormController)
 		authorized.POST("/new", controller.FormController)
 		authorized.GET("/edit/:uuid", controller.FormController)
@@ -58,12 +62,11 @@ func main() {
 		authorized.GET("/drafts", controller.DraftsController)
 		authorized.GET("/published", controller.PublishedController)
 
-		router.NoRoute(controller.PostController)
-
-		router.Static("/static", fmt.Sprintf("%s/static", app.RootDir()))
+		e.Static("/static", fmt.Sprintf("%s/static", app.RootDir()))
+		e.File("/favicon.ico", fmt.Sprintf("%s/static/images/favicon.ico", app.RootDir()))
 
 		addr := config.String("addr")
 		logger.WithField("address", addr).Info("Running...")
-		router.Run(addr)
+		e.Run(standard.New(addr))
 	}
 }

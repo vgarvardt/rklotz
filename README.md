@@ -21,7 +21,7 @@ so don't forget to override and change it on production.
 
 `./db/config.ini` is the base config file loaded every time when rKlotz server is started.
 Environment variables can be used to override its values. To override default config value
-create env value with name `RKLOTZ_<config_section>`, e.g. `RKLOTZ_<ui.title>=My Blog`.
+create env value with name `RKLOTZ_<config_section>`, e.g. `RKLOTZ_ui.title=My Blog`.
 
 To override config value for development environment set values in `./env.dev.txt` - file
 is loaded as env file to docker.
@@ -67,7 +67,7 @@ Template must have the following structure:
 - [ ] Implement Material Design Lite theme
 - [x] Write some tests
 - [ ] Cover reindex logic with tests
-- [ ] Migrate to another Web Framework (maybe echo)
+- [x] Migrate to another Web Framework (maybe echo)
 - [x] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)
 - [ ] Replace raw validation with govalidator - https://github.com/asaskevich/govalidator
 - [ ] Post attachments (at least images) support

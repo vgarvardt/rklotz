@@ -7,9 +7,6 @@ import:
 - package: github.com/drgomesp/cargo
   subpackages:
   - container
-- package: github.com/gin-gonic/gin
-  subpackages:
-  - binding
 - package: github.com/gorilla/feeds
 - package: github.com/leekchan/gtf
 - package: github.com/pborman/uuid
@@ -19,3 +16,9 @@ import:
 - package: github.com/smartystreets/goconvey
   subpackages:
   - convey
+- package: github.com/labstack/echo
+  version: ^2.1.0
+- package: github.com/dgrijalva/jwt-go
+  version: ^3.0.0
+- package: github.com/alecthomas/template
+- package: github.com/alecthomas/units

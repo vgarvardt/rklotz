@@ -8,8 +8,7 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
+	"github.com/labstack/echo"
 	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
 	log "github.com/Sirupsen/logrus"
@@ -46,21 +45,22 @@ type Post struct {
 	Title       string    `form:"title"`
 	Body        string    `form:"body"`
 	Format      string    `form:"format"`
+	Tags        []string  `form:"tags"`
 	HTML        string    `form:"-"`
-	Tags        []string  `form:"-"`
 	Draft       bool      `form:"-"`
 	CreatedAt   time.Time `form:"-"`
 	UpdatedAt   time.Time `form:"-"`
 	PublishedAt time.Time `form:"-"`
 }
 
-func (post *Post) Bind(c *gin.Context) error {
-	c.BindWith(post, binding.Form)
-	post.Path = strings.Trim(post.Path, "/")
-	post.Tags = c.Request.PostForm["tags"]
-
+func (post *Post) Bind(ctx echo.Context) error {
 	var err error
-	if post.PublishedAt, err = time.Parse(time.RFC3339, c.Request.PostFormValue("published_at")); err != nil {
+	if err = ctx.Bind(post); err != nil {
+		return err
+	}
+
+	post.Path = strings.Trim(post.Path, "/")
+	if post.PublishedAt, err = time.Parse(time.RFC3339, ctx.FormValue("published_at")); err != nil {
 		post.PublishedAt = time.Now()
 	}
 
@@ -89,7 +89,7 @@ func (post *Post) Save(draft bool) error {
 	post.UpdatedAt = time.Now()
 	post.ReFormat()
 
-	if err := db.Update(func(tx *bolt.Tx) error {
+	if err := DB.Update(func(tx *bolt.Tx) error {
 		bucketPosts, err := tx.CreateBucketIfNotExists([]byte(BUCKET_POSTS))
 		if err != nil {
 			return err
@@ -126,7 +126,7 @@ func (post *Post) Save(draft bool) error {
 }
 
 func (post *Post) Load(uuid string) error {
-	return db.View(func(tx *bolt.Tx) error {
+	return DB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucket == nil {
 			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))
@@ -140,7 +140,7 @@ func (post *Post) Load(uuid string) error {
 }
 
 func (post *Post) LoadByPath(path string) error {
-	return db.View(func(tx *bolt.Tx) error {
+	return DB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_MAP))
 		if bucket == nil {
 			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_MAP))
@@ -200,7 +200,7 @@ func UpdatePostField(uuid, field, value string) error {
 }
 
 func (post *Post) Delete() error {
-	if err := db.Update(func(tx *bolt.Tx) error {
+	if err := DB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucket == nil {
 			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))

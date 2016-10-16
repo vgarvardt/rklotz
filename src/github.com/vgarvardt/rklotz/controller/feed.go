@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/gorilla/feeds"
 
 	"github.com/vgarvardt/rklotz/app"
@@ -14,36 +15,30 @@ import (
 	"github.com/vgarvardt/rklotz/utils"
 )
 
-func AtomController(c *gin.Context) {
-	feed := feeds.Atom{Feed: getFeed(c)}
+func AtomController(ctx echo.Context) error {
+	feed := feeds.Atom{Feed: getFeed(ctx.Request().(*standard.Request).Request)}
 	atomFeed := feed.AtomFeed()
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
-		c.Abort()
+		return err
 	} else {
-		// tried c.XML(...) but browser detect it as XML,
-		// with this custom code browser detects it as feed
-		c.Writer.Header().Set("Content-Type", "application/xml; charset=utf-8")
-		c.Writer.WriteHeader(http.StatusOK)
-		c.Writer.Write([]byte(atom))
+		return ctx.Blob(http.StatusOK, echo.MIMEApplicationXMLCharsetUTF8, []byte(atom))
 	}
 }
 
-func RssController(c *gin.Context) {
-	feed := feeds.Rss{Feed: getFeed(c)}
+func RssController(ctx echo.Context) error {
+	feed := feeds.Rss{Feed: getFeed(ctx.Request().(*standard.Request).Request)}
 	rssFeed := feed.RssFeed()
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
-		c.Abort()
+		return err
 	} else {
-		c.Writer.Header().Set("Content-Type", "application/xml; charset=utf-8")
-		c.Writer.WriteHeader(http.StatusOK)
-		c.Writer.Write([]byte(rss))
+		return ctx.Blob(http.StatusOK, echo.MIMEApplicationXMLCharsetUTF8, []byte(rss))
 	}
 }
 
-func getFeed(c *gin.Context) *feeds.Feed {
+func getFeed(r *http.Request) *feeds.Feed {
 	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
 
-	rootUrl := app.RootUrl(c.Request)
+	rootUrl := app.RootUrl(r)
 	feed := &feeds.Feed{
 		Title:       config.String("ui.title"),
 		Link:        &feeds.Link{Href: rootUrl.String()},

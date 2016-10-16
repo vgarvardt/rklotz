@@ -3,51 +3,65 @@ package controller
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
 
 	"github.com/vgarvardt/rklotz/model"
+	"net/http"
 )
 
-func FormController(c *gin.Context) {
+const (
+	FORM_VALUE_DELETE = "delete"
+	FORM_VALUE_PREVIEW = "preview"
+	FORM_VALUE_DRAFT = "draft"
+	FORM_VALUE_PUBLISH = "publish"
+)
+
+func FormController(ctx echo.Context) error {
 	post := new(model.Post)
-	uuid := c.Params.ByName("uuid")
+	uuid := ctx.Param("uuid")
 	if len(uuid) > 0 {
 		post.Load(uuid)
 	} else {
 		post.PublishedAt = time.Now()
 	}
-	ctx := gin.H{"post": post}
+	data := map[string]interface{}{
+		"post": post,
+		"formValueDelete": FORM_VALUE_DELETE,
+		"formValuePreview": FORM_VALUE_PREVIEW,
+		"formValueDraft": FORM_VALUE_DRAFT,
+		"formValuePublish": FORM_VALUE_PUBLISH,
+	}
 
-	ctx["formats"] = model.GetAvailableFormats()
-	if c.Request.Method == "POST" {
-		if c.Request.FormValue("op") == "delete" {
+	data["formats"] = model.GetAvailableFormats()
+	if ctx.Request().Method() == http.MethodPost {
+		if ctx.FormValue("op") == FORM_VALUE_DELETE {
 			post.Delete()
 			if post.Draft {
-				redirect(c, "/@/drafts")
+				return ctx.Redirect(http.StatusFound, "/@/drafts")
 			} else {
-				redirect(c, "/@/published")
+				return ctx.Redirect(http.StatusFound, "/@/published")
 			}
-			return
 		} else {
-			post.Bind(c)
-			ctx["post"] = post
+			if err := post.Bind(ctx); err != nil {
+				return err
+			}
+			data["post"] = post
 
-			if c.Request.FormValue("op") == "preview" {
+			if ctx.FormValue("op") == FORM_VALUE_PREVIEW {
 				post.ReFormat()
-				ctx["preview"] = true
-				ctx["post"] = post
+				data["preview"] = true
+				data["post"] = post
 			} else {
 				if formErrors := post.Validate(); len(formErrors) > 0 {
-					ctx["alert_warning"] = "Please fix form values"
-					ctx["errors"] = formErrors
+					data["alert_warning"] = "Please fix form values"
+					data["errors"] = formErrors
 				} else {
-					post.Save(c.Request.FormValue("op") == "draft")
-					redirect(c, "/@/edit/"+post.UUID)
-					return
+					post.Save(ctx.FormValue("op") == FORM_VALUE_DRAFT)
+					return ctx.Redirect(http.StatusFound, "/@/edit/" + post.UUID)
 				}
 			}
 		}
 	}
 
-	render(c, "@/form.html", ctx)
+	return ctx.Render(http.StatusOK, "@/form.html", data)
 }

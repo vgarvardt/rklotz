@@ -43,7 +43,7 @@ func (meta *Meta) init() {
 
 func (meta *Meta) Load() {
 	meta.init()
-	db.View(func(tx *bolt.Tx) error {
+	DB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte([]byte(BUCKET_INDEX)))
 		if bucket != nil {
 			jsonMeta := bucket.Get([]byte(INDEX_META))
@@ -68,7 +68,7 @@ func RebuildIndex() error {
 	var publishedStamps []int
 	postsMap := make(map[int]string)
 
-	if err := db.View(func(tx *bolt.Tx) error {
+	if err := DB.View(func(tx *bolt.Tx) error {
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucketPosts != nil {
 			c := bucketPosts.Cursor()
@@ -92,7 +92,7 @@ func RebuildIndex() error {
 
 	sort.Sort(sort.Reverse(sort.IntSlice(publishedStamps)))
 
-	if err := db.Update(func(tx *bolt.Tx) error {
+	if err := DB.Update(func(tx *bolt.Tx) error {
 		meta := new(Meta)
 		meta.init()
 
@@ -210,7 +210,7 @@ func GetPostsPage(page int) ([]Post, error) {
 	pageKey := fmt.Sprintf("page-%d", page)
 	var posts []Post
 
-	if err := db.View(func(tx *bolt.Tx) error {
+	if err := DB.View(func(tx *bolt.Tx) error {
 		bucketIndex := tx.Bucket([]byte(BUCKET_INDEX))
 		if bucketIndex == nil {
 			panic("Bucket index not found!")
@@ -230,7 +230,7 @@ func GetPostsPage(page int) ([]Post, error) {
 func GetTagPosts(tag string) ([]Post, error) {
 	var posts []Post
 
-	if err := db.View(func(tx *bolt.Tx) error {
+	if err := DB.View(func(tx *bolt.Tx) error {
 		bucketTags := tx.Bucket([]byte(BUCKET_TAGS))
 		if bucketTags == nil {
 			panic("Bucket index not found!")
@@ -247,9 +247,17 @@ func GetTagPosts(tag string) ([]Post, error) {
 	return posts, nil
 }
 
+func MustGetTagPosts(tag string) []Post {
+	if posts, err := GetTagPosts(tag); err != nil {
+		panic(err)
+	} else {
+		return posts
+	}
+}
+
 func AutoCompleteTags(q string) []string {
 	var tags []string
-	db.View(func(tx *bolt.Tx) error {
+	DB.View(func(tx *bolt.Tx) error {
 		bucketTags := tx.Bucket([]byte(BUCKET_TAGS))
 		if bucketTags == nil {
 			return nil
@@ -277,7 +285,7 @@ func getIndexPosts(draft bool) ([]*Post, error) {
 	var createdStamps []int
 	postsMap := make(map[int]int)
 
-	if err := db.View(func(tx *bolt.Tx) error {
+	if err := DB.View(func(tx *bolt.Tx) error {
 		bucketPosts := tx.Bucket([]byte(BUCKET_POSTS))
 		if bucketPosts != nil {
 			c := bucketPosts.Cursor()
@@ -308,6 +316,22 @@ func GetDraftPosts() ([]*Post, error) {
 	return getIndexPosts(true)
 }
 
+func MustGetDraftPosts() []*Post {
+	if posts, err := GetDraftPosts(); err != nil {
+		panic(err)
+	} else {
+		return posts
+	}
+}
+
 func GetPublishedPosts() ([]*Post, error) {
 	return getIndexPosts(false)
+}
+
+func MustGetPublishedPosts() []*Post {
+	if posts, err := GetPublishedPosts(); err != nil {
+		panic(err)
+	} else {
+		return posts
+	}
 }

@@ -142,14 +142,15 @@
 
 	<div class="form-group pull-right">
 		<input type="hidden" name="uuid" value="{{ .post.UUID }}">
-		<button type="submit" class="button secondary" name="op" value="preview">Preview</button>
-		<button type="submit" class="button success" name="op" value="draft">Draft</button>
-		<button type="submit" class="button" name="op" value="publish">Publish</button>
+		<button type="submit" class="button secondary" name="op" value="{{ .formValuePreview }}">Preview</button>
+		<button type="submit" class="button success" name="op" value="{{ .formValueDraft }}">Draft</button>
+		<button type="submit" class="button" name="op" value="{{ .formValuePublish }}">Publish</button>
 	</div>
 
     {{ if .post.UUID }}
 	<div>
-		<button type="submit" class="button alert" name="op" value="delete" onclick="return confirm('Are you sure?');">Delete</button>
+		<button type="submit" class="button alert" name="op" value="{{ .formValueDelete }}"
+				onclick="return confirm('Are you sure?');">Delete</button>
 	</div>
     {{ end }}
 </form>
