@@ -1,5 +1,5 @@
-hash: 7832e14abbd17466585096cc618cf2c62ed828788b8aa171246957f65f1f4016
-updated: 2016-10-16T15:04:24.816209085Z
+hash: dce55a3c96f43dfe8bf436c30cf501465944580f28296021299731c06cf65bb7
+updated: 2016-10-16T17:23:50.276096765Z
 imports:
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
@@ -19,6 +19,17 @@ imports:
   - definition
   - method
   - reference
+- name: github.com/facebookgo/clock
+  version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
+- name: github.com/facebookgo/grace
+  version: 5729e484473f52048578af1b80d0008c7024089b
+  subpackages:
+  - gracehttp
+  - gracenet
+- name: github.com/facebookgo/httpdown
+  version: a3b1354551a26449fbe05f5d855937f6e7acbd71
+- name: github.com/facebookgo/stats
+  version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/gorilla/feeds
   version: 441264de03a8117ed530ae8e049d8f601a33a099
 - name: github.com/labstack/echo

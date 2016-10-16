@@ -22,3 +22,5 @@ import:
   version: ^3.0.0
 - package: github.com/alecthomas/template
 - package: github.com/alecthomas/units
+- package: github.com/facebookgo/grace
+- package: github.com/facebookgo/httpdown

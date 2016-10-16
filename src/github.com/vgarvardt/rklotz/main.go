@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/facebookgo/grace/gracehttp"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
@@ -66,7 +67,10 @@ func main() {
 		e.File("/favicon.ico", fmt.Sprintf("%s/static/images/favicon.ico", app.RootDir()))
 
 		addr := config.String("addr")
+		std := standard.New(addr)
+		std.SetHandler(e)
 		logger.WithField("address", addr).Info("Running...")
-		e.Run(standard.New(addr))
+
+		gracehttp.Serve(std.Server)
 	}
 }
