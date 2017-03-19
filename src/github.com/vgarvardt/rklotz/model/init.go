@@ -5,9 +5,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/boltdb/bolt"
 	log "github.com/Sirupsen/logrus"
-
+	"github.com/boltdb/bolt"
 	"github.com/vgarvardt/rklotz/app"
 	"github.com/vgarvardt/rklotz/svc"
 )

@@ -11,9 +11,9 @@ var logger *log.Logger
 
 func NewLiveLogger() *log.Logger {
 	logger = &log.Logger{
-		Out: os.Stderr,
+		Out:       os.Stderr,
 		Formatter: &log.JSONFormatter{},
-		Level: log.DebugLevel,
+		Level:     log.DebugLevel,
 	}
 
 	return logger

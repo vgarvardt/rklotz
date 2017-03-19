@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
-	log "github.com/Sirupsen/logrus"
 
 	"github.com/vgarvardt/rklotz/app"
 	"github.com/vgarvardt/rklotz/controller"

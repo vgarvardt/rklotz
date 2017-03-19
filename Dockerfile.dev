@@ -1,4 +1,4 @@
-FROM golang:1.7-alpine
+FROM golang:1.8-alpine
 
 # Install base packages
 RUN apk update && apk upgrade && apk add \
@@ -8,14 +8,14 @@ RUN apk update && apk upgrade && apk add \
     nodejs \
     vim
 
-RUN curl https://glide.sh/get | sh
+RUN go get -u github.com/Masterminds/glide
 RUN npm install -g bower
 
-RUN mkdir -p /go/src/github.com/vgarvardt/rklotz
-RUN mkdir -p /data/bin
-RUN mkdir -p /data/var
-RUN mkdir -p /data/templates
-RUN mkdir -p /data/static
+RUN mkdir -p /go/src/github.com/vgarvardt/rklotz \
+    && mkdir -p /data/bin \
+    && mkdir -p /data/var \
+    && mkdir -p /data/templates \
+    && mkdir -p /data/static
 
 WORKDIR /go/src/github.com/vgarvardt/rklotz
 

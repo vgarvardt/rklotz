@@ -10,6 +10,7 @@
     "tests"
   ],
   "dependencies": {
+    "jquery": "^2.2.0",
     "foundation": "~5.5.3",
     "select2": "^4.0.3"
   }

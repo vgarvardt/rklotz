@@ -1,7 +1,7 @@
 {{ define "title" }}{{ .post.Title }}{{ end }}
 
 {{ define "head_extra" }}
-    {{ if .plugins.highlightjs }}{{ template "plugins/highlightjs.html" . }}{{ end }}
+    {{ if .plugins.highlightjs }}{{ template "plugins/highlightjs-css.html" . }}{{ end }}
 {{ end }}
 
 {{ define "content" }}
@@ -19,4 +19,8 @@
 
     {{ if .plugins.disqus }}{{ template "plugins/disqus.html" . }}{{ end }}
 
+{{ end }}
+
+{{ define "foot_extra" }}
+	{{ if .plugins.highlightjs }}{{ template "plugins/highlightjs-js.html" . }}{{ end }}
 {{ end }}

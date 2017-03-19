@@ -10,17 +10,15 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/alecthomas/kingpin.v2"
 	log "github.com/Sirupsen/logrus"
-
 	"github.com/vgarvardt/rklotz/svc"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-
 const (
-	COMMAND_RUN = "run"
+	COMMAND_RUN     = "run"
 	COMMAND_REBUILD = "rebuild"
-	COMMAND_UPDATE = "update"
+	COMMAND_UPDATE  = "update"
 )
 
 var version = "0.0.0-dev"
@@ -32,8 +30,8 @@ var (
 
 	_ = kingpin.Command(COMMAND_REBUILD, "Rebuild index only, do not run web server")
 
-	update = kingpin.Command(COMMAND_UPDATE, "Update post UUID field with new value")
-	updateUUID = update.Arg("UUID", "Post UUID").Required().String()
+	update      = kingpin.Command(COMMAND_UPDATE, "Update post UUID field with new value")
+	updateUUID  = update.Arg("UUID", "Post UUID").Required().String()
 	updateField = update.Arg("field", "Post field name").Required().String()
 	updateValue = update.Arg("value", "Post field value").Required().String()
 

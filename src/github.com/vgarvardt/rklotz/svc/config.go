@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"gopkg.in/ini.v1"
 	log "github.com/Sirupsen/logrus"
+	"gopkg.in/ini.v1"
 )
 
 const ENV_PREFIX = "RKLOTZ_"

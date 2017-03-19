@@ -4,21 +4,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
 	"github.com/labstack/echo"
 	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
-	log "github.com/Sirupsen/logrus"
-
 	"github.com/vgarvardt/rklotz/svc"
 )
 
 const (
 	BUCKET_POSTS = "posts"
-	BUCKET_MAP = "path_map"
+	BUCKET_MAP   = "path_map"
 )
 
 type Format struct {
@@ -32,9 +32,9 @@ func GetAvailableFormats() []Format {
 		{
 			Name:  "md",
 			Title: "MarkDown",
-			Handler: (func(input string) string {
+			Handler: func(input string) string {
 				return string(blackfriday.MarkdownCommon([]byte(input)))
-			}),
+			},
 		},
 	}
 }
@@ -80,6 +80,9 @@ func (post *Post) ReFormat() string {
 
 	// open all links in new tab
 	post.HTML = strings.Replace(post.HTML, `<a href=`, `<a target="_blank" href=`, -1)
+	// fix code class to make highlight.js work
+	re := regexp.MustCompile(`<code class="language-(\w+)">`)
+	post.HTML = re.ReplaceAllString(post.HTML, "<code class=\"$1\">")
 
 	return post.HTML
 }

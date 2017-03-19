@@ -1,18 +1,17 @@
 package controller
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/labstack/echo"
-
 	"github.com/vgarvardt/rklotz/model"
-	"net/http"
 )
 
 const (
-	FORM_VALUE_DELETE = "delete"
+	FORM_VALUE_DELETE  = "delete"
 	FORM_VALUE_PREVIEW = "preview"
-	FORM_VALUE_DRAFT = "draft"
+	FORM_VALUE_DRAFT   = "draft"
 	FORM_VALUE_PUBLISH = "publish"
 )
 
@@ -25,10 +24,10 @@ func FormController(ctx echo.Context) error {
 		post.PublishedAt = time.Now()
 	}
 	data := map[string]interface{}{
-		"post": post,
-		"formValueDelete": FORM_VALUE_DELETE,
+		"post":             post,
+		"formValueDelete":  FORM_VALUE_DELETE,
 		"formValuePreview": FORM_VALUE_PREVIEW,
-		"formValueDraft": FORM_VALUE_DRAFT,
+		"formValueDraft":   FORM_VALUE_DRAFT,
 		"formValuePublish": FORM_VALUE_PUBLISH,
 	}
 
@@ -57,7 +56,7 @@ func FormController(ctx echo.Context) error {
 					data["errors"] = formErrors
 				} else {
 					post.Save(ctx.FormValue("op") == FORM_VALUE_DRAFT)
-					return ctx.Redirect(http.StatusFound, "/@/edit/" + post.UUID)
+					return ctx.Redirect(http.StatusFound, "/@/edit/"+post.UUID)
 				}
 			}
 		}

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"os"
 	"strings"
 	"time"
-	"os"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	"github.com/leekchan/gtf"
-	log "github.com/Sirupsen/logrus"
 )
 
 type renderable struct {
@@ -66,7 +66,8 @@ func Renderer(rootDir, instanceId string) *renderable {
 
 		fmt.Sprintf("%s/templates/plugins/disqus.html", rootDir),
 		fmt.Sprintf("%s/templates/plugins/ga.html", rootDir),
-		fmt.Sprintf("%s/templates/plugins/highlightjs.html", rootDir),
+		fmt.Sprintf("%s/templates/plugins/highlightjs-css.html", rootDir),
+		fmt.Sprintf("%s/templates/plugins/highlightjs-js.html", rootDir),
 		fmt.Sprintf("%s/templates/plugins/yamka.html", rootDir),
 		fmt.Sprintf("%s/templates/plugins/yasha.html", rootDir),
 	}
@@ -85,7 +86,7 @@ func Renderer(rootDir, instanceId string) *renderable {
 	baseTemplate := template.Must(template.New("base.html").Funcs(getTmplFuncMap()).ParseFiles(baseFiles...))
 
 	renderer := &renderable{
-		templates: make(map[string]*template.Template),
+		templates:  make(map[string]*template.Template),
 		instanceId: instanceId,
 	}
 
@@ -98,7 +99,7 @@ func Renderer(rootDir, instanceId string) *renderable {
 		logger.WithFields(
 			log.Fields{"name": tmplName, "path": tmplPath},
 		).Debug("Initializing template")
-		renderer.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath, ))
+		renderer.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
 	return renderer

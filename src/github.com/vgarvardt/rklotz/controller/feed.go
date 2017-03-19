@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/feeds"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
-	"github.com/gorilla/feeds"
-
 	"github.com/vgarvardt/rklotz/app"
 	"github.com/vgarvardt/rklotz/model"
 	"github.com/vgarvardt/rklotz/svc"

@@ -9,15 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/boltdb/bolt"
 	log "github.com/Sirupsen/logrus"
-
+	"github.com/boltdb/bolt"
 	"github.com/vgarvardt/rklotz/svc"
 )
 
 const (
-	BUCKET_INDEX = "index"
-	BUCKET_TAGS = "tags"
+	BUCKET_INDEX   = "index"
+	BUCKET_TAGS    = "tags"
 	BUCKET_TAG_MAP = "tag_map"
 
 	INDEX_META = "meta"
@@ -295,7 +294,7 @@ func getIndexPosts(draft bool) ([]*Post, error) {
 				if post.Draft == draft {
 					posts = append(posts, post)
 					createdStamps = append(createdStamps, int(post.CreatedAt.Unix()))
-					postsMap[createdStamps[len(createdStamps) - 1]] = len(posts) - 1
+					postsMap[createdStamps[len(createdStamps)-1]] = len(posts) - 1
 				}
 			}
 		}
