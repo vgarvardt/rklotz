@@ -60,9 +60,7 @@ func NewLoadedMeta() *Meta {
 }
 
 func RebuildIndex() error {
-	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
-
-	logger.Info("Rebuilding index...")
+	log.Info("Rebuilding index...")
 
 	var publishedStamps []int
 	postsMap := make(map[int]string)
@@ -165,7 +163,7 @@ func RebuildIndex() error {
 		}
 
 		jsonMeta, _ := json.Marshal(meta)
-		logger.WithField("meta", string(jsonMeta)).Debug("Meta data")
+		log.WithField("meta", string(jsonMeta)).Debug("Meta data")
 		if err := bucketIndex.Put([]byte(INDEX_META), []byte(jsonMeta)); err != nil {
 			return err
 		}
@@ -201,7 +199,7 @@ func RebuildIndex() error {
 		return err
 	}
 
-	logger.Info("Index rebuilt!")
+	log.Info("Index rebuilt!")
 	return nil
 }
 

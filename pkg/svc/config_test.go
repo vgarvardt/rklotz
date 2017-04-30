@@ -5,18 +5,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/drgomesp/cargo/container"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func initNullLogger() {
-	Container = container.New()
-	Container.Set(DI_LOGGER, NewNullLogger())
-}
-
 func TestNewIniConfigBaseDoesNotExist(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config path that does not exist", t, func() {
 		baseConfigPath := "/tmp/must-not-exist.ini"
 
@@ -29,8 +21,6 @@ func TestNewIniConfigBaseDoesNotExist(t *testing.T) {
 }
 
 func TestNewIniConfigEnvDoesNotExist(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config that does exist", t, func() {
 		baseConfigPath := "/tmp/~rklotz-ini-base-no-env.ini"
 		dataBase := []byte("debug=false\nui.email=vgarvardt@gmail.com\nui.per_page=10\n")
@@ -56,8 +46,6 @@ func TestNewIniConfigEnvDoesNotExist(t *testing.T) {
 }
 
 func TestNewIniConfigEnvDoesExist(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config that does exist and env config that does exist either", t, func() {
 		var err error
 		baseConfigPath := "/tmp/~rklotz-ini-base-env.ini"
@@ -93,8 +81,6 @@ func TestNewIniConfigEnvDoesExist(t *testing.T) {
 }
 
 func TestNewIniEnvConfigDoesNotExist(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config path that does not exist", t, func() {
 		baseConfigPath := "/tmp/must-not-exist.ini"
 
@@ -107,8 +93,6 @@ func TestNewIniEnvConfigDoesNotExist(t *testing.T) {
 }
 
 func TestNewIniEnvConfigEnvNotSetOrEmpty(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config that does exist", t, func() {
 		configPath := "/tmp/~rklotz-ini-env-config-no-env.ini"
 		dataBase := []byte("debug=false\nui.email=vgarvardt@gmail.com\nui.per_page=10\n")
@@ -138,8 +122,6 @@ func TestNewIniEnvConfigEnvNotSetOrEmpty(t *testing.T) {
 }
 
 func TestNewIniEnvConfigEnvIsSet(t *testing.T) {
-	initNullLogger()
-
 	Convey("Given a config that does exist", t, func() {
 		var err error
 		configPath := "/tmp/~rklotz-ini-env-config.ini"

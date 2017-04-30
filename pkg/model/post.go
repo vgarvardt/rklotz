@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -13,7 +12,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
-	"github.com/vgarvardt/rklotz/pkg/svc"
 )
 
 const (
@@ -122,8 +120,7 @@ func (post *Post) Save(draft bool) error {
 		return err
 	}
 
-	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
-	logger.WithField("UUID", post.UUID).Info("Saved post")
+	log.WithField("UUID", post.UUID).Info("Saved post")
 	go RebuildIndex()
 	return nil
 }
@@ -176,32 +173,6 @@ func (post *Post) Validate() map[string]string {
 	return err
 }
 
-func UpdatePostField(uuid, field, value string) error {
-	post := new(Post)
-	if err := post.Load(uuid); err != nil {
-		return err
-	}
-
-	if len(post.UUID) < 1 {
-		return errors.New("Post could not be loaded")
-	}
-
-	switch {
-	case field == "PublishedAt":
-		var t time.Time
-		var err error
-		if t, err = time.Parse(time.RFC3339, value); err != nil {
-			return errors.New(fmt.Sprintf("Invalid value '%s' for '%s': %v (must be in '%s' format)", value, field, err, time.RFC3339))
-		}
-		post.PublishedAt = t
-		break
-	default:
-		return errors.New(fmt.Sprintf("Unknown field '%s'", field))
-	}
-
-	return post.Save(post.Draft)
-}
-
 func (post *Post) Delete() error {
 	if err := DB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_POSTS))
@@ -218,9 +189,7 @@ func (post *Post) Delete() error {
 		panic(err)
 	}
 
-	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
-
-	logger.WithField("UUID", post.UUID).Info("Removed post")
+	log.WithField("UUID", post.UUID).Info("Removed post")
 	go RebuildIndex()
 	return nil
 }

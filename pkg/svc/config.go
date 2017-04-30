@@ -18,21 +18,19 @@ type Config interface {
 }
 
 func NewIniConfig(baseConfigPath, envConfigPath string) *iniConfig {
-	logger := Container.MustGet(DI_LOGGER).(*log.Logger)
-
 	var config = &iniConfig{}
 	var err error
-	logger.WithField("path", baseConfigPath).Info("Loading base config")
+	log.WithField("path", baseConfigPath).Info("Loading base config")
 	if config.iniFile, err = ini.Load(baseConfigPath); err != nil {
 		panic(err)
 	}
 
-	logger.WithField("path", envConfigPath).Info("Loading env config")
+	log.WithField("path", envConfigPath).Info("Loading env config")
 	if _, err := os.Stat(envConfigPath); os.IsNotExist(err) {
-		logger.WithField("path", envConfigPath).Warn("Env config not found")
+		log.WithField("path", envConfigPath).Warn("Env config not found")
 	} else {
 		if err := config.iniFile.Append(envConfigPath); err != nil {
-			logger.WithField("err", err).Fatal("Failed to append env config")
+			log.WithField("err", err).Fatal("Failed to append env config")
 		}
 	}
 
@@ -40,9 +38,7 @@ func NewIniConfig(baseConfigPath, envConfigPath string) *iniConfig {
 }
 
 func NewIniEnvConfig(configPath, envPrefix string) *iniEnvConfig {
-	logger := Container.MustGet(DI_LOGGER).(*log.Logger)
-
-	logger.WithFields(log.Fields{"path": configPath, "prefix": envPrefix}).Info("Loading ini config for env loader")
+	log.WithFields(log.Fields{"path": configPath, "prefix": envPrefix}).Info("Loading ini config for env loader")
 
 	var config = &iniEnvConfig{envPrefix: envPrefix}
 	config.iniConfig = NewIniConfig(configPath, "")

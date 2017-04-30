@@ -1,5 +1,5 @@
-hash: dce55a3c96f43dfe8bf436c30cf501465944580f28296021299731c06cf65bb7
-updated: 2017-03-19T19:44:43.016663136Z
+hash: 2fb6a0677ab055fd203a2a77d82456a9a283a2950a41038afcaa2ade7cce3468
+updated: 2017-04-30T23:07:13.436497686+02:00
 imports:
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
@@ -69,6 +69,8 @@ imports:
   - convey
   - convey/gotest
   - convey/reporting
+- name: github.com/spf13/cobra
+  version: 0a4540b161984c70bc56a12a7b796cb867d5e39d
 - name: github.com/valyala/bytebufferpool
   version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
 - name: github.com/valyala/fasttemplate

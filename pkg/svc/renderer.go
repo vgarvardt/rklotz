@@ -55,7 +55,6 @@ func (r *renderable) Render(w io.Writer, name string, data interface{}, ctx echo
 
 func Renderer(rootDir, instanceId string) *renderable {
 	config := Container.MustGet(DI_CONFIG).(Config)
-	logger := Container.MustGet(DI_LOGGER).(*log.Logger)
 
 	partials := []string{
 		fmt.Sprintf("%s/templates/%s/partial/alert.html", rootDir, config.String("ui.theme")),
@@ -74,10 +73,10 @@ func Renderer(rootDir, instanceId string) *renderable {
 
 	uiAbout := fmt.Sprintf("%s/var/about.html", rootDir)
 	if _, err := os.Stat(uiAbout); os.IsNotExist(err) {
-		logger.Info("Loading default theme about panel")
+		log.Info("Loading default theme about panel")
 		uiAbout = fmt.Sprintf("%s/templates/%s/partial/about.html", rootDir, config.String("ui.theme"))
 	} else {
-		logger.WithField("path", uiAbout).Info("Loading custom about panel")
+		log.WithField("path", uiAbout).Info("Loading custom about panel")
 	}
 
 	partials = append(partials, uiAbout)
@@ -96,7 +95,7 @@ func Renderer(rootDir, instanceId string) *renderable {
 	} {
 		tmplPath := fmt.Sprintf("%s/templates/%s/%s", rootDir, config.String("ui.theme"), tmplName)
 
-		logger.WithFields(
+		log.WithFields(
 			log.Fields{"name": tmplName, "path": tmplPath},
 		).Debug("Initializing template")
 		renderer.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))

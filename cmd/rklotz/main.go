@@ -18,59 +18,43 @@ import (
 func main() {
 	defer model.DB.Close()
 
-	logger := svc.Container.MustGet(svc.DI_LOGGER).(*log.Logger)
 	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
 
-	switch app.Command() {
-	case app.COMMAND_UPDATE:
-		updateParams := app.GetUpdateParams()
-		logger.WithField("UUID", updateParams.UUID).Info("Trying to update post")
-		if err := model.UpdatePostField(updateParams.UUID, updateParams.Field, updateParams.Value); err != nil {
-			panic(err)
-		}
+	e := echo.New()
+	e.SetDebug(config.Bool("debug"))
 
-	case app.COMMAND_REBUILD:
-		if err := model.RebuildIndex(); err != nil {
-			panic(err)
-		}
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	case app.COMMAND_RUN:
-		e := echo.New()
-		e.SetDebug(config.Bool("debug"))
+	e.SetRenderer(svc.Renderer(app.RootDir(), app.InstanceId()))
 
-		e.Use(middleware.Logger())
-		e.Use(middleware.Recover())
+	e.GET("/", controller.FrontController)
+	e.GET("/tag/:tag", controller.TagController)
+	e.GET("/autocomplete", controller.AutoComplete)
+	e.GET("/*", controller.PostController)
 
-		e.SetRenderer(svc.Renderer(app.RootDir(), app.InstanceId()))
+	feed := e.Group("/feed")
+	feed.GET("/atom", controller.AtomController)
+	feed.GET("/rss", controller.RssController)
 
-		e.GET("/", controller.FrontController)
-		e.GET("/tag/:tag", controller.TagController)
-		e.GET("/autocomplete", controller.AutoComplete)
-		e.GET("/*", controller.PostController)
+	authorized := e.Group("/@", middleware.BasicAuth(func(username, password string) bool {
+		return username == config.String("auth.name") && password == config.String("auth.password")
+	}))
+	authorized.GET("/", controller.AdmFrontController)
+	authorized.GET("/new", controller.FormController)
+	authorized.POST("/new", controller.FormController)
+	authorized.GET("/edit/:uuid", controller.FormController)
+	authorized.POST("/edit/:uuid", controller.FormController)
+	authorized.GET("/drafts", controller.DraftsController)
+	authorized.GET("/published", controller.PublishedController)
 
-		feed := e.Group("/feed")
-		feed.GET("/atom", controller.AtomController)
-		feed.GET("/rss", controller.RssController)
+	e.Static("/static", fmt.Sprintf("%s/static", app.RootDir()))
+	e.File("/favicon.ico", fmt.Sprintf("%s/static/images/favicon.ico", app.RootDir()))
 
-		authorized := e.Group("/@", middleware.BasicAuth(func(username, password string) bool {
-			return username == config.String("auth.name") && password == config.String("auth.password")
-		}))
-		authorized.GET("/", controller.AdmFrontController)
-		authorized.GET("/new", controller.FormController)
-		authorized.POST("/new", controller.FormController)
-		authorized.GET("/edit/:uuid", controller.FormController)
-		authorized.POST("/edit/:uuid", controller.FormController)
-		authorized.GET("/drafts", controller.DraftsController)
-		authorized.GET("/published", controller.PublishedController)
+	addr := config.String("addr")
+	std := standard.New(addr)
+	std.SetHandler(e)
+	log.WithField("address", addr).Info("Running...")
 
-		e.Static("/static", fmt.Sprintf("%s/static", app.RootDir()))
-		e.File("/favicon.ico", fmt.Sprintf("%s/static/images/favicon.ico", app.RootDir()))
-
-		addr := config.String("addr")
-		std := standard.New(addr)
-		std.SetHandler(e)
-		logger.WithField("address", addr).Info("Running...")
-
-		gracehttp.Serve(std.Server)
-	}
+	gracehttp.Serve(std.Server)
 }
