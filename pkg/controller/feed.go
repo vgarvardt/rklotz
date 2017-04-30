@@ -8,10 +8,10 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
-	"github.com/vgarvardt/rklotz/app"
-	"github.com/vgarvardt/rklotz/model"
-	"github.com/vgarvardt/rklotz/svc"
-	"github.com/vgarvardt/rklotz/utils"
+	"github.com/vgarvardt/rklotz/pkg/app"
+	"github.com/vgarvardt/rklotz/pkg/model"
+	"github.com/vgarvardt/rklotz/pkg/svc"
+	"github.com/vgarvardt/rklotz/pkg/utils"
 )
 
 func AtomController(ctx echo.Context) error {

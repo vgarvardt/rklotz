@@ -7,10 +7,9 @@
 ```sh
 $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
-$ brew install fswatch
-$ make init
-$ make test
-$ make serve
+$ make deps
+$ make build
+$ ./dist/rklotz
 ```
 
 Then open `http://127.0.0.1:8080` in your browser.
@@ -60,8 +59,6 @@ Template must have the following structure:
 
 ## TODO
 
-- [x] Config loader as interface in DI container
-- [x] Dockerize development (move from gb to glide)
 - [ ] Dockerize deployment
 - [x] Get config values from os env
 - [ ] Implement Material Design Lite theme
@@ -72,4 +69,4 @@ Template must have the following structure:
 - [ ] Replace raw validation with govalidator - https://github.com/asaskevich/govalidator
 - [ ] Post attachments (at least images) support
 - [ ] Paths history with permanent redirects from old paths to new
-- [ ] SemVer versioning
+- [x] SemVer versioning

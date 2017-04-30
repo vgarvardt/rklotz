@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/vgarvardt/rklotz/model"
+	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
 func DraftsController(ctx echo.Context) error {

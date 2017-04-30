@@ -9,10 +9,10 @@ import (
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/vgarvardt/rklotz/app"
-	"github.com/vgarvardt/rklotz/controller"
-	"github.com/vgarvardt/rklotz/model"
-	"github.com/vgarvardt/rklotz/svc"
+	"github.com/vgarvardt/rklotz/pkg/app"
+	"github.com/vgarvardt/rklotz/pkg/controller"
+	"github.com/vgarvardt/rklotz/pkg/model"
+	"github.com/vgarvardt/rklotz/pkg/svc"
 )
 
 func main() {

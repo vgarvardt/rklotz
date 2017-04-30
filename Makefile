@@ -1,78 +1,48 @@
-APPTAG="rklotz/dev:latest"
-WORKDIR="/go/src/github.com/vgarvardt/rklotz"
-VOLSRC="`pwd`/src:/go/src"
-VOLBIN="`pwd`/bin:/data/bin"
-VOLVAR="`pwd`/var:/data/var"
-VOLTPL="`pwd`/templates:/data/templates"
-VOLSTC="`pwd`/static:/data/static"
-VOLUMES=--volume "${VOLSRC}" --volume "${VOLBIN}" --volume "${VOLVAR}" --volume "${VOLTPL}" --volume "${VOLSTC}"
+NO_COLOR=\033[0m
+OK_COLOR=\033[32;01m
+ERROR_COLOR=\033[31;01m
+WARN_COLOR=\033[33;01m
 
+# The import path is the unique absolute name of your repository.
+# All subpackages should always be imported as relative to it.
+# If you change this, run `make clean`.
+IMPORT_PATH := github.com/vgarvardt/rklotz
+PKG_SRC := $(IMPORT_PATH)/cmd/rklotz
 
-init:
-	@docker build -f ./Dockerfile.dev -t ${APPTAG} .
-	@docker run ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} glide install
-	@docker run ${VOLUMES} --workdir "/data/static" ${APPTAG} bower --allow-root install
+# Space separated patterns of packages to skip in list, test, format.
+IGNORED_PACKAGES := /vendor/
 
-cli:
-	@docker run --interactive --tty ${VOLUMES} --workdir "${WORKDIR}" ${APPTAG} /bin/bash
+.PHONY: all clean deps build
+
+all: clean deps build
+
+deps:
+	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
+	@go get -u github.com/Masterminds/glide
+	@go get -u github.com/golang/lint/golint
+	@glide install
+	@docker run -it --rm -v $(pwd)/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install
 
 build:
-	@echo "Building amd64/linux..."
-	@docker run \
-		${VOLUMES} \
-		--workdir "${WORKDIR}" \
-		${APPTAG} \
-		env GOOS=linux GOARCH=amd64 \
-			go build -ldflags "-X github.com/vgarvardt/rklotz/app.version=`<./VERSION`" -v -o /data/bin/rklotz.linux
-	@echo "Building amd64/darwin..."
-	@docker run \
-		${VOLUMES} \
-		--workdir "${WORKDIR}" \
-		${APPTAG} \
-		env GOOS=darwin GOARCH=amd64 \
-			go build -ldflags "-X github.com/vgarvardt/rklotz/app.version=`<./VERSION`" -v -o /data/bin/rklotz.darwin
-
-run:
-	@docker run --interactive --tty \
-		${VOLUMES} \
-		--workdir "${WORKDIR}" \
-		--publish 8080:8080 \
-		--hostname 127.0.0.1 \
-		--env-file ./env.dev.txt \
-		${APPTAG} \
-		go run main.go --root="/data"
-
-rund:
-	@docker run --detach \
-		${VOLUMES} \
-		--workdir "${WORKDIR}" \
-		--publish 8080:8080 \
-		--hostname 127.0.0.1 \
-		--env-file ./env.dev.txt \
-		${APPTAG} \
-		go run main.go --root="/data"
-
-serve:
-	@make restart
-	@fswatch -o -r ./src/ -r ./templates/ -r ./static/ | xargs -n1 -I{} make restart || make kill
-
-kill:
-	@echo ""
-	@echo ""
-	@echo ""
-	@echo "Trying to kill old instance..."
-	@docker ps | grep ${APPTAG} | awk '{print $$1}' | xargs docker stop || true
-
-restart:
-	@make kill
-	@make rund
+	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
+	/bin/sh -c "PKG_SRC=$(PKG_SRC) VERSION=`cat ./VERSION` ./build/build.sh"
 
 test:
-	@docker run --tty \
-	${VOLUMES} \
-	--workdir "${WORKDIR}" \
-	--env-file ./env.dev.txt \
-	${APPTAG} \
-	/bin/bash -c "go list ./... | grep -v /vendor/ | xargs go test"
+	@/bin/sh -c "./build/test.sh $(allpackages)"
 
-.PHONY: init cli build run rund serve kill restart test
+lint:
+	@echo "$(OK_COLOR)==> Linting... $(NO_COLOR)"
+	@golint $(allpackages)
+
+clean:
+	@echo "$(OK_COLOR)==> Cleaning project$(NO_COLOR)"
+	@go clean
+	@rm -rf bin $GOPATH/bin
+
+# cd into the GOPATH to workaround ./... not following symlinks
+_allpackages = $(shell ( go list ./... 2>&1 1>&3 | \
+    grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)) 1>&2 ) 3>&1 | \
+    grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)))
+
+# memoize allpackages, so that it's executed only once and only if used
+allpackages = $(if $(__allpackages),,$(eval __allpackages := $$(_allpackages)))$(__allpackages)

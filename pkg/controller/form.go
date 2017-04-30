@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"github.com/vgarvardt/rklotz/model"
+	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
 const (

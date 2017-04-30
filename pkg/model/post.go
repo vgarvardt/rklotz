@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
-	"github.com/vgarvardt/rklotz/svc"
+	"github.com/vgarvardt/rklotz/pkg/svc"
 )
 
 const (

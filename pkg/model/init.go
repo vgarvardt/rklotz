@@ -7,8 +7,8 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
-	"github.com/vgarvardt/rklotz/app"
-	"github.com/vgarvardt/rklotz/svc"
+	"github.com/vgarvardt/rklotz/pkg/app"
+	"github.com/vgarvardt/rklotz/pkg/svc"
 )
 
 var DB *bolt.DB

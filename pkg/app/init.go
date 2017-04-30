@@ -11,7 +11,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/vgarvardt/rklotz/svc"
+	"github.com/vgarvardt/rklotz/pkg/svc"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
