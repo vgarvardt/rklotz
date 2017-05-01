@@ -59,7 +59,6 @@ func Renderer(templatesPath string, instanceId string, uiSettings config.UISetti
 		fmt.Sprintf("%s/%s/partial/alert.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/heading.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/info.html", templatesPath, uiSettings.Theme),
-		fmt.Sprintf("%s/%s/partial/nav.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/posts.html", templatesPath, uiSettings.Theme),
 
 		fmt.Sprintf("%s/plugins/disqus.html", templatesPath),
@@ -91,7 +90,7 @@ func Renderer(templatesPath string, instanceId string, uiSettings config.UISetti
 	}
 
 	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
-		tmplPath := fmt.Sprintf("%s/templates/%s/%s", templatesPath, uiSettings.Theme, tmplName)
+		tmplPath := fmt.Sprintf("%s/%s/%s", templatesPath, uiSettings.Theme, tmplName)
 
 		log.WithFields(log.Fields{"name": tmplName, "path": tmplPath}).Debug("Initializing template")
 		renderer.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
