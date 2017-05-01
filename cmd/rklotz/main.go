@@ -2,59 +2,38 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/facebookgo/grace/gracehttp"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
-	"github.com/labstack/echo/middleware"
+	"github.com/spf13/cobra"
+)
 
-	"github.com/vgarvardt/rklotz/pkg/app"
-	"github.com/vgarvardt/rklotz/pkg/controller"
-	"github.com/vgarvardt/rklotz/pkg/model"
-	"github.com/vgarvardt/rklotz/pkg/svc"
+var (
+	version     string
+	versionFlag bool
 )
 
 func main() {
-	defer model.DB.Close()
+	versionString := "rKlotz v" + version
+	cobra.OnInitialize(func() {
+		if versionFlag {
+			fmt.Println(versionString)
+			os.Exit(0)
+		}
 
-	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
+		log.SetFormatter(&log.JSONFormatter{})
+	})
 
-	e := echo.New()
-	e.SetDebug(config.Bool("debug"))
+	var RootCmd = &cobra.Command{
+		Use:   "rklotz",
+		Short: "rKlotz is a simple one-user file-based blog engine.",
+		Long:  versionString + ` rKlotz is a simple one-user file-based blog engine.`,
+		Run:   RunServer,
+	}
+	RootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "Print application version")
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	e.SetRenderer(svc.Renderer(app.RootDir(), app.InstanceId()))
-
-	e.GET("/", controller.FrontController)
-	e.GET("/tag/:tag", controller.TagController)
-	e.GET("/autocomplete", controller.AutoComplete)
-	e.GET("/*", controller.PostController)
-
-	feed := e.Group("/feed")
-	feed.GET("/atom", controller.AtomController)
-	feed.GET("/rss", controller.RssController)
-
-	authorized := e.Group("/@", middleware.BasicAuth(func(username, password string) bool {
-		return username == config.String("auth.name") && password == config.String("auth.password")
-	}))
-	authorized.GET("/", controller.AdmFrontController)
-	authorized.GET("/new", controller.FormController)
-	authorized.POST("/new", controller.FormController)
-	authorized.GET("/edit/:uuid", controller.FormController)
-	authorized.POST("/edit/:uuid", controller.FormController)
-	authorized.GET("/drafts", controller.DraftsController)
-	authorized.GET("/published", controller.PublishedController)
-
-	e.Static("/static", fmt.Sprintf("%s/static", app.RootDir()))
-	e.File("/favicon.ico", fmt.Sprintf("%s/static/images/favicon.ico", app.RootDir()))
-
-	addr := config.String("addr")
-	std := standard.New(addr)
-	std.SetHandler(e)
-	log.WithField("address", addr).Info("Running...")
-
-	gracehttp.Serve(std.Server)
+	if err := RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
 }

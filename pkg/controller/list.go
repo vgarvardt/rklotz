@@ -7,22 +7,6 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
-func DraftsController(ctx echo.Context) error {
-	return ctx.Render(
-		http.StatusOK,
-		"@/drafts.html",
-		map[string]interface{}{"posts": model.MustGetDraftPosts()},
-	)
-}
-
-func PublishedController(ctx echo.Context) error {
-	return ctx.Render(
-		http.StatusOK,
-		"@/published.html",
-		map[string]interface{}{"posts": model.MustGetPublishedPosts()},
-	)
-}
-
 func TagController(ctx echo.Context) error {
 	tag := ctx.Param("tag")
 

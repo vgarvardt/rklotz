@@ -7,10 +7,8 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
 	"github.com/labstack/echo"
-	"github.com/pborman/uuid"
 	"github.com/russross/blackfriday"
 )
 
@@ -85,46 +83,6 @@ func (post *Post) ReFormat() string {
 	return post.HTML
 }
 
-func (post *Post) Save(draft bool) error {
-	post.Draft = draft
-	post.UpdatedAt = time.Now()
-	post.ReFormat()
-
-	if err := DB.Update(func(tx *bolt.Tx) error {
-		bucketPosts, err := tx.CreateBucketIfNotExists([]byte(BUCKET_POSTS))
-		if err != nil {
-			return err
-		}
-
-		if len(post.UUID) < 1 {
-			post.UUID = uuid.New()
-			post.CreatedAt = time.Now()
-		}
-
-		jsonPost, _ := json.Marshal(post)
-		if err := bucketPosts.Put([]byte(post.UUID), []byte(jsonPost)); err != nil {
-			return err
-		}
-
-		bucketMap, err := tx.CreateBucketIfNotExists([]byte(BUCKET_MAP))
-		if err != nil {
-			return err
-		}
-
-		if err := bucketMap.Put([]byte(post.Path), []byte(post.UUID)); err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	log.WithField("UUID", post.UUID).Info("Saved post")
-	go RebuildIndex()
-	return nil
-}
-
 func (post *Post) Load(uuid string) error {
 	return DB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(BUCKET_POSTS))
@@ -171,25 +129,4 @@ func (post *Post) Validate() map[string]string {
 	}
 
 	return err
-}
-
-func (post *Post) Delete() error {
-	if err := DB.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(BUCKET_POSTS))
-		if bucket == nil {
-			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))
-		}
-
-		if err := bucket.Delete([]byte(post.UUID)); err != nil {
-			panic(err)
-		}
-
-		return nil
-	}); err != nil {
-		panic(err)
-	}
-
-	log.WithField("UUID", post.UUID).Info("Removed post")
-	go RebuildIndex()
-	return nil
 }

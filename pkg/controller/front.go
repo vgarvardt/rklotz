@@ -9,7 +9,7 @@ import (
 )
 
 func FrontController(ctx echo.Context) error {
-	meta := model.NewLoadedMeta()
+	meta := model.NewLoadedMeta(10)
 	data := map[string]interface{}{
 		"meta": meta,
 	}
@@ -31,8 +31,4 @@ func FrontController(ctx echo.Context) error {
 	}
 
 	return ctx.Render(http.StatusOK, "index.html", data)
-}
-
-func AdmFrontController(ctx echo.Context) error {
-	return ctx.Redirect(http.StatusTemporaryRedirect, "/@/drafts")
 }

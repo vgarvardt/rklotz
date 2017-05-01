@@ -19,10 +19,3 @@ func PostController(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusNotFound)
 	}
 }
-
-func AutoComplete(ctx echo.Context) error {
-	q := ctx.Request().URL().QueryParam("q")
-	var tags []string
-	tags = append(tags, q)
-	return ctx.JSON(http.StatusOK, map[string]interface{}{"tags": append(tags, model.AutoCompleteTags(q)...)})
-}

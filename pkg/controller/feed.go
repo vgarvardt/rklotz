@@ -2,20 +2,28 @@ package controller
 
 import (
 	_ "encoding/xml"
+	"math"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
-	"github.com/vgarvardt/rklotz/pkg/app"
+	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/model"
-	"github.com/vgarvardt/rklotz/pkg/svc"
-	"github.com/vgarvardt/rklotz/pkg/utils"
 )
 
-func AtomController(ctx echo.Context) error {
-	feed := feeds.Atom{Feed: getFeed(ctx.Request().(*standard.Request).Request)}
+type feedController struct {
+	uiSettings config.UISetting
+	rootUrl    config.RootURL
+}
+
+func NewFeedController(uiSettings config.UISetting, rootUrl config.RootURL) *feedController {
+	return &feedController{uiSettings, rootUrl}
+}
+
+func (c *feedController) AtomHandler(ctx echo.Context) error {
+	feed := feeds.Atom{Feed: c.getFeed(ctx.Request().(*standard.Request).Request)}
 	atomFeed := feed.AtomFeed()
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
 		return err
@@ -24,8 +32,8 @@ func AtomController(ctx echo.Context) error {
 	}
 }
 
-func RssController(ctx echo.Context) error {
-	feed := feeds.Rss{Feed: getFeed(ctx.Request().(*standard.Request).Request)}
+func (c *feedController) RssHandler(ctx echo.Context) error {
+	feed := feeds.Rss{Feed: c.getFeed(ctx.Request().(*standard.Request).Request)}
 	rssFeed := feed.RssFeed()
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
 		return err
@@ -34,19 +42,17 @@ func RssController(ctx echo.Context) error {
 	}
 }
 
-func getFeed(r *http.Request) *feeds.Feed {
-	config := svc.Container.MustGet(svc.DI_CONFIG).(svc.Config)
-
-	rootUrl := app.RootUrl(r)
+func (c *feedController) getFeed(r *http.Request) *feeds.Feed {
+	rootUrl := c.rootUrl.URL(r)
 	feed := &feeds.Feed{
-		Title:       config.String("ui.title"),
+		Title:       c.uiSettings.Title,
 		Link:        &feeds.Link{Href: rootUrl.String()},
-		Description: config.String("ui.description"),
-		Author:      &feeds.Author{Name: config.String("ui.author"), Email: config.String("ui.email")},
-		Copyright:   "This work is copyright © " + config.String("ui.author"),
+		Description: c.uiSettings.Description,
+		Author:      &feeds.Author{Name: c.uiSettings.Author, Email: c.uiSettings.Email},
+		Copyright:   "This work is copyright © " + c.uiSettings.Author,
 	}
 
-	meta := model.NewLoadedMeta()
+	meta := model.NewLoadedMeta(10)
 
 	var items []*feeds.Item
 	if meta.Posts > 0 {
@@ -58,8 +64,8 @@ func getFeed(r *http.Request) *feeds.Feed {
 				Id:          post.UUID,
 				Title:       post.Title,
 				Link:        &feeds.Link{Href: rootUrl.String()},
-				Description: post.Body[0:utils.Min(len(post.Body), 255)],
-				Author:      &feeds.Author{Name: config.String("ui.author"), Email: config.String("ui.email")},
+				Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],
+				Author:      &feeds.Author{Name: c.uiSettings.Author, Email: c.uiSettings.Email},
 				Created:     post.PublishedAt,
 			}
 			items = append(items, item)
