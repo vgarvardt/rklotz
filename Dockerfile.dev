@@ -8,7 +8,7 @@ RUN apk update && apk upgrade && apk add \
     nodejs \
     vim
 
-RUN go get -u github.com/Masterminds/glide
+RUN go get -u github.com/golang/dep/...
 RUN npm install -g bower
 
 RUN mkdir -p /go/src/github.com/vgarvardt/rklotz \
