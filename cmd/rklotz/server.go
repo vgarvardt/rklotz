@@ -4,19 +4,19 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/facebookgo/grace/gracehttp"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
-	"github.com/labstack/echo/middleware"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/middleware"
 	"github.com/spf13/cobra"
 	"github.com/vgarvardt/rklotz/pkg/config"
-	"github.com/vgarvardt/rklotz/pkg/controller"
+	"github.com/vgarvardt/rklotz/pkg/handler"
+	m "github.com/vgarvardt/rklotz/pkg/middleware"
 	"github.com/vgarvardt/rklotz/pkg/model"
-	"github.com/vgarvardt/rklotz/pkg/svc"
+	"github.com/vgarvardt/rklotz/pkg/renderer"
 )
 
 func RunServer(cmd *cobra.Command, args []string) {
@@ -39,31 +39,36 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	log.WithFields(log.Fields{"version": version, "instance": instanceId}).Info("Starting rKlotz...")
 
-	e := echo.New()
-	e.SetDebug(false)
+	htmlRenderer := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI)
+	xmlRenderer := renderer.NewXmlRenderer()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	postsHandler := handler.NewPostsHandler(htmlRenderer)
+	feedHandler := handler.NewFeedHandler(xmlRenderer, appConfig.UI, appConfig.RootURL)
 
-	e.SetRenderer(svc.Renderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI))
+	r := chi.NewRouter()
 
-	e.GET("/", controller.FrontController)
-	e.GET("/tag/:tag", controller.TagController)
-	e.GET("/*", controller.PostController)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.RequestLogger(&m.LoggerRequest{}))
+	r.Use(middleware.Recoverer)
 
-	feedController := controller.NewFeedController(appConfig.UI, appConfig.RootURL)
+	r.Get("/", postsHandler.Front)
+	r.Get("/tag/:tag", postsHandler.Tag)
+	r.NotFound(postsHandler.Post)
 
-	feed := e.Group("/feed")
-	feed.GET("/atom", feedController.AtomHandler)
-	feed.GET("/rss", feedController.RssHandler)
+	r.Route("/feed", func(r chi.Router) {
+		r.Get("/atom", feedHandler.Atom)
+		r.Get("/rss", feedHandler.Rss)
+	})
 
-	e.Static("/static", appConfig.Web.StaticPath)
-	e.File("/favicon.ico", filepath.Join(appConfig.Web.StaticPath, appConfig.UI.Theme, "favicon.ico"))
+	r.FileServer("/static", http.Dir(appConfig.Web.StaticPath))
+	faviconPath := filepath.Join(appConfig.Web.StaticPath, appConfig.UI.Theme, "favicon.ico")
+	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, faviconPath)
+	})
 
 	address := fmt.Sprintf(":%d", appConfig.Web.Port)
-	std := standard.New(address)
-	std.SetHandler(e)
 	log.WithField("address", address).Info("Running...")
 
-	gracehttp.Serve(std.Server)
+	log.Fatal(http.ListenAndServe(address, r))
 }

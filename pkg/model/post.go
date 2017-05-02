@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/labstack/echo"
 	"github.com/russross/blackfriday"
 )
 
@@ -36,31 +35,16 @@ func GetAvailableFormats() []Format {
 }
 
 type Post struct {
-	UUID        string    `form:"uuid"`
-	Path        string    `form:"path"`
-	Title       string    `form:"title"`
-	Body        string    `form:"body"`
-	Format      string    `form:"format"`
-	Tags        []string  `form:"tags"`
-	HTML        string    `form:"-"`
-	Draft       bool      `form:"-"`
-	CreatedAt   time.Time `form:"-"`
-	UpdatedAt   time.Time `form:"-"`
-	PublishedAt time.Time `form:"-"`
-}
-
-func (post *Post) Bind(ctx echo.Context) error {
-	var err error
-	if err = ctx.Bind(post); err != nil {
-		return err
-	}
-
-	post.Path = strings.Trim(post.Path, "/")
-	if post.PublishedAt, err = time.Parse(time.RFC3339, ctx.FormValue("published_at")); err != nil {
-		post.PublishedAt = time.Now()
-	}
-
-	return nil
+	UUID        string
+	Path        string
+	Title       string
+	Body        string
+	Format      string
+	Tags        []string
+	HTML        string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	PublishedAt time.Time
 }
 
 func (post *Post) ReFormat() string {

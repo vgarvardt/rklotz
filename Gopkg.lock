@@ -1,4 +1,4 @@
-memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
+memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"
@@ -17,36 +17,6 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
-
-[[projects]]
-  name = "github.com/dgrijalva/jwt-go"
-  packages = ["."]
-  revision = "d2709f9f1f31ebcda9651b03077758c1f3a0018c"
-  version = "v3.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/clock"
-  packages = ["."]
-  revision = "600d898af40aa09a7a93ecb9265d87b0504b6f03"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/grace"
-  packages = ["gracehttp","gracenet"]
-  revision = "4afe952a37a495ae4ac0c1d4ce5f66e91058d149"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/httpdown"
-  packages = ["."]
-  revision = "a3b1354551a26449fbe05f5d855937f6e7acbd71"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/stats"
-  packages = ["."]
-  revision = "1b76add642e42c6ffba7211ad7b3939ce654526e"
 
 [[projects]]
   name = "github.com/fsnotify/fsnotify"
@@ -79,18 +49,6 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   version = "v1.3.0"
 
 [[projects]]
-  name = "github.com/labstack/echo"
-  packages = [".","context","engine","engine/standard","log","middleware"]
-  revision = "e08070379af60f5b9c0fb5bb2d1527ba9624fe43"
-  version = "v2.2.0"
-
-[[projects]]
-  name = "github.com/labstack/gommon"
-  packages = ["bytes","color","log","random"]
-  revision = "9cedb429ffbe71a32a3ae7c65fd109cb7ae07804"
-  version = "v0.2.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/leekchan/gtf"
   packages = ["."]
@@ -101,18 +59,6 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   packages = ["."]
   revision = "f917359f079a3759162704eaa8caeec3d01d9f91"
   version = "v1.7.2"
-
-[[projects]]
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  revision = "d228849504861217f796da67fae4f6e347643f15"
-  version = "v0.0.7"
-
-[[projects]]
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
-  version = "v0.0.2"
 
 [[projects]]
   branch = "master"
@@ -137,6 +83,12 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/pressly/chi"
+  packages = [".","middleware"]
+  revision = "e6033ea75479391a4bce3918fc119cad31e1cb30"
+  version = "v2.1.0"
 
 [[projects]]
   name = "github.com/russross/blackfriday"
@@ -166,7 +118,7 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "bc8a58ff4dd5c544249f2bf6763302f1914eafea"
+  revision = "8f0203be891287870100e4af46262cdf4a4261d1"
 
 [[projects]]
   branch = "master"
@@ -178,7 +130,7 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   branch = "master"
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "f1d95a35e132e8a1868023a08932b14f0b8b8fcb"
+  revision = "c990990ab4981d84da820b7b00c85139ca150b5f"
 
 [[projects]]
   branch = "master"
@@ -191,24 +143,6 @@ memo = "b937adee18946c87f15a8768301168296e1e131b905723983538098dafae6022"
   packages = ["assert"]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
   version = "v1.1.4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/valyala/bytebufferpool"
-  packages = ["."]
-  revision = "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/valyala/fasttemplate"
-  packages = ["."]
-  revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["context"]
-  revision = "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344"
 
 [[projects]]
   branch = "master"
