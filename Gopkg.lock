@@ -1,10 +1,16 @@
-memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
+memo = "c6929f98ca50fcc560aa51f054c00dbceba08d2b772a00803a9d355591fa0eff"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
   revision = "ba1b36c82c5e05c4f912a88eab0dcd91a171688f"
   version = "v0.11.5"
+
+[[projects]]
+  name = "github.com/asdine/storm"
+  packages = [".","codec","codec/json","index","internal","q"]
+  revision = "e8518cc1200f320e508639491f9390b9c7c37970"
+  version = "v0.8.0"
 
 [[projects]]
   name = "github.com/boltdb/bolt"
@@ -17,6 +23,12 @@ memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/emirpasic/gods"
+  packages = ["containers","trees","trees/redblacktree","utils"]
+  revision = "f6c17b524822278a87e3b3bd809fec33b51f5b46"
+  version = "v1.9.0"
 
 [[projects]]
   name = "github.com/fsnotify/fsnotify"
@@ -34,7 +46,7 @@ memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
   branch = "master"
   name = "github.com/hashicorp/hcl"
   packages = [".","hcl/ast","hcl/parser","hcl/scanner","hcl/strconv","hcl/token","json/parser","json/scanner","json/token"]
-  revision = "7fa7fff964d035e8a162cce3a164b3ad02ad651b"
+  revision = "a4b07c25de5ff55ad3b8936cea69a79a3d95a855"
 
 [[projects]]
   branch = "master"
@@ -118,7 +130,7 @@ memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
   branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "8f0203be891287870100e4af46262cdf4a4261d1"
+  revision = "d83a1d7ccd00a9e1b5d234653837b498b9b27abd"
 
 [[projects]]
   branch = "master"
@@ -130,7 +142,7 @@ memo = "fada84da91c8c13286e170cc9f753cdcdc454be68e8d29e47b53126dbde868b7"
   branch = "master"
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "c990990ab4981d84da820b7b00c85139ca150b5f"
+  revision = "80fe0fb4eba54167e2ccae1c6c950e72abf61b73"
 
 [[projects]]
   branch = "master"

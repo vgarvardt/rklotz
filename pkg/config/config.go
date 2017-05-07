@@ -9,10 +9,12 @@ import (
 )
 
 type AppConfig struct {
-	LogLevel string `envconfig:"LOG_LEVEL"`
+	LogLevel     string `envconfig:"LOG_LEVEL"`
+	PostsDSN     string `envconfig:"POSTS_DSN"`
+	PostsPerPage uint   `envconfig:"POSTS_PERPAGE"`
+	StorageDSN   string `envconfig:"STORAGE_DSN"`
 
 	Web     WebSettings
-	Posts   PostsSettings
 	UI      UISetting
 	RootURL RootURL
 	Plugins Plugins
@@ -22,11 +24,6 @@ type WebSettings struct {
 	Port          int    `envconfig:"WEB_PORT"`
 	StaticPath    string `envconfig:"WEB_STATIC_PATH"`
 	TemplatesPath string `envconfig:"WEB_TEMPLATES_PATH"`
-}
-
-type PostsSettings struct {
-	Path    string `envconfig:"POSTS_PATH"`
-	PerPage uint   `envconfig:"POSTS_PERPAGE"`
 }
 
 type UISetting struct {
@@ -64,13 +61,13 @@ type Plugins struct {
 
 func init() {
 	viper.SetDefault("logLevel", "info")
+	viper.SetDefault("postsDSN", "file:///etc/rklotz/posts")
+	viper.SetDefault("postsPerPage", 10)
+	viper.SetDefault("storageDSN", "boltdb:///tmp/rklotz.db")
 
 	viper.SetDefault("web.port", 8080)
 	viper.SetDefault("web.staticPath", "/etc/rklotz/static")
 	viper.SetDefault("web.templatesPath", "/etc/rklotz/templates")
-
-	viper.SetDefault("posts.path", "/etc/rklotz/posts")
-	viper.SetDefault("posts.perPage", 10)
 
 	viper.SetDefault("ui.theme", "foundation")
 	viper.SetDefault("ui.author", "Vladimir Garvardt")

@@ -14,13 +14,13 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, appConfig.LogLevel, "info")
+	assert.Equal(t, appConfig.PostsDSN, "file:///etc/rklotz/posts")
+	assert.Equal(t, appConfig.PostsPerPage, uint(10))
+	assert.Equal(t, appConfig.StorageDSN, "boltdb:///tmp/rklotz.db")
 
 	assert.Equal(t, appConfig.Web.Port, 8080)
 	assert.Equal(t, appConfig.Web.StaticPath, "/etc/rklotz/static")
 	assert.Equal(t, appConfig.Web.TemplatesPath, "/etc/rklotz/templates")
-
-	assert.Equal(t, appConfig.Posts.Path, "/etc/rklotz/posts")
-	assert.Equal(t, appConfig.Posts.PerPage, uint(10))
 
 	assert.Equal(t, appConfig.UI.Theme, "foundation")
 	assert.Equal(t, appConfig.UI.Author, "Vladimir Garvardt")
@@ -40,13 +40,13 @@ func TestLoad_DefaultValues(t *testing.T) {
 
 func TestLoad(t *testing.T) {
 	os.Setenv("LOG_LEVEL", "debug")
+	os.Setenv("POSTS_DSN", "file:///path/to/posts")
+	os.Setenv("POSTS_PERPAGE", "42")
+	os.Setenv("STORAGE_DSN", "mysql://root@localhost/rklotz")
 
 	os.Setenv("WEB_PORT", "8081")
 	os.Setenv("WEB_STATIC_PATH", "/path/to/static")
 	os.Setenv("WEB_TEMPLATES_PATH", "/path/to/templates")
-
-	os.Setenv("POSTS_PATH", "/path/to/posts")
-	os.Setenv("POSTS_PERPAGE", "42")
 
 	os.Setenv("UI_THEME", "premium")
 	os.Setenv("UI_AUTHOR", "Neal Stephenson")
@@ -67,13 +67,13 @@ func TestLoad(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, appConfig.LogLevel, "debug")
+	assert.Equal(t, appConfig.PostsDSN, "file:///path/to/posts")
+	assert.Equal(t, appConfig.PostsPerPage, uint(42))
+	assert.Equal(t, appConfig.StorageDSN, "mysql://root@localhost/rklotz")
 
 	assert.Equal(t, appConfig.Web.Port, 8081)
 	assert.Equal(t, appConfig.Web.StaticPath, "/path/to/static")
 	assert.Equal(t, appConfig.Web.TemplatesPath, "/path/to/templates")
-
-	assert.Equal(t, appConfig.Posts.Path, "/path/to/posts")
-	assert.Equal(t, appConfig.Posts.PerPage, uint(42))
 
 	assert.Equal(t, appConfig.UI.Theme, "premium")
 	assert.Equal(t, appConfig.UI.Author, "Neal Stephenson")

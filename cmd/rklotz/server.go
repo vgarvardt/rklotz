@@ -17,27 +17,36 @@ import (
 	m "github.com/vgarvardt/rklotz/pkg/middleware"
 	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/repository"
 )
 
 func RunServer(cmd *cobra.Command, args []string) {
 	defer model.DB.Close()
 
 	appConfig, err := config.Load()
-	if nil != err {
-		log.WithError(err).Panic("Failed to load config")
-	}
+	failOnError(err, "Failed to load config")
 
 	logLevel, err := log.ParseLevel(appConfig.LogLevel)
-	if nil != err {
-		log.WithError(err).Panic("Failed to parse log level")
-	}
+	failOnError(err, "Failed to parse log level")
 	log.SetLevel(logLevel)
 
 	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format("2006/01/02 - 15:04:05")))
+	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
 	instanceId := hex.EncodeToString(hasher.Sum(nil))[:5]
 
 	log.WithFields(log.Fields{"version": version, "instance": instanceId}).Info("Starting rKlotz...")
+
+	storage, err := repository.NewStorage(appConfig.StorageDSN, appConfig.PostsPerPage)
+	failOnError(err, "Failed to get storage instance")
+	defer storage.Close()
+
+	loader, err := repository.NewLoader(appConfig.PostsDSN)
+	failOnError(err, "Failed to get loader instance")
+
+	err = loader.Load(storage)
+	failOnError(err, "Failed to load posts")
+	err = storage.Reindex(appConfig.PostsPerPage)
+	failOnError(err, "Failed to reindex storage")
 
 	htmlRenderer := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI)
 	xmlRenderer := renderer.NewXmlRenderer()
@@ -71,4 +80,10 @@ func RunServer(cmd *cobra.Command, args []string) {
 	log.WithField("address", address).Info("Running...")
 
 	log.Fatal(http.ListenAndServe(address, r))
+}
+
+func failOnError(err error, msg string) {
+	if nil != err {
+		log.WithError(err).Panic(msg)
+	}
 }

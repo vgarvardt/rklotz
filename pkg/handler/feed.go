@@ -60,7 +60,7 @@ func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
 		for _, post := range posts {
 			rootUrl.Path = post.Path
 			item := &feeds.Item{
-				Id:          post.UUID,
+				Id:          post.ID,
 				Title:       post.Title,
 				Link:        &feeds.Link{Href: rootUrl.String()},
 				Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],

@@ -1,8 +1,12 @@
 package model
 
 import (
+	"crypto/sha1"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -12,59 +16,89 @@ import (
 )
 
 const (
+	postMetaSeparator = "+++"
+)
+
+const (
 	BUCKET_POSTS = "posts"
 	BUCKET_MAP   = "path_map"
 )
 
-type Format struct {
-	Name    string
-	Title   string
-	Handler func(string) string
-}
+var (
+	ErrorUnknownFormat    = errors.New("Unknown post format")
+	ErrorBadPostStructure = errors.New("Bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaSeparator)
+	ErrorBadMetaStructure = errors.New("Bad post meta structure, must have the following lines: post title, publishing date, post tags")
+)
 
-func GetAvailableFormats() []Format {
-	return []Format{
-		{
-			Name:  "md",
-			Title: "MarkDown",
-			Handler: func(input string) string {
-				return string(blackfriday.MarkdownCommon([]byte(input)))
-			},
-		},
-	}
+type formatHandler func(input string) string
+
+var formatsMap map[string]formatHandler = map[string]formatHandler{
+	"md": func(input string) string {
+		html := string(blackfriday.MarkdownCommon([]byte(input)))
+		// open all links in new tab
+		html = strings.Replace(html, `<a href=`, `<a target="_blank" href=`, -1)
+		// fix code class to make highlight.js work
+		re := regexp.MustCompile(`<code class="language-(\w+)">`)
+		html = re.ReplaceAllString(html, "<code class=\"$1\">")
+
+		return html
+	},
 }
 
 type Post struct {
-	UUID        string
-	Path        string
+	Path        string `storm:"id"`
+	ID          string `storm:"unique"`
 	Title       string
+	PublishedAt time.Time `storm:"index"`
+	Tags        []string  `storm:"index"`
 	Body        string
 	Format      string
-	Tags        []string
 	HTML        string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	PublishedAt time.Time
 }
 
-func (post *Post) ReFormat() string {
-	post.HTML = post.Body
+func NewPostFromFile(basePath, postPath string) (*Post, error) {
+	post := &Post{Path: postPath[len(basePath) : len(postPath)-len(filepath.Ext(postPath))]}
 
-	formats := GetAvailableFormats()
-	for i := 0; i < len(formats); i++ {
-		if formats[i].Name == post.Format {
-			post.HTML = formats[i].Handler(post.Body)
-			break
-		}
+	fileContents, err := ioutil.ReadFile(postPath)
+	if err != nil {
+		return nil, err
 	}
 
-	// open all links in new tab
-	post.HTML = strings.Replace(post.HTML, `<a href=`, `<a target="_blank" href=`, -1)
-	// fix code class to make highlight.js work
-	re := regexp.MustCompile(`<code class="language-(\w+)">`)
-	post.HTML = re.ReplaceAllString(post.HTML, "<code class=\"$1\">")
+	postParts := strings.SplitN(string(fileContents), postMetaSeparator, 2)
+	if len(postParts) != 2 {
+		return nil, ErrorBadPostStructure
+	}
 
-	return post.HTML
+	postMeta := strings.Split(strings.TrimSpace(postParts[0]), "\n")
+	if len(postMeta) < 3 {
+		return nil, ErrorBadMetaStructure
+	}
+
+	post.Title = postMeta[0]
+
+	post.PublishedAt, err = time.Parse(time.RFC822Z, postMeta[1])
+	if nil != err {
+		return nil, err
+	}
+
+	post.Tags = strings.Split(postMeta[2], ",")
+	for i, tag := range post.Tags {
+		post.Tags[i] = strings.TrimSpace(tag)
+	}
+
+	post.Body = strings.TrimSpace(postParts[1])
+	post.Format = strings.ToLower(filepath.Ext(postPath)[1:])
+	if handler, ok := formatsMap[post.Format]; ok {
+		post.HTML = handler(post.Body)
+	} else {
+		return nil, ErrorUnknownFormat
+	}
+
+	h := sha1.New()
+	h.Write([]byte(post.Path))
+	post.ID = fmt.Sprintf("%x", h.Sum(nil))
+
+	return post, nil
 }
 
 func (post *Post) Load(uuid string) error {
@@ -91,26 +125,4 @@ func (post *Post) LoadByPath(path string) error {
 		postUUID := bucket.Get([]byte(path))
 		return post.Load(string(postUUID))
 	})
-}
-
-func (post *Post) Validate() map[string]string {
-	var err map[string]string = make(map[string]string)
-
-	if strings.TrimSpace(post.Title) == "" {
-		err["Title"] = "Title can not be empty"
-	}
-
-	if strings.TrimSpace(post.Body) == "" {
-		err["Body"] = "Body can not be empty"
-	}
-
-	if strings.TrimSpace(post.Format) == "" {
-		err["Format"] = "Format can not be empty"
-	}
-
-	if strings.TrimSpace(post.Path) == "" {
-		err["Path"] = "Path can not be empty"
-	}
-
-	return err
 }

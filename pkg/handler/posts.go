@@ -60,7 +60,7 @@ func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	post := new(model.Post)
 	post.LoadByPath(strings.Trim(fmt.Sprintf("%v", r.URL.Path), "/"))
 
-	if len(post.UUID) > 0 {
+	if len(post.Path) > 0 {
 		tmplData := renderer.HTMLRendererData(r, "index.html", map[string]interface{}{"post": post})
 		h.renderer.Render(w, http.StatusOK, tmplData)
 	} else {
