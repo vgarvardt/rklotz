@@ -2,7 +2,6 @@ package model
 
 import (
 	"crypto/sha1"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,17 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/boltdb/bolt"
 	"github.com/russross/blackfriday"
 )
 
 const (
 	postMetaSeparator = "+++"
-)
-
-const (
-	BUCKET_POSTS = "posts"
-	BUCKET_MAP   = "path_map"
 )
 
 var (
@@ -99,30 +92,4 @@ func NewPostFromFile(basePath, postPath string) (*Post, error) {
 	post.ID = fmt.Sprintf("%x", h.Sum(nil))
 
 	return post, nil
-}
-
-func (post *Post) Load(uuid string) error {
-	return DB.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(BUCKET_POSTS))
-		if bucket == nil {
-			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_POSTS))
-		}
-
-		jsonPost := bucket.Get([]byte(uuid))
-		json.Unmarshal(jsonPost, &post)
-
-		return nil
-	})
-}
-
-func (post *Post) LoadByPath(path string) error {
-	return DB.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(BUCKET_MAP))
-		if bucket == nil {
-			panic(fmt.Sprintf("Bucket %s not found!", BUCKET_MAP))
-		}
-
-		postUUID := bucket.Get([]byte(path))
-		return post.Load(string(postUUID))
-	})
 }

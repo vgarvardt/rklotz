@@ -15,14 +15,11 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"
 	m "github.com/vgarvardt/rklotz/pkg/middleware"
-	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
 	"github.com/vgarvardt/rklotz/pkg/repository"
 )
 
 func RunServer(cmd *cobra.Command, args []string) {
-	defer model.DB.Close()
-
 	appConfig, err := config.Load()
 	failOnError(err, "Failed to load config")
 
@@ -52,7 +49,7 @@ func RunServer(cmd *cobra.Command, args []string) {
 	xmlRenderer := renderer.NewXmlRenderer()
 
 	postsHandler := handler.NewPostsHandler(htmlRenderer)
-	feedHandler := handler.NewFeedHandler(xmlRenderer, appConfig.UI, appConfig.RootURL)
+	feedHandler := handler.NewFeedHandler(storage, xmlRenderer, appConfig.UI, appConfig.RootURL)
 
 	r := chi.NewRouter()
 

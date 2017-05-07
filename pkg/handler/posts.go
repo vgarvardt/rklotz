@@ -1,22 +1,22 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/pressly/chi"
 	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/repository"
 )
 
 type PostsHandler struct {
+	storage  repository.Storage
 	renderer renderer.Renderer
 }
 
-func NewPostsHandler(renderer renderer.Renderer) *PostsHandler {
-	return &PostsHandler{renderer}
+func NewPostsHandler(storage repository.Storage, renderer renderer.Renderer) *PostsHandler {
+	return &PostsHandler{storage, renderer}
 }
 
 func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
@@ -57,13 +57,14 @@ func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
-	post := new(model.Post)
-	post.LoadByPath(strings.Trim(fmt.Sprintf("%v", r.URL.Path), "/"))
+	post, err := h.storage.FindByPath(r.URL.Path)
 
-	if len(post.Path) > 0 {
+	if err != nil {
+		code := map[bool]int{true: http.StatusNotFound, false: http.StatusInternalServerError}
+		w.WriteHeader(code[err == repository.ErrorNotFound])
+		w.Write([]byte(err.Error()))
+	} else {
 		tmplData := renderer.HTMLRendererData(r, "index.html", map[string]interface{}{"post": post})
 		h.renderer.Render(w, http.StatusOK, tmplData)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
 	}
 }

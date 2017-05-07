@@ -7,18 +7,19 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/vgarvardt/rklotz/pkg/config"
-	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/repository"
 )
 
 type FeedHandler struct {
+	storage    repository.Storage
 	renderer   renderer.Renderer
 	uiSettings config.UISetting
 	rootUrl    config.RootURL
 }
 
-func NewFeedHandler(renderer renderer.Renderer, uiSettings config.UISetting, rootUrl config.RootURL) *FeedHandler {
-	return &FeedHandler{renderer, uiSettings, rootUrl}
+func NewFeedHandler(storage repository.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootUrl config.RootURL) *FeedHandler {
+	return &FeedHandler{storage, renderer, uiSettings, rootUrl}
 }
 
 func (h *FeedHandler) Atom(w http.ResponseWriter, r *http.Request) {
@@ -51,24 +52,20 @@ func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
 		Copyright:   "This work is copyright © " + h.uiSettings.Author,
 	}
 
-	meta := model.NewLoadedMeta(10)
-
 	var items []*feeds.Item
-	if meta.Posts > 0 {
-		posts, _ := model.GetPostsPage(0)
+	posts, _ := h.storage.ListAll(0)
 
-		for _, post := range posts {
-			rootUrl.Path = post.Path
-			item := &feeds.Item{
-				Id:          post.ID,
-				Title:       post.Title,
-				Link:        &feeds.Link{Href: rootUrl.String()},
-				Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],
-				Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
-				Created:     post.PublishedAt,
-			}
-			items = append(items, item)
+	for _, post := range posts {
+		rootUrl.Path = post.Path
+		item := &feeds.Item{
+			Id:          post.ID,
+			Title:       post.Title,
+			Link:        &feeds.Link{Href: rootUrl.String()},
+			Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],
+			Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
+			Created:     post.PublishedAt,
 		}
+		items = append(items, item)
 	}
 
 	if len(items) > 0 {
