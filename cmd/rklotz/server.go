@@ -48,7 +48,7 @@ func RunServer(cmd *cobra.Command, args []string) {
 	htmlRenderer := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI)
 	xmlRenderer := renderer.NewXmlRenderer()
 
-	postsHandler := handler.NewPostsHandler(htmlRenderer)
+	postsHandler := handler.NewPostsHandler(storage, htmlRenderer)
 	feedHandler := handler.NewFeedHandler(storage, xmlRenderer, appConfig.UI, appConfig.RootURL)
 
 	r := chi.NewRouter()

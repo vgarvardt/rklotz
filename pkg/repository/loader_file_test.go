@@ -43,6 +43,14 @@ func (s *mockStorage) Close() error {
 	return nil
 }
 
+func (s *mockStorage) Meta() *model.Meta {
+	return &model.Meta{
+		Posts:   uint(len(s.saveCallParams)),
+		PerPage: 0,
+		Pages:   0,
+	}
+}
+
 func TestFileLoader_Load(t *testing.T) {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)

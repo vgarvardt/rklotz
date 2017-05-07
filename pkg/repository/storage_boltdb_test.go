@@ -59,6 +59,7 @@ func loadTestPosts(t *testing.T, storage Storage) {
 
 	err = fileLoader.Load(storage)
 	assert.NoError(t, err)
+	assert.Equal(t, uint(2), storage.Meta().Posts)
 }
 
 func TestBoltDBStorage_FindByPath(t *testing.T) {
@@ -90,6 +91,7 @@ func TestBoltDBStorage_ListAll_10(t *testing.T) {
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
+	assert.Equal(t, uint(1), storage.Meta().Pages)
 
 	posts, err := storage.ListAll(0)
 	assert.NoError(t, err)
@@ -110,6 +112,7 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
+	assert.Equal(t, uint(2), storage.Meta().Pages)
 
 	posts, err := storage.ListAll(0)
 	assert.NoError(t, err)

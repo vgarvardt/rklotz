@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"math"
 	"os"
 	"path/filepath"
 
@@ -10,8 +11,10 @@ import (
 )
 
 type BoltDBStorage struct {
-	db           *storm.DB
-	path         string
+	db   *storm.DB
+	path string
+
+	postsCount   uint
 	postsPerPage uint
 }
 
@@ -43,7 +46,11 @@ func NewBoltDBStorage(path string, postsPerPage uint) (*BoltDBStorage, error) {
 }
 
 func (s *BoltDBStorage) Save(post *model.Post) error {
-	return s.db.Save(post)
+	err := s.db.Save(post)
+	if nil == err {
+		s.postsCount++
+	}
+	return err
 }
 
 func (s *BoltDBStorage) Reindex(postsPerPage uint) error {
@@ -92,6 +99,14 @@ func (s *BoltDBStorage) Close() error {
 		return err
 	}
 	return s.remove()
+}
+
+func (s *BoltDBStorage) Meta() *model.Meta {
+	return &model.Meta{
+		Posts:   s.postsCount,
+		PerPage: s.postsPerPage,
+		Pages:   uint(math.Floor(float64(s.postsCount) / float64(s.postsPerPage))),
+	}
 }
 
 func (s *BoltDBStorage) remove() error {

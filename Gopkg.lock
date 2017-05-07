@@ -1,4 +1,4 @@
-memo = "c6929f98ca50fcc560aa51f054c00dbceba08d2b772a00803a9d355591fa0eff"
+memo = "03a7518b0baf7a76d6ba1bb50a745586fc7376e426b1aec1712bcfd11eea8980"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"

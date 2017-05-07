@@ -23,6 +23,8 @@ type Storage interface {
 	ListAll(page uint) ([]*model.Post, error)
 	ListTag(tag string, page uint) ([]*model.Post, error)
 	Close() error
+
+	Meta() *model.Meta
 }
 
 func NewStorage(dsn string, postsPerPage uint) (Storage, error) {
