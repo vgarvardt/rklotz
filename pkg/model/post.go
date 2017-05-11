@@ -43,7 +43,7 @@ type Post struct {
 	ID          string `storm:"unique"`
 	Title       string
 	PublishedAt time.Time `storm:"index"`
-	Tags        []string  `storm:"index"`
+	Tags        []string
 	Body        string
 	Format      string
 	HTML        string

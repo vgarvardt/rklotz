@@ -12,10 +12,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getFilePath() string {
+func getRandomHash(length int) string {
 	hasher := md5.New()
 	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
-	return fmt.Sprintf("/tmp/rklotz-test.%s.db", hex.EncodeToString(hasher.Sum(nil))[:5])
+	return hex.EncodeToString(hasher.Sum(nil))[:length]
+}
+
+func getFilePath() string {
+	return fmt.Sprintf("/tmp/rklotz-test.%s.db", getRandomHash(5))
 }
 
 func fileExists(path string) bool {
@@ -36,13 +40,13 @@ func TestNewBoltDBStorage(t *testing.T) {
 	assert.False(t, fileExists(dbFilePath))
 }
 
-func TestBoltDBStorage_Reindex(t *testing.T) {
+func TestBoltDBStorage_Finalize(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	assert.NoError(t, err)
 	defer storage.Close()
 
-	err = storage.Reindex(10)
+	err = storage.Finalize()
 	assert.NoError(t, err)
 }
 
@@ -130,21 +134,62 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListTag_10(t *testing.T) {
-	//dbFilePath := getFilePath()
-	//storage, err := NewBoltDBStorage(dbFilePath, 10)
-	//assert.NoError(t, err)
-	//defer storage.Close()
-	//
-	//loadTestPosts(t, storage)
-	//
-	//posts, err := storage.ListTag("test post", 0)
-	//assert.NoError(t, err)
-	//assert.Equal(t, 2, len(posts))
-	//
-	//assert.Equal(t, "/nested/nested-path", posts[0].Path)
-	//assert.Equal(t, "/hello-world", posts[1].Path)
-	//
-	//posts, err = storage.ListAll(1)
-	//assert.NoError(t, err)
-	//assert.Equal(t, 0, len(posts))
+	dbFilePath := getFilePath()
+	storage, err := NewBoltDBStorage(dbFilePath, 10)
+	assert.NoError(t, err)
+	defer storage.Close()
+
+	loadTestPosts(t, storage)
+
+	tag := "test post"
+
+	posts, err := storage.ListTag(tag, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(posts))
+
+	assert.Equal(t, "/nested/nested-path", posts[0].Path)
+	assert.Equal(t, "/hello-world", posts[1].Path)
+
+	posts, err = storage.ListTag(tag, 1)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(posts))
+}
+
+func TestBoltDBStorage_ListTag_1(t *testing.T) {
+	dbFilePath := getFilePath()
+	storage, err := NewBoltDBStorage(dbFilePath, 1)
+	assert.NoError(t, err)
+	defer storage.Close()
+
+	loadTestPosts(t, storage)
+
+	tag := "test post"
+
+	posts, err := storage.ListTag(tag, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(posts))
+	assert.Equal(t, "/nested/nested-path", posts[0].Path)
+
+	posts, err = storage.ListTag(tag, 1)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(posts))
+	assert.Equal(t, "/hello-world", posts[0].Path)
+
+	posts, err = storage.ListTag(tag, 2)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(posts))
+}
+
+func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
+	dbFilePath := getFilePath()
+	storage, err := NewBoltDBStorage(dbFilePath, 1)
+	assert.NoError(t, err)
+	defer storage.Close()
+
+	loadTestPosts(t, storage)
+
+	tag := getRandomHash(10)
+	_, err = storage.ListTag(tag, 0)
+	assert.Error(t, err)
+	assert.Equal(t, ErrorNotFound, err)
 }

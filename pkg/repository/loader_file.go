@@ -34,5 +34,9 @@ func (l *FileLoader) Load(storage Storage) error {
 		}
 		return nil
 	})
-	return err
+	if err != nil {
+		return err
+	}
+
+	return storage.Finalize()
 }

@@ -13,12 +13,12 @@ const (
 
 var (
 	ErrorUnknownStorageType = errors.New("Uknonwn storage type")
-	ErrorNotFound           = errors.New("Post not found")
+	ErrorNotFound           = errors.New("Record not found")
 )
 
 type Storage interface {
 	Save(post *model.Post) error
-	Reindex(postsPerPage uint) error
+	Finalize() error
 	FindByPath(path string) (*model.Post, error)
 	ListAll(page uint) ([]*model.Post, error)
 	ListTag(tag string, page uint) ([]*model.Post, error)

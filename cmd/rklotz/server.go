@@ -42,8 +42,6 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	err = loader.Load(storage)
 	failOnError(err, "Failed to load posts")
-	err = storage.Reindex(appConfig.PostsPerPage)
-	failOnError(err, "Failed to reindex storage")
 
 	htmlRenderer := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI)
 	xmlRenderer := renderer.NewXmlRenderer()

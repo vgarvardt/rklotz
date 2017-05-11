@@ -10,9 +10,12 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
+const tagsNode = "__rklotz_tags"
+
 type BoltDBStorage struct {
 	db   *storm.DB
 	path string
+	tags storm.Node
 
 	postsCount   uint
 	postsPerPage uint
@@ -38,22 +41,49 @@ func NewBoltDBStorage(path string, postsPerPage uint) (*BoltDBStorage, error) {
 		return nil, err
 	}
 
+	instance.tags = instance.db.From(tagsNode)
+
 	// Initialize buckets and indexes before saving an object
 	// Useful when starting your application
 	err = instance.db.Init(&model.Post{})
+	if nil != err {
+		return nil, err
+	}
+	err = instance.tags.Init(&model.Tag{})
+	if nil != err {
+		return nil, err
+	}
 
-	return instance, err
+	return instance, nil
 }
 
 func (s *BoltDBStorage) Save(post *model.Post) error {
 	err := s.db.Save(post)
-	if nil == err {
-		s.postsCount++
+	if nil != err {
+		return err
 	}
-	return err
+
+	for i := range post.Tags {
+		var tag model.Tag
+		err := s.tags.One("Tag", post.Tags[i], &tag)
+		if err == storm.ErrNotFound {
+			tag = model.Tag{Tag: post.Tags[i], Paths: []string{}}
+		} else if nil != err {
+			return err
+		}
+
+		tag.Paths = append(tag.Paths, post.Path)
+		err = s.tags.Save(&tag)
+		if nil != err {
+			return err
+		}
+	}
+
+	s.postsCount++
+	return nil
 }
 
-func (s *BoltDBStorage) Reindex(postsPerPage uint) error {
+func (s *BoltDBStorage) Finalize() error {
 	return nil
 }
 
@@ -76,13 +106,18 @@ func (s *BoltDBStorage) ListAll(page uint) ([]*model.Post, error) {
 }
 
 func (s *BoltDBStorage) ListTag(tag string, page uint) ([]*model.Post, error) {
-	// TODO: does not work, need to implement tag-posts map in separate bucket
+	var tagObject model.Tag
+
+	err := s.tags.One("Tag", tag, &tagObject)
+	if err == storm.ErrNotFound {
+		return nil, ErrorNotFound
+	}
+
 	var posts []*model.Post
-
 	offset := int(page * s.postsPerPage)
-	query := s.db.Select(q.Eq("Tags", tag)).Limit(int(s.postsPerPage)).Skip(offset).OrderBy("PublishedAt").Reverse()
-	err := query.Find(&posts)
+	query := s.db.Select(q.In("Path", tagObject.Paths)).Limit(int(s.postsPerPage)).Skip(offset).OrderBy("PublishedAt").Reverse()
 
+	err = query.Find(&posts)
 	if err == storm.ErrNotFound {
 		return []*model.Post{}, nil
 	}
@@ -105,7 +140,7 @@ func (s *BoltDBStorage) Meta() *model.Meta {
 	return &model.Meta{
 		Posts:   s.postsCount,
 		PerPage: s.postsPerPage,
-		Pages:   uint(math.Floor(float64(s.postsCount) / float64(s.postsPerPage))),
+		Pages:   uint(math.Ceil(float64(s.postsCount) / float64(s.postsPerPage))),
 	}
 }
 

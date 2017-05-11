@@ -23,7 +23,7 @@ func (s *mockStorage) Save(post *model.Post) error {
 	return s.saveCallResult[currentCall]
 }
 
-func (s *mockStorage) Reindex(postsPerPage uint) error {
+func (s *mockStorage) Finalize() error {
 	return nil
 }
 
