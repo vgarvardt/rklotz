@@ -11,7 +11,7 @@ import (
 type AppConfig struct {
 	LogLevel     string `envconfig:"LOG_LEVEL"`
 	PostsDSN     string `envconfig:"POSTS_DSN"`
-	PostsPerPage uint   `envconfig:"POSTS_PERPAGE"`
+	PostsPerPage int    `envconfig:"POSTS_PERPAGE"`
 	StorageDSN   string `envconfig:"STORAGE_DSN"`
 
 	Web     WebSettings

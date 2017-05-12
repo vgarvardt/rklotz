@@ -1,7 +1,7 @@
 package model
 
 type Meta struct {
-	Posts   uint
-	PerPage uint
-	Pages   uint
+	Posts   int
+	PerPage int
+	Pages   int
 }

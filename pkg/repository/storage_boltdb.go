@@ -17,11 +17,11 @@ type BoltDBStorage struct {
 	path string
 	tags storm.Node
 
-	postsCount   uint
-	postsPerPage uint
+	postsCount   int
+	postsPerPage int
 }
 
-func NewBoltDBStorage(path string, postsPerPage uint) (*BoltDBStorage, error) {
+func NewBoltDBStorage(path string, postsPerPage int) (*BoltDBStorage, error) {
 	var err error
 
 	instance := &BoltDBStorage{path: path, postsPerPage: postsPerPage}
@@ -98,14 +98,14 @@ func (s *BoltDBStorage) FindByPath(path string) (*model.Post, error) {
 	return &post, err
 }
 
-func (s *BoltDBStorage) ListAll(page uint) ([]*model.Post, error) {
+func (s *BoltDBStorage) ListAll(page int) ([]*model.Post, error) {
 	var posts []*model.Post
 	offset := int(page * s.postsPerPage)
-	err := s.db.AllByIndex("PublishedAt", &posts, storm.Limit(int(s.postsPerPage)), storm.Skip(offset), storm.Reverse())
+	err := s.db.AllByIndex("PublishedAt", &posts, storm.Limit(s.postsPerPage), storm.Skip(offset), storm.Reverse())
 	return posts, err
 }
 
-func (s *BoltDBStorage) ListTag(tag string, page uint) ([]*model.Post, error) {
+func (s *BoltDBStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	var tagObject model.Tag
 
 	err := s.tags.One("Tag", tag, &tagObject)
@@ -115,7 +115,7 @@ func (s *BoltDBStorage) ListTag(tag string, page uint) ([]*model.Post, error) {
 
 	var posts []*model.Post
 	offset := int(page * s.postsPerPage)
-	query := s.db.Select(q.In("Path", tagObject.Paths)).Limit(int(s.postsPerPage)).Skip(offset).OrderBy("PublishedAt").Reverse()
+	query := s.db.Select(q.In("Path", tagObject.Paths)).Limit(s.postsPerPage).Skip(offset).OrderBy("PublishedAt").Reverse()
 
 	err = query.Find(&posts)
 	if err == storm.ErrNotFound {
@@ -140,7 +140,22 @@ func (s *BoltDBStorage) Meta() *model.Meta {
 	return &model.Meta{
 		Posts:   s.postsCount,
 		PerPage: s.postsPerPage,
-		Pages:   uint(math.Ceil(float64(s.postsCount) / float64(s.postsPerPage))),
+		Pages:   int(math.Ceil(float64(s.postsCount) / float64(s.postsPerPage))),
+	}
+}
+
+func (s *BoltDBStorage) TagMeta(tag string) *model.Meta {
+	var tagObject model.Tag
+
+	err := s.tags.One("Tag", tag, &tagObject)
+	if err != nil {
+		return &model.Meta{}
+	}
+
+	return &model.Meta{
+		Posts:   len(tagObject.Paths),
+		PerPage: s.postsPerPage,
+		Pages:   int(math.Ceil(float64(len(tagObject.Paths)) / float64(s.postsPerPage))),
 	}
 }
 

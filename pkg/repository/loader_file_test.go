@@ -31,11 +31,11 @@ func (s *mockStorage) FindByPath(path string) (*model.Post, error) {
 	return nil, nil
 }
 
-func (s *mockStorage) ListAll(page uint) ([]*model.Post, error) {
+func (s *mockStorage) ListAll(page int) ([]*model.Post, error) {
 	return nil, nil
 }
 
-func (s *mockStorage) ListTag(tag string, page uint) ([]*model.Post, error) {
+func (s *mockStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	return nil, nil
 }
 
@@ -45,7 +45,15 @@ func (s *mockStorage) Close() error {
 
 func (s *mockStorage) Meta() *model.Meta {
 	return &model.Meta{
-		Posts:   uint(len(s.saveCallParams)),
+		Posts:   len(s.saveCallParams),
+		PerPage: 0,
+		Pages:   0,
+	}
+}
+
+func (s *mockStorage) TagMeta(tag string) *model.Meta {
+	return &model.Meta{
+		Posts:   len(s.saveCallParams),
 		PerPage: 0,
 		Pages:   0,
 	}

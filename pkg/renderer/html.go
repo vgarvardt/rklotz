@@ -25,6 +25,7 @@ func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.
 		fmt.Sprintf("%s/%s/partial/alert.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/heading.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/info.html", templatesPath, uiSettings.Theme),
+		fmt.Sprintf("%s/%s/partial/pagination.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/posts.html", templatesPath, uiSettings.Theme),
 
 		fmt.Sprintf("%s/plugins/disqus.html", templatesPath),
@@ -97,7 +98,10 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	templateData["plugin"] = plugin
 
 	templateName := templateData[TemplateNameDateKey].(string)
-	r.templates[templateName].Execute(w, templateData)
+	err := r.templates[templateName].Execute(w, templateData)
+	if nil != err {
+		log.WithError(err).WithField("template", templateName).Error("Problems with rendering HTML template")
+	}
 }
 
 func HTMLRendererData(r *http.Request, templateName string, data map[string]interface{}) interface{} {

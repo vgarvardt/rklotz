@@ -15,7 +15,7 @@ func TestLoad_DefaultValues(t *testing.T) {
 
 	assert.Equal(t, appConfig.LogLevel, "info")
 	assert.Equal(t, appConfig.PostsDSN, "file:///etc/rklotz/posts")
-	assert.Equal(t, appConfig.PostsPerPage, uint(10))
+	assert.Equal(t, appConfig.PostsPerPage, 10)
 	assert.Equal(t, appConfig.StorageDSN, "boltdb:///tmp/rklotz.db")
 
 	assert.Equal(t, appConfig.Web.Port, 8080)
@@ -68,7 +68,7 @@ func TestLoad(t *testing.T) {
 
 	assert.Equal(t, appConfig.LogLevel, "debug")
 	assert.Equal(t, appConfig.PostsDSN, "file:///path/to/posts")
-	assert.Equal(t, appConfig.PostsPerPage, uint(42))
+	assert.Equal(t, appConfig.PostsPerPage, 42)
 	assert.Equal(t, appConfig.StorageDSN, "mysql://root@localhost/rklotz")
 
 	assert.Equal(t, appConfig.Web.Port, 8081)

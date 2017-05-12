@@ -24,7 +24,7 @@ func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := h.getPageFromURL(r)
-	posts, _ := h.storage.ListAll(uint(page))
+	posts, _ := h.storage.ListAll(page)
 	data["posts"] = posts
 	data["page"] = page
 
@@ -33,11 +33,11 @@ func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
-	data := map[string]interface{}{
-		"meta": h.storage.Meta(),
-	}
-
 	tag := chi.URLParam(r, "tag")
+
+	data := map[string]interface{}{
+		"meta": h.storage.TagMeta(tag),
+	}
 
 	page := h.getPageFromURL(r)
 	posts, _ := h.storage.ListTag(tag, page)
@@ -62,7 +62,7 @@ func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *PostsHandler) getPageFromURL(r *http.Request) uint {
+func (h *PostsHandler) getPageFromURL(r *http.Request) int {
 	var err error
 
 	page := 0
@@ -73,5 +73,5 @@ func (h *PostsHandler) getPageFromURL(r *http.Request) uint {
 		}
 	}
 
-	return uint(page)
+	return page
 }
