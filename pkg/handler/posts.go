@@ -57,7 +57,7 @@ func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(code[err == repository.ErrorNotFound])
 		w.Write([]byte(err.Error()))
 	} else {
-		tmplData := renderer.HTMLRendererData(r, "index.html", map[string]interface{}{"post": post})
+		tmplData := renderer.HTMLRendererData(r, "post.html", map[string]interface{}{"post": post})
 		h.renderer.Render(w, http.StatusOK, tmplData)
 	}
 }
