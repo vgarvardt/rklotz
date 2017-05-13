@@ -60,6 +60,10 @@
   version = ">=0.8.0, <1.0.0"
 
 [[dependencies]]
+  name = "github.com/fatih/structs"
+  version = "^1.0.0"
+
+[[dependencies]]
   branch = "master"
   name = "github.com/gorilla/feeds"
 

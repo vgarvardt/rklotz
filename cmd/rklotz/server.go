@@ -43,7 +43,8 @@ func RunServer(cmd *cobra.Command, args []string) {
 	err = loader.Load(storage)
 	failOnError(err, "Failed to load posts")
 
-	htmlRenderer := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI)
+	htmlRenderer, err := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI, appConfig.Plugins)
+	failOnError(err, "Failed to init HTML Renderer")
 	xmlRenderer := renderer.NewXmlRenderer()
 
 	postsHandler := handler.NewPostsHandler(storage, htmlRenderer)

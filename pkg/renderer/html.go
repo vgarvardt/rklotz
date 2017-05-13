@@ -10,6 +10,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/leekchan/gtf"
 	"github.com/vgarvardt/rklotz/pkg/config"
+	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
 const TemplateNameDateKey = "template_name"
@@ -18,9 +19,13 @@ type htmlRenderer struct {
 	templates  map[string]*template.Template
 	instanceId string
 	uiSettings config.UISetting
+	plugins    config.Plugins
+
+	enabledPluginsMap map[string]bool
+	pluginsSettings   map[string]map[string]template.JS
 }
 
-func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting) *htmlRenderer {
+func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting, plugins config.Plugins) (*htmlRenderer, error) {
 	partials := []string{
 		fmt.Sprintf("%s/%s/partial/alert.html", templatesPath, uiSettings.Theme),
 		fmt.Sprintf("%s/%s/partial/heading.html", templatesPath, uiSettings.Theme),
@@ -54,6 +59,7 @@ func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.
 		templates:  make(map[string]*template.Template),
 		instanceId: instanceId,
 		uiSettings: uiSettings,
+		plugins:    plugins,
 	}
 
 	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
@@ -63,7 +69,40 @@ func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.
 		instance.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
-	return instance
+	err := instance.initPlugins()
+	if err != nil {
+		return nil, err
+	}
+
+	return instance, nil
+}
+
+func (r *htmlRenderer) initPlugins() error {
+	r.enabledPluginsMap = make(map[string]bool, len(r.plugins.Enabled))
+	r.pluginsSettings = make(map[string]map[string]template.JS, len(r.plugins.Enabled))
+
+	for i := range r.plugins.Enabled {
+		r.enabledPluginsMap[r.plugins.Enabled[i]] = true
+
+		log.WithField("name", r.plugins.Enabled[i]).Info("Loading plugin")
+		p, err := plugin.GetByName(r.plugins.Enabled[i])
+		if err != nil {
+			return err
+		}
+
+		log.WithField("name", r.plugins.Enabled[i]).Info("Configuring plugin")
+		settings, err := r.plugins.Configure(p)
+		if err != nil {
+			return err
+		}
+
+		r.pluginsSettings[r.plugins.Enabled[i]] = make(map[string]template.JS)
+		for settingName, settingValue := range settings {
+			r.pluginsSettings[r.plugins.Enabled[i]][settingName] = template.JS(settingValue)
+		}
+	}
+
+	return nil
 }
 
 func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{}) {
@@ -80,22 +119,8 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 
 	templateData["instance_id"] = r.instanceId
 
-	// enabled plugins and their settings
-	//enabledPlugins := strings.Split(config.String("plugins"), " ")
-	plugin := make(map[string]map[string]template.JS)
-	plugins := make(map[string]bool)
-	//for i := 0; i < len(enabledPlugins); i++ {
-	//	plugin[enabledPlugins[i]] = make(map[string]template.JS)
-	//	plugins[enabledPlugins[i]] = true
-	//
-	//	pluginParams := strings.Split(config.String(fmt.Sprintf("plugin.%s._", enabledPlugins[i])), " ")
-	//	for j := 0; j < len(pluginParams); j++ {
-	//		pluginCfgKey := fmt.Sprintf("plugin.%s.%s", enabledPlugins[i], pluginParams[j])
-	//		plugin[enabledPlugins[i]][pluginParams[j]] = template.JS(config.String(pluginCfgKey))
-	//	}
-	//}
-	templateData["plugins"] = plugins
-	templateData["plugin"] = plugin
+	templateData["plugins"] = r.enabledPluginsMap
+	templateData["plugin"] = r.pluginsSettings
 
 	templateName := templateData[TemplateNameDateKey].(string)
 	err := r.templates[templateName].Execute(w, templateData)

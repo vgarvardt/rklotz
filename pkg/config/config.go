@@ -1,11 +1,15 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 
+	"github.com/fatih/structs"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/viper"
+	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
 type AppConfig struct {
@@ -55,8 +59,26 @@ func (u RootURL) URL(r *http.Request) *url.URL {
 }
 
 type Plugins struct {
-	Enabled []string
-	// TODO: add plugins support
+	Enabled  []string `envconfig:"PLUGINS_ENABLED"`
+	Settings PluginsSettings
+}
+
+func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
+	pluginName := structs.Name(instance)
+	settingsMap := structs.Map(p.Settings)
+	pluginSettings, ok := settingsMap[pluginName]
+	if !ok {
+		return nil, errors.New("Failed to get plugin settings")
+	}
+	return instance.Configure(pluginSettings.(map[string]string))
+}
+
+type PluginsSettings struct {
+	Disqus          map[string]string `envconfig:"PLUGINS_DISQUS"`
+	GoogleAnalytics map[string]string `envconfig:"PLUGINS_GA"`
+	YandexMetrika   map[string]string `envconfig:"PLUGINS_YAMKA"`
+	HighlightJS     map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
+	YandexShare     map[string]string `envconfig:"PLUGINS_YASHA"`
 }
 
 func init() {
@@ -83,6 +105,11 @@ func init() {
 	viper.SetDefault("rootURL.scheme", "http")
 	viper.SetDefault("rootURL.host", "")
 	viper.SetDefault("rootURL.path", "/")
+
+	viper.SetDefault("plugins.enabled", []string{})
+	for name, p := range plugin.GetAll() {
+		viper.SetDefault(fmt.Sprintf("plugins.settings.%s", name), p.Defaults())
+	}
 }
 
 func Load() (*AppConfig, error) {
