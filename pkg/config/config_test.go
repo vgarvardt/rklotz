@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
 func TestLoad_DefaultValues(t *testing.T) {
@@ -38,6 +39,12 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, "/", appConfig.RootURL.Path)
 
 	assert.Equal(t, []string{}, appConfig.Plugins.Enabled)
+
+	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Disqus)
+	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Ga)
+	assert.Equal(t, map[string]string{"clickmap": "true", "trackLinks": "true", "accurateTrackBounce": "true"}, appConfig.Plugins.Settings.Yamka)
+	assert.Equal(t, map[string]string{"version": "9.7.0", "theme": "idea"}, appConfig.Plugins.Settings.Highlightjs)
+	assert.Equal(t, map[string]string{"services": "vkontakte,facebook,twitter,gplus", "type": "icon", "l10n": "en"}, appConfig.Plugins.Settings.Yasha)
 }
 
 func TestLoad(t *testing.T) {
@@ -67,6 +74,12 @@ func TestLoad(t *testing.T) {
 
 	os.Setenv("PLUGINS_ENABLED", "foo,bar,baz")
 
+	os.Setenv("PLUGINS_DISQUS", "shortname:foo")
+	os.Setenv("PLUGINS_GA", "tracking_id:bar")
+	os.Setenv("PLUGINS_YAMKA", "id:baz")
+	os.Setenv("PLUGINS_HIGHLIGHTJS", "theme:foo,version:9.9.9")
+	os.Setenv("PLUGINS_YASHA", "services:facebook twitter,l10n:de")
+
 	appConfig, err := Load()
 	assert.NoError(t, err)
 
@@ -95,6 +108,12 @@ func TestLoad(t *testing.T) {
 	assert.Equal(t, "/blog", appConfig.RootURL.Path)
 
 	assert.Equal(t, []string{"foo", "bar", "baz"}, appConfig.Plugins.Enabled)
+
+	assert.Equal(t, map[string]string{"shortname": "foo"}, appConfig.Plugins.Settings.Disqus)
+	assert.Equal(t, map[string]string{"tracking_id": "bar"}, appConfig.Plugins.Settings.Ga)
+	assert.Equal(t, map[string]string{"id": "baz"}, appConfig.Plugins.Settings.Yamka)
+	assert.Equal(t, map[string]string{"theme": "foo", "version": "9.9.9"}, appConfig.Plugins.Settings.Highlightjs)
+	assert.Equal(t, map[string]string{"services": "facebook twitter", "l10n": "de"}, appConfig.Plugins.Settings.Yasha)
 }
 
 func TestRootURL_URL(t *testing.T) {
@@ -114,4 +133,40 @@ func TestRootURL_URL(t *testing.T) {
 	appConfig.RootURL.Path = "/blog"
 
 	assert.Equal(t, &url.URL{Scheme: "https", Host: "protected.com", Path: "/blog"}, appConfig.RootURL.URL(r))
+}
+
+type mockPlugin struct{}
+
+func (p *mockPlugin) Defaults() map[string]string {
+	return map[string]string{}
+}
+
+func (p *mockPlugin) Configure(settings map[string]string) (map[string]string, error) {
+	return settings, nil
+}
+
+func TestPlugins_Configure(t *testing.T) {
+	p := Plugins{
+		Settings: PluginsSettings{
+			Disqus:      map[string]string{"shortname": "foo"},
+			Ga:          map[string]string{"tracking_id": "foo"},
+			Yamka:       map[string]string{"id": "foo"},
+			Highlightjs: map[string]string{},
+			Yasha:       map[string]string{},
+		},
+	}
+	instance, _ := plugin.GetByName("ga")
+
+	config, err := p.Configure(instance)
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]string{"tracking_id": "foo"}, config)
+
+	_, err = p.Configure(&mockPlugin{})
+	assert.Error(t, err)
+	assert.Equal(t, plugin.ErrorUnknownPlugin, err)
+
+	for _, instance := range plugin.GetAll() {
+		_, err = p.Configure(instance)
+		assert.NoError(t, err)
+	}
 }

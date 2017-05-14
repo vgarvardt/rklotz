@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/kelseyhightower/envconfig"
@@ -64,9 +65,13 @@ type Plugins struct {
 }
 
 func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
-	pluginName := structs.Name(instance)
+	pluginName, err := plugin.GetName(instance)
+	if err != nil {
+		return nil, err
+	}
+
 	settingsMap := structs.Map(p.Settings)
-	pluginSettings, ok := settingsMap[pluginName]
+	pluginSettings, ok := settingsMap[strings.Title(pluginName)]
 	if !ok {
 		return nil, errors.New("Failed to get plugin settings")
 	}
@@ -74,11 +79,11 @@ func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
 }
 
 type PluginsSettings struct {
-	Disqus          map[string]string `envconfig:"PLUGINS_DISQUS"`
-	GoogleAnalytics map[string]string `envconfig:"PLUGINS_GA"`
-	YandexMetrika   map[string]string `envconfig:"PLUGINS_YAMKA"`
-	HighlightJS     map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
-	YandexShare     map[string]string `envconfig:"PLUGINS_YASHA"`
+	Disqus      map[string]string `envconfig:"PLUGINS_DISQUS"`
+	Ga          map[string]string `envconfig:"PLUGINS_GA"`
+	Yamka       map[string]string `envconfig:"PLUGINS_YAMKA"`
+	Highlightjs map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
+	Yasha       map[string]string `envconfig:"PLUGINS_YASHA"`
 }
 
 func init() {
