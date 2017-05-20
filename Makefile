@@ -18,10 +18,10 @@ all: clean deps build
 
 deps:
 	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
-	@go get -u github.com/golang/dep/...
-	@go get -u github.com/golang/lint/golint
-	@dep ensure
-	@docker run -it --rm -v $(pwd)/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install
+	go get -u github.com/golang/dep/...
+	go get -u github.com/golang/lint/golint
+	dep ensure
+	docker run -it --rm -v `pwd`/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install || echo "$(WARN_COLOR)==> Failed to install frontend libs, skipping... $(NO_COLOR)"
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
