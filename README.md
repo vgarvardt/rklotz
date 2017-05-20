@@ -1,5 +1,8 @@
 # rKlotz
 
+[![Build Status](https://travis-ci.org/vgarvardt/rklotz.svg?branch=master)](https://travis-ci.org/vgarvardt/rklotz)
+[![Coverage Status](https://coveralls.io/repos/github/vgarvardt/rklotz/badge.svg?branch=master)](https://coveralls.io/github/vgarvardt/rklotz?branch=master)
+
 ## Simple golang-driven single-user blog engine on top of [Bolt DB](https://github.com/boltdb/bolt)
 
 ### Install and run in dev env with automatic server reload on files change
@@ -63,10 +66,9 @@ Template must have the following structure:
 - [x] Get config values from os env
 - [ ] Implement Material Design Lite theme
 - [x] Write some tests
-- [ ] Cover reindex logic with tests
+- [x] Cover reindex logic with tests
 - [x] Migrate to another Web Framework (maybe echo)
 - [x] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)
-- [ ] Replace raw validation with govalidator - https://github.com/asaskevich/govalidator
 - [ ] Post attachments (at least images) support
 - [ ] Paths history with permanent redirects from old paths to new
 - [x] SemVer versioning
