@@ -3,20 +3,24 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/pressly/chi/middleware"
 )
 
+var static []string = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}
+
 type LoggerRequest struct{}
 
 type LoggerEntry struct {
 	logger log.FieldLogger
+	path   string
 }
 
 func (l *LoggerRequest) NewLogEntry(r *http.Request) middleware.LogEntry {
-	entry := &LoggerEntry{}
+	entry := &LoggerEntry{path: r.URL.Path}
 
 	entry.logger = log.WithFields(log.Fields{
 		"method":      r.Method,
@@ -37,7 +41,15 @@ func (l *LoggerEntry) Write(status, bytes int, elapsed time.Duration) {
 		"elapsed_ms":   elapsed.String(),
 	})
 
-	l.logger.Infoln("Finished serving request")
+	msg := "Finished serving request"
+	for i := range static {
+		if strings.HasSuffix(l.path, static[i]) {
+			l.logger.Debugln(msg)
+			return
+		}
+	}
+
+	l.logger.Infoln(msg)
 }
 
 func (l *LoggerEntry) Panic(v interface{}, stack []byte) {
@@ -45,4 +57,6 @@ func (l *LoggerEntry) Panic(v interface{}, stack []byte) {
 		"stack": string(stack),
 		"panic": fmt.Sprintf("%+v", v),
 	})
+
+	l.logger.Errorln("Panic while serving request")
 }
