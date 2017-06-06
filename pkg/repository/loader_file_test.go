@@ -64,7 +64,7 @@ func TestFileLoader_Load(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
 
-	// .../github.com/hellofresh/auth-service/pkg/model/../../assets/posts
+	// .../github.com/vgarvardt/rklotz/pkg/model/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
 
 	storage := &mockStorage{saveCallResult: []error{nil, nil}}

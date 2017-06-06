@@ -5,6 +5,9 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -26,41 +29,21 @@ type htmlRenderer struct {
 }
 
 func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting, plugins config.Plugins) (*htmlRenderer, error) {
-	partials := []string{
-		fmt.Sprintf("%s/%s/partial/alert.html", templatesPath, uiSettings.Theme),
-		fmt.Sprintf("%s/%s/partial/heading.html", templatesPath, uiSettings.Theme),
-		fmt.Sprintf("%s/%s/partial/info.html", templatesPath, uiSettings.Theme),
-		fmt.Sprintf("%s/%s/partial/pagination.html", templatesPath, uiSettings.Theme),
-		fmt.Sprintf("%s/%s/partial/posts.html", templatesPath, uiSettings.Theme),
-
-		fmt.Sprintf("%s/plugins/disqus.html", templatesPath),
-		fmt.Sprintf("%s/plugins/ga.html", templatesPath),
-		fmt.Sprintf("%s/plugins/highlightjs-css.html", templatesPath),
-		fmt.Sprintf("%s/plugins/highlightjs-js.html", templatesPath),
-		fmt.Sprintf("%s/plugins/yamka.html", templatesPath),
-		fmt.Sprintf("%s/plugins/yasha.html", templatesPath),
-	}
-
-	uiAbout := uiSettings.AboutPath
-	if _, err := os.Stat(uiAbout); os.IsNotExist(err) {
-		log.Info("Loading default theme about panel")
-		uiAbout = fmt.Sprintf("%s/%s/partial/about.html", templatesPath, uiSettings.Theme)
-	} else {
-		log.WithField("path", uiAbout).Info("Loading custom about panel")
-	}
-
-	partials = append(partials, uiAbout)
-	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", templatesPath, uiSettings.Theme))
-
-	baseTemplate := template.Must(
-		template.New("base.html").Funcs(getTmplFuncMap(uiSettings.DateFormat)).ParseFiles(baseFiles...))
-
 	instance := &htmlRenderer{
 		templates:  make(map[string]*template.Template),
 		instanceId: instanceId,
 		uiSettings: uiSettings,
 		plugins:    plugins,
 	}
+
+	partials, err := instance.getPartials(templatesPath, uiSettings.Theme, uiSettings.AboutPath)
+	if nil != err {
+		return nil, err
+	}
+
+	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", templatesPath, uiSettings.Theme))
+	baseTemplate := template.Must(
+		template.New("base.html").Funcs(getTmplFuncMap(uiSettings.DateFormat)).ParseFiles(baseFiles...))
 
 	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
 		tmplPath := fmt.Sprintf("%s/%s/%s", templatesPath, uiSettings.Theme, tmplName)
@@ -69,12 +52,50 @@ func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.
 		instance.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
-	err := instance.initPlugins()
+	err = instance.initPlugins()
 	if err != nil {
 		return nil, err
 	}
 
 	return instance, nil
+}
+
+func (r *htmlRenderer) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
+	var partials []string
+
+	walkFn := func(path string, f os.FileInfo, err error) error {
+		if nil == err && !f.IsDir() && !strings.HasSuffix(path, "about.html") {
+			partials = append(partials, path)
+		}
+		return err
+	}
+
+	pluginsPath := path.Join(templatesPath, "plugins")
+	err := filepath.Walk(pluginsPath, walkFn)
+	if err != nil {
+		return nil, err
+	}
+
+	themePartialsPath := path.Join(templatesPath, theme, "partial")
+	err = filepath.Walk(themePartialsPath, walkFn)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = os.Stat(uiAbout)
+	if os.IsNotExist(err) {
+		log.WithField("path", uiAbout).Info("Custom about panel not found, loading default theme about panel")
+		uiAbout = fmt.Sprintf("%s/%s/partial/about.html", templatesPath, theme)
+	} else if nil != err {
+		log.WithError(err).WithField("path", uiAbout).Error("Failed to load custom about panel")
+		return nil, err
+	} else {
+		log.WithField("path", uiAbout).Info("Loading custom about panel")
+	}
+
+	partials = append(partials, uiAbout)
+
+	return partials, nil
 }
 
 func (r *htmlRenderer) initPlugins() error {

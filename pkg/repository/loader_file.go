@@ -19,6 +19,10 @@ func NewFileLoader(path string) (*FileLoader, error) {
 func (l *FileLoader) Load(storage Storage) error {
 	err := filepath.Walk(l.path, func(path string, f os.FileInfo, err error) error {
 		if !f.IsDir() {
+			if nil != err {
+				return err
+			}
+
 			log.WithField("path", path).Debug("Loading post from file")
 			post, err := model.NewPostFromFile(l.path, path)
 			if err != nil {
