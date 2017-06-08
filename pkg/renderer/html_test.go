@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTMLRendererData(t *testing.T) {
+func TestNewHTMLRenderer(t *testing.T) {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
 	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
@@ -43,4 +44,26 @@ func TestHTMLRendererData(t *testing.T) {
 	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "alert.html"))
 	assert.NoError(t, err)
 	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "alert.html")), partials)
+}
+
+func TestHTMLRendererData(t *testing.T) {
+	urlPath := "/hello/world"
+	r, err := http.NewRequest(http.MethodGet, urlPath, nil)
+	assert.NoError(t, err)
+
+	templateName := "hello.html"
+	passedData := map[string]interface{}{"foo": "bar", "bar": "baz"}
+	data := HTMLRendererData(r, templateName, passedData)
+
+	dataMap, ok := data.(map[string]interface{})
+	assert.True(t, ok)
+
+	assert.Equal(t, templateName, dataMap[TemplateNameDateKey])
+	assert.Equal(t, urlPath, dataMap["url_path"])
+
+	for k, v := range passedData {
+		val, ok := dataMap[k]
+		assert.True(t, ok)
+		assert.Equal(t, v, val)
+	}
 }
