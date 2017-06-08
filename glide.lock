@@ -1,8 +1,8 @@
-hash: 608d3a0c1cc8c904bf3b27bfdf0594610e7b415e076eff3984b2a82fd275e9f7
-updated: 2017-06-08T23:43:34.262108227+02:00
+hash: 8bc4ef82182d2fab353971c5f88f431664e86757e5cb2c1934901fb6a9d947e2
+updated: 2017-06-08T23:58:08.327074677+02:00
 imports:
 - name: github.com/asdine/storm
-  version: 2da548c16156b3197728372bff5614033084aff5
+  version: e8518cc1200f320e508639491f9390b9c7c37970
   subpackages:
   - codec
   - codec/json
@@ -11,6 +11,13 @@ imports:
   - q
 - name: github.com/boltdb/bolt
   version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
+- name: github.com/emirpasic/gods
+  version: f6c17b524822278a87e3b3bd809fec33b51f5b46
+  subpackages:
+  - containers
+  - trees
+  - trees/redblacktree
+  - utils
 - name: github.com/fatih/structs
   version: a720dfa8df582c51dee1b36feabb906bde1588bd
 - name: github.com/fsnotify/fsnotify

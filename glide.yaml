@@ -3,7 +3,7 @@ import:
 - package: github.com/Sirupsen/logrus
   version: ^1.0.0
 - package: github.com/asdine/storm
-  version: ^0.8.1
+  version: 0.8.0
   subpackages:
   - q
 - package: github.com/fatih/structs
