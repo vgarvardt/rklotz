@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pressly/chi/middleware"
+	"github.com/go-chi/chi/middleware"
 	log "github.com/sirupsen/logrus"
 )
 

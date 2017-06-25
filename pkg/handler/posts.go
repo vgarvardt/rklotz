@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pressly/chi"
+	"github.com/go-chi/chi"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
 	"github.com/vgarvardt/rklotz/pkg/repository"
 )

@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/middleware"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/vgarvardt/rklotz/pkg/config"
@@ -58,7 +58,7 @@ func RunServer(cmd *cobra.Command, args []string) {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", postsHandler.Front)
-	r.Get("/tag/:tag", postsHandler.Tag)
+	r.Get("/tag/{tag}", postsHandler.Tag)
 	r.NotFound(postsHandler.Post)
 
 	r.Route("/feed", func(r chi.Router) {
@@ -66,16 +66,28 @@ func RunServer(cmd *cobra.Command, args []string) {
 		r.Get("/rss", feedHandler.Rss)
 	})
 
-	r.FileServer("/static", http.Dir(appConfig.Web.StaticPath))
-	faviconPath := filepath.Join(appConfig.Web.StaticPath, appConfig.UI.Theme, "favicon.ico")
-	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, faviconPath)
-	})
+	serveStatic(r, appConfig)
 
 	address := fmt.Sprintf(":%d", appConfig.Web.Port)
 	log.WithField("address", address).Info("Running...")
 
 	log.Fatal(http.ListenAndServe(address, r))
+}
+
+func serveStatic(r chi.Router, appConfig *config.AppConfig) {
+	staticRoot := http.Dir(appConfig.Web.StaticPath)
+	staticPath := "/static"
+	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
+
+	faviconPath := filepath.Join(appConfig.Web.StaticPath, appConfig.UI.Theme, "favicon.ico")
+
+	r.Get(staticPath+"/*", func(w http.ResponseWriter, r *http.Request) {
+		staticHandler.ServeHTTP(w, r)
+	})
+
+	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, faviconPath)
+	})
 }
 
 func failOnError(err error, msg string) {

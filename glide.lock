@@ -1,5 +1,5 @@
-hash: e8482e0672333a94da375be39784028e3b28da316bad661424d499690e76a4c3
-updated: 2017-06-25T22:46:57.456864601+02:00
+hash: c3f642be1035b57a8c7738f65b2702c398c9e6804f538dbf11fd71404d7d00e2
+updated: 2017-06-25T22:56:36.159752539+02:00
 imports:
 - name: github.com/asdine/storm
   version: e8518cc1200f320e508639491f9390b9c7c37970
@@ -22,6 +22,10 @@ imports:
   version: a720dfa8df582c51dee1b36feabb906bde1588bd
 - name: github.com/fsnotify/fsnotify
   version: 4da3e2cfbabc9f751898f250b49f2439785783a1
+- name: github.com/go-chi/chi
+  version: 967844826e58cf31213a7dfb82455d242ad85101
+  subpackages:
+  - middleware
 - name: github.com/gorilla/feeds
   version: fa8f5548eedbe306d748925237a48d70ae4150de
 - name: github.com/hashicorp/hcl
@@ -49,10 +53,6 @@ imports:
   version: c37440a7cf42ac63b919c752ca73a85067e05992
 - name: github.com/pelletier/go-toml
   version: 4a000a21a414d139727f616a8bb97f847b1b310b
-- name: github.com/pressly/chi
-  version: e6033ea75479391a4bce3918fc119cad31e1cb30
-  subpackages:
-  - middleware
 - name: github.com/russross/blackfriday
   version: 0b647d0506a698cca42caca173e55559b12a69f2
 - name: github.com/shurcooL/sanitized_anchor_name
