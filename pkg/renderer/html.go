@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/leekchan/gtf"
+	log "github.com/sirupsen/logrus"
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )

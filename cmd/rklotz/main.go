@@ -4,24 +4,20 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-var (
-	version     string
-	versionFlag bool
-)
+var version string
 
 func main() {
+	var versionFlag bool
+
 	versionString := "rKlotz v" + version
 	cobra.OnInitialize(func() {
 		if versionFlag {
 			fmt.Println(versionString)
 			os.Exit(0)
 		}
-
-		log.SetFormatter(&log.JSONFormatter{})
 	})
 
 	var RootCmd = &cobra.Command{

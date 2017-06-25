@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/pressly/chi/middleware"
+	log "github.com/sirupsen/logrus"
 )
 
 var static []string = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}

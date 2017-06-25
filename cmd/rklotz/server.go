@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/middleware"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"

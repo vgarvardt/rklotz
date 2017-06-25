@@ -1,6 +1,6 @@
 package: github.com/vgarvardt/rklotz
 import:
-- package: github.com/Sirupsen/logrus
+- package: github.com/sirupsen/logrus
   version: ^1.0.0
 - package: github.com/asdine/storm
   version: 0.8.0
