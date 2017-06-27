@@ -6,7 +6,7 @@ import "strings"
 type YandexShare struct{}
 
 func (p *YandexShare) Defaults() map[string]string {
-	return map[string]string{"services": "vkontakte,facebook,twitter,gplus", "type": "icon", "l10n": "en"}
+	return map[string]string{"services": "facebook,twitter,gplus", "size": "m", "lang": "en"}
 }
 
 func (p *YandexShare) Configure(settings map[string]string) (map[string]string, error) {

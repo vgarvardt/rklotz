@@ -15,11 +15,11 @@ func TestYandexShare_Configure(t *testing.T) {
 	_, err := p.Configure(map[string]string{})
 	assert.NoError(t, err)
 
-	settings, err := p.Configure(map[string]string{"l10n": "de"})
+	settings, err := p.Configure(map[string]string{"lang": "de"})
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]string{"services": "vkontakte,facebook,twitter,gplus", "type": "icon", "l10n": "de"}, settings)
+	assert.Equal(t, map[string]string{"services": "facebook,twitter,gplus", "size": "m", "lang": "de"}, settings)
 
 	settings, err = p.Configure(map[string]string{"services": "facebook twitter"})
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]string{"services": "facebook,twitter", "type": "icon", "l10n": "en"}, settings)
+	assert.Equal(t, map[string]string{"services": "facebook,twitter", "size": "m", "lang": "en"}, settings)
 }

@@ -38,7 +38,7 @@ Post file has the following structure:
 
 * *Line 1*: Post title
 * *Line 2*: Post publishing date - posts are ordered by publishing date in reverse chronological order.
-  Date must be in [`RFC822Z` format](http://golang.org/pkg/time/#Time.Format)
+  Date must be in [`RFC822Z` format](https://golang.org/pkg/time/#pkg-constants)
 * *Line 3*: Post tags - comma-separated tags list
 * *Line 4*: Reserved for further usage
 * *Line 5*: Post delimiter - `+++` for Markdown, not necessary that line number, may be preceded by any number
@@ -116,9 +116,33 @@ rKlots supports plugins. Currently the following are implemented:
 
 * [Disqus](https://disqus.com/) (`disqus`) - posts comments
 * [Google Analytics](http://www.google.com/analytics/) (`ga`) - site visits analytics from Google
-* [Yandex Metrika](https://metrika.yandex.ru/) (`yamka`) - site visits analytics from Yandex
 * [highlight.js](https://highlightjs.org/) (`highlightjs`) - posts code highlighting
+* [Yandex Metrika](https://metrika.yandex.ru/) (`yamka`) - site visits analytics from Yandex
 * [Yandex Share](https://tech.yandex.ru/share/) (`yasha`) - share post buttons from Yandex
+
+Plugins configuration available with the following settings:
+
+* `PLUGINS_ENABLED` - comma-separated plugins list, e.g. `disqus,ga,highlightjs`
+  to enable *Disqus*, *Google Analytics* and *highlight.js* plugins
+* `PLUGINS_DISQUS` - *Disqus* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available:
+  ** `shortname` (required) - account short name
+* `PLUGINS_GA` - *Google Analytics* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available:
+  ** `tracking_id` (required) - analytics tracking ID
+* `PLUGINS_HIGHLIGHTJS` - *highlight.js* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available:
+  ** `version` (default `9.7.0`) - library version
+  ** `theme` (default `idea`) - colour scheme/theme
+* `PLUGINS_YAMKA` - *Yandex Metrika* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available:
+  ** `id` (required) - metrika ID 
+* `PLUGINS_YASHA` - *Yandex Share* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available (see fill list of values on plugin page):
+  ** `services` (default: `facebook twitter gplus`) - space-separated services list
+  ** `size` (default: `m`) - icons size: `m` - medium, `s` - small
+  ** `lang` (default `en`) - widget language, see [docs page](https://tech.yandex.ru/share/doc/dg/add-docpage/)
+  for complete list of available languages
 
 ## TODO
 

@@ -42,9 +42,9 @@ func TestLoad_DefaultValues(t *testing.T) {
 
 	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Disqus)
 	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Ga)
-	assert.Equal(t, map[string]string{"clickmap": "true", "trackLinks": "true", "accurateTrackBounce": "true"}, appConfig.Plugins.Settings.Yamka)
 	assert.Equal(t, map[string]string{"version": "9.7.0", "theme": "idea"}, appConfig.Plugins.Settings.Highlightjs)
-	assert.Equal(t, map[string]string{"services": "vkontakte,facebook,twitter,gplus", "type": "icon", "l10n": "en"}, appConfig.Plugins.Settings.Yasha)
+	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Yamka)
+	assert.Equal(t, map[string]string{"services": "facebook,twitter,gplus", "size": "m", "lang": "en"}, appConfig.Plugins.Settings.Yasha)
 }
 
 func TestLoad(t *testing.T) {
