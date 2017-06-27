@@ -29,6 +29,11 @@ $ docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION`
 
 Then open `http://127.0.0.1:8080` in your browser.
 
+## Build your own blog based on rKlotz
+
+See [github.com/vgarvardt/itskrig.com](https://github.com/vgarvardt/itskrig.com) for example
+on how to build your blog using `rKlotz` as base image.
+
 ## Posts
 
 Posts in rKlotz are just files written in some markup language.
