@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,24 +17,30 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
-const TemplateNameDateKey = "template_name"
+const (
+	TemplateNameDateKey = "template_name"
+
+	dataRequestKey = "__request"
+)
 
 type htmlRenderer struct {
 	templates  map[string]*template.Template
 	instanceId string
 	uiSettings config.UISetting
 	plugins    config.Plugins
+	rootUrl    config.RootURL
 
 	enabledPluginsMap map[string]bool
 	pluginsSettings   map[string]map[string]template.JS
 }
 
-func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting, plugins config.Plugins) (*htmlRenderer, error) {
+func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting, plugins config.Plugins, rootUrl config.RootURL) (*htmlRenderer, error) {
 	instance := &htmlRenderer{
 		templates:  make(map[string]*template.Template),
 		instanceId: instanceId,
 		uiSettings: uiSettings,
 		plugins:    plugins,
+		rootUrl:    rootUrl,
 	}
 
 	partials, err := instance.getPartials(templatesPath, uiSettings.Theme, uiSettings.AboutPath)
@@ -143,6 +150,17 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	templateData["plugins"] = r.enabledPluginsMap
 	templateData["plugin"] = r.pluginsSettings
 
+	rq, ok := templateData[dataRequestKey].(*http.Request)
+	if ok {
+		templateData["url_path"] = rq.URL.Path
+		templateData["root_url"] = r.rootUrl.URL(rq).String()
+
+		currentURL := &url.URL{}
+		*currentURL = *r.rootUrl.URL(rq)
+		currentURL.Path = rq.URL.Path
+		templateData["current_url"] = currentURL.String()
+	}
+
 	templateName := templateData[TemplateNameDateKey].(string)
 	err := r.templates[templateName].Execute(w, templateData)
 	if nil != err {
@@ -152,7 +170,7 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 
 func HTMLRendererData(r *http.Request, templateName string, data map[string]interface{}) interface{} {
 	data[TemplateNameDateKey] = templateName
-	data["url_path"] = r.URL.Path
+	data[dataRequestKey] = r
 
 	return data
 }
