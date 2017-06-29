@@ -1,6 +1,6 @@
 {
   "name": "rklotz",
-  "version": "0.4",
+  "version": "0.5",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -10,7 +10,7 @@
     "tests"
   ],
   "dependencies": {
-    "foundation": "~5.5.3",
-    "select2": "^4.0.3"
+    "jquery": "^2.2.0",
+    "foundation": "~5.5.3"
   }
 }

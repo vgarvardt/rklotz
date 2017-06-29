@@ -2,21 +2,18 @@
 *.o
 *.a
 *.so
-main
 
 # Folders
 _obj
 _test
-.DS_Store
-.idea/*
 
 var/*
 !var/config.ini
-bin/*
-!bin/.gitkeep
 
-src/github.com/vgarvardt/rklotz/vendor/*
-src/github.com/vgarvardt/rklotz/.glide/*
+dist/*
+vendor/*
 
 static/3rd-party/*
 !static/3rd-party/.placeholder
+
+.docker-run.sh
