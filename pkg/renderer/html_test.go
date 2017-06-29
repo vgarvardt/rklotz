@@ -59,7 +59,6 @@ func TestHTMLRendererData(t *testing.T) {
 	assert.True(t, ok)
 
 	assert.Equal(t, templateName, dataMap[TemplateNameDateKey])
-	assert.Equal(t, urlPath, dataMap["url_path"])
 
 	for k, v := range passedData {
 		val, ok := dataMap[k]
