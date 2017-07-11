@@ -1,7 +1,7 @@
 # rKlotz
 
 [![Build Status](https://travis-ci.org/vgarvardt/rklotz.svg?branch=master)](https://travis-ci.org/vgarvardt/rklotz)
-[![Coverage Status](https://coveralls.io/repos/github/vgarvardt/rklotz/badge.svg?branch=master)](https://coveralls.io/github/vgarvardt/rklotz?branch=master)
+[![Coverage Status](https://codecov.io/gh/vgarvardt/rklotz/branch/master/graph/badge.svg)](https://codecov.io/gh/vgarvardt/rklotz)
 
 > Yet another simple single-user file-based golang-driven blog engine
 
