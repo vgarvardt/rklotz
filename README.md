@@ -1,7 +1,7 @@
 # rKlotz
 
 [![Build Status](https://travis-ci.org/vgarvardt/rklotz.svg?branch=master)](https://travis-ci.org/vgarvardt/rklotz)
-[![Coverage Status](https://coveralls.io/repos/github/vgarvardt/rklotz/badge.svg?branch=master)](https://coveralls.io/github/vgarvardt/rklotz?branch=master)
+[![Coverage Status](https://codecov.io/gh/vgarvardt/rklotz/branch/master/graph/badge.svg)](https://codecov.io/gh/vgarvardt/rklotz)
 
 > Yet another simple single-user file-based golang-driven blog engine
 
@@ -74,6 +74,17 @@ Currently The following settings (environment variables) are available:
 * `WEB_PORT` (default `8080`) - port to run the `http` server
 * `WEB_STATIC_PATH` (default `/etc/rklotz/static`) - static files root path
 * `WEB_TEMPLATES_PATH` (default `/etc/rklotz/templates`) - templates root path
+
+### SSL settings
+
+`rKlotz` supports SSL with [Let's Encrypt](https://letsencrypt.org/).
+
+* `SSL_ENABLED` (default `false`) - enables SSL/TLS
+* `SSL_PORT` (default `8443`) - SSL port
+* `SSL_HOST` - host to validate for SSL
+* `SSL_REDIRECT_HTTP` (default `true`) - redirect `http` requests to `https` if SSL is enabled,
+  otherwise both HTTP and HTTPS will be served
+* `SSL_CACHE_DIR` (default `/tmp`) - directory to cache retrieved certificate
 
 ### HTML and UI settings
 
@@ -159,4 +170,7 @@ Plugins configuration available with the following settings:
 - [x] Migrate to another Web Framework (maybe echo)
 - [x] Get version from VERSION file (gb does not seem to inject ldflag into packages other than main)
 - [x] SemVer versioning
-- [ ] SSL/TLS with Let's Encrypt
+- [x] SSL/TLS with Let's Encrypt
+- [ ] Implement [`badger`](https://github.com/dgraph-io/badger) storage
+- [ ] Implement `memory` storage
+- [ ] Implement `git` loader

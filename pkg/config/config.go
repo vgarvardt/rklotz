@@ -20,6 +20,7 @@ type AppConfig struct {
 	StorageDSN   string `envconfig:"STORAGE_DSN"`
 
 	Web     WebSettings
+	SSL     SSLSettings
 	UI      UISetting
 	RootURL RootURL
 	Plugins Plugins
@@ -29,6 +30,14 @@ type WebSettings struct {
 	Port          int    `envconfig:"WEB_PORT"`
 	StaticPath    string `envconfig:"WEB_STATIC_PATH"`
 	TemplatesPath string `envconfig:"WEB_TEMPLATES_PATH"`
+}
+
+type SSLSettings struct {
+	Enabled      bool   `envconfig:"SSL_ENABLED"`
+	Port         int    `envconfig:"SSL_PORT"`
+	Host         string `envconfig:"SSL_HOST"`
+	RedirectHTTP bool   `envconfig:"SSL_REDIRECT_HTTP"`
+	CacheDir     string `envconfig:"SSL_CACHE_DIR"`
 }
 
 type UISetting struct {
@@ -95,6 +104,11 @@ func init() {
 	viper.SetDefault("web.port", 8080)
 	viper.SetDefault("web.staticPath", "/etc/rklotz/static")
 	viper.SetDefault("web.templatesPath", "/etc/rklotz/templates")
+
+	viper.SetDefault("ssl.enabled", false)
+	viper.SetDefault("ssl.port", 8443)
+	viper.SetDefault("ssl.redirectHTTP", true)
+	viper.SetDefault("ssl.cacheDir", "/tmp")
 
 	viper.SetDefault("ui.theme", "foundation")
 	viper.SetDefault("ui.author", "Vladimir Garvardt")

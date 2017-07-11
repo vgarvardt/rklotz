@@ -1,5 +1,5 @@
-hash: c3f642be1035b57a8c7738f65b2702c398c9e6804f538dbf11fd71404d7d00e2
-updated: 2017-06-25T22:56:36.159752539+02:00
+hash: 8d9a8c8301f19a9d0a962809f13f8908b6e23067e5446767dda6d01e1fd4cfae
+updated: 2017-07-08T16:41:25.794511945+02:00
 imports:
 - name: github.com/asdine/storm
   version: e8518cc1200f320e508639491f9390b9c7c37970
@@ -49,10 +49,8 @@ imports:
   version: 51463bfca2576e06c62a8504b5c0f06d61312647
 - name: github.com/mitchellh/mapstructure
   version: d0303fe809921458f417bcf828397a65db30a7e4
-- name: github.com/pelletier/go-buffruneio
-  version: c37440a7cf42ac63b919c752ca73a85067e05992
 - name: github.com/pelletier/go-toml
-  version: 4a000a21a414d139727f616a8bb97f847b1b310b
+  version: 69d355db5304c0f7f809a2edc054553e7142f016
 - name: github.com/russross/blackfriday
   version: 0b647d0506a698cca42caca173e55559b12a69f2
 - name: github.com/shurcooL/sanitized_anchor_name
@@ -66,19 +64,24 @@ imports:
 - name: github.com/spf13/cast
   version: acbeb36b902d72a7a4c18e8f3241075e7ab763e4
 - name: github.com/spf13/cobra
-  version: 4d647c8944eb42504a714e57e97f244ed6344722
+  version: 8c6fa02d2225de0f9bdcb7ca912556f68d172d8c
 - name: github.com/spf13/jwalterweatherman
   version: 0efa5202c04663c757d84f90f5219c1250baf94f
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/spf13/viper
   version: c1de95864d73a5465492829d7cb2dd422b19ac96
+- name: golang.org/x/crypto
+  version: a48ac81e47fd6f9ed1258f3b60ae9e75f93cb7ed
+  subpackages:
+  - acme
+  - acme/autocert
 - name: golang.org/x/sys
-  version: c23410a886927bab8ca5e80b08af6a56faeb330d
+  version: 739734461d1c916b6c72a63d7efda2b27edb369f
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 4e9ab9ee170f2a39bd66c92b3e0a47ff47a4bc77
+  version: cfdf022e86b4ecfb646e1efbd7db175dd623a8fa
   subpackages:
   - transform
   - unicode/norm

@@ -23,6 +23,11 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, "/etc/rklotz/static", appConfig.Web.StaticPath)
 	assert.Equal(t, "/etc/rklotz/templates", appConfig.Web.TemplatesPath)
 
+	assert.Equal(t, false, appConfig.SSL.Enabled)
+	assert.Equal(t, 8443, appConfig.SSL.Port)
+	assert.Equal(t, true, appConfig.SSL.RedirectHTTP)
+	assert.Equal(t, "/tmp", appConfig.SSL.CacheDir)
+
 	assert.Equal(t, "foundation", appConfig.UI.Theme)
 	assert.Equal(t, "Vladimir Garvardt", appConfig.UI.Author)
 	assert.Equal(t, "vgarvardt@gmail.com", appConfig.UI.Email)
