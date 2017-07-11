@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"crypto/md5"
+	"crypto/tls"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -17,6 +19,7 @@ import (
 	m "github.com/vgarvardt/rklotz/pkg/middleware"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
 	"github.com/vgarvardt/rklotz/pkg/repository"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func RunServer(cmd *cobra.Command, args []string) {
@@ -68,10 +71,7 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	serveStatic(r, appConfig)
 
-	address := fmt.Sprintf(":%d", appConfig.Web.Port)
-	log.WithField("address", address).Info("Running...")
-
-	log.Fatal(http.ListenAndServe(address, r))
+	listenAndServe(r, appConfig)
 }
 
 func serveStatic(r chi.Router, appConfig *config.AppConfig) {
@@ -88,6 +88,59 @@ func serveStatic(r chi.Router, appConfig *config.AppConfig) {
 	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, faviconPath)
 	})
+}
+
+func listenAndServe(r chi.Router, appConfig *config.AppConfig) {
+	if appConfig.SSL.Enabled {
+		log.Info("SSL is enabled, starting HTTPS server")
+
+		hostPolicy := func(ctx context.Context, host string) error {
+			if host == appConfig.SSL.Host {
+				return nil
+			}
+			return fmt.Errorf("acme/autocert: only %s host is allowed", appConfig.SSL.Host)
+		}
+
+		tlsCertManager := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: hostPolicy,
+			Cache:      autocert.DirCache(appConfig.SSL.CacheDir),
+			Email:      appConfig.UI.Email,
+		}
+
+		httpsAddress := fmt.Sprintf(":%d", appConfig.SSL.Port)
+		server := &http.Server{
+			Addr:      httpsAddress,
+			Handler:   r,
+			TLSConfig: &tls.Config{GetCertificate: tlsCertManager.GetCertificate},
+		}
+
+		go func() {
+			log.WithField("address", httpsAddress).Info("Running HTTPS server...")
+			log.Fatal(server.ListenAndServeTLS("", ""))
+		}()
+	}
+
+	if appConfig.SSL.Enabled && appConfig.SSL.RedirectHTTP {
+		mux := &http.ServeMux{}
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			log.WithField("url", r.URL.String()).Debug("Redirecting HTTP request to HTTPS")
+
+			newURI := "https://" + r.Host + r.URL.String()
+			http.Redirect(w, r, newURI, http.StatusFound)
+		})
+
+		httpAddress := fmt.Sprintf(":%d", appConfig.Web.Port)
+		redirectServer := &http.Server{Handler: mux, Addr: httpAddress}
+
+		log.WithField("address", httpAddress).Info("Running HTTP to HTTPS redirect server...")
+		log.Fatal(redirectServer.ListenAndServe())
+	} else {
+		address := fmt.Sprintf(":%d", appConfig.Web.Port)
+		log.WithField("address", address).Info("Running HTTP server...")
+
+		log.Fatal(http.ListenAndServe(address, r))
+	}
 }
 
 func failOnError(err error, msg string) {
