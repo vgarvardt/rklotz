@@ -28,6 +28,9 @@ build:
 	/bin/sh -c "PKG_SRC=$(PKG_SRC) VERSION=`cat ./VERSION` ./build/build.sh"
 	docker build --no-cache --pull -t vgarvardt/rklotz:`cat ./VERSION` .
 
+push:
+	docker push vgarvardt/rklotz:`cat ./VERSION` .
+
 test:
 	@/bin/sh -c "./build/test.sh $(allpackages)"
 
