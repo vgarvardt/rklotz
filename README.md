@@ -132,6 +132,7 @@ rKlots supports plugins. Currently the following are implemented:
 
 * [Disqus](https://disqus.com/) (`disqus`) - posts comments
 * [Google Analytics](http://www.google.com/analytics/) (`ga`) - site visits analytics from Google
+* [Google Tag Manager](https://tagmanager.google.com) (`gtm`) - tag management analytics from Google
 * [highlight.js](https://highlightjs.org/) (`highlightjs`) - posts code highlighting
 * [Yandex Metrika](https://metrika.yandex.ru/) (`yamka`) - site visits analytics from Yandex
 * [Yandex Share](https://tech.yandex.ru/share/) (`yasha`) - share post buttons from Yandex
@@ -142,22 +143,25 @@ Plugins configuration available with the following settings:
   to enable *Disqus*, *Google Analytics* and *highlight.js* plugins
 * `PLUGINS_DISQUS` - *Disqus* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available:
-  ** `shortname` (required) - account short name
+  * `shortname` (required) - account short name
 * `PLUGINS_GA` - *Google Analytics* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available:
-  ** `tracking_id` (required) - analytics tracking ID
+  * `tracking_id` (required) - analytics tracking ID
+* `PLUGINS_GTM` - *Google Tag Manager* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
+  The following configurations are available:
+  * `id` (required) - tag manager ID
 * `PLUGINS_HIGHLIGHTJS` - *highlight.js* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available:
-  ** `version` (default `9.7.0`) - library version
-  ** `theme` (default `idea`) - colour scheme/theme
+  * `version` (default `9.7.0`) - library version
+  * `theme` (default `idea`) - colour scheme/theme
 * `PLUGINS_YAMKA` - *Yandex Metrika* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available:
-  ** `id` (required) - metrika ID 
+  * `id` (required) - metrika ID 
 * `PLUGINS_YASHA` - *Yandex Share* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available (see fill list of values on plugin page):
-  ** `services` (default: `facebook twitter gplus`) - space-separated services list
-  ** `size` (default: `m`) - icons size: `m` - medium, `s` - small
-  ** `lang` (default `en`) - widget language, see [docs page](https://tech.yandex.ru/share/doc/dg/add-docpage/)
+  * `services` (default: `facebook twitter gplus`) - space-separated services list
+  * `size` (default: `m`) - icons size: `m` - medium, `s` - small
+  * `lang` (default `en`) - widget language, see [docs page](https://tech.yandex.ru/share/doc/dg/add-docpage/)
   for complete list of available languages
 
 ## TODO

@@ -43,6 +43,7 @@ func init() {
 	all = make(map[string]Plugin)
 	all["disqus"] = &Disqus{}
 	all["ga"] = &GoogleAnalytics{}
+	all["gtm"] = &GoogleTagManager{}
 	all["yamka"] = &YandexMetrika{}
 	all["highlightjs"] = &HighlightJS{}
 	all["yasha"] = &YandexShare{}

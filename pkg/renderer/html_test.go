@@ -21,6 +21,8 @@ func TestNewHTMLRenderer(t *testing.T) {
 	expected := []string{
 		path.Join(templatesPath, "plugins", "disqus.html"),
 		path.Join(templatesPath, "plugins", "ga.html"),
+		path.Join(templatesPath, "plugins", "gtm-body.html"),
+		path.Join(templatesPath, "plugins", "gtm-head.html"),
 		path.Join(templatesPath, "plugins", "highlightjs-css.html"),
 		path.Join(templatesPath, "plugins", "highlightjs-js.html"),
 		path.Join(templatesPath, "plugins", "yamka.html"),
