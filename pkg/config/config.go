@@ -90,6 +90,7 @@ func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
 type PluginsSettings struct {
 	Disqus      map[string]string `envconfig:"PLUGINS_DISQUS"`
 	Ga          map[string]string `envconfig:"PLUGINS_GA"`
+	Gtm         map[string]string `envconfig:"PLUGINS_GTM"`
 	Yamka       map[string]string `envconfig:"PLUGINS_YAMKA"`
 	Highlightjs map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
 	Yasha       map[string]string `envconfig:"PLUGINS_YASHA"`

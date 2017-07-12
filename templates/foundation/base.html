@@ -10,6 +10,8 @@
 
     <title>{{ .title }} | {{ block "title" . }}{{ .intro }}{{ end }}</title>
 
+    {{ if .plugins.gtm }}{{ template "plugins/gtm-head.html" . }}{{ end }}
+
     <link href="/feed/atom" type="application/atom+xml" rel="alternate" title="Posts (Atom feed)">
     <link href="/feed/rss" type="application/rss+xml" rel="alternate" title="Posts (RSS feed)">
 
@@ -23,6 +25,7 @@
 </head>
 
 <body>
+{{ if .plugins.gtm }}{{ template "plugins/gtm-body.html" . }}{{ end }}
 
 <div class="row">
     <div class="small-12 columns">
