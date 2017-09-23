@@ -2,12 +2,8 @@ language: go
 
 go:
   - 1.x
-  - 1.7
-
-before_install:
-  - sudo add-apt-repository ppa:masterminds/glide -y
-  - sudo apt-get update -q
-  - sudo apt-get install glide -y
+  - 1.8
+  - 1.9
 
 install:
   - mkdir -p $GOPATH/bin

@@ -27,7 +27,7 @@ type formatHandler func(input string) string
 
 var formatsMap map[string]formatHandler = map[string]formatHandler{
 	"md": func(input string) string {
-		html := string(blackfriday.MarkdownCommon([]byte(input)))
+		html := string(blackfriday.Run([]byte(input)))
 		// open all links in new tab
 		html = strings.Replace(html, `<a href=`, `<a target="_blank" href=`, -1)
 		// fix code class to make highlight.js work
