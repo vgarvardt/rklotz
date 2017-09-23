@@ -16,9 +16,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"
+	"github.com/vgarvardt/rklotz/pkg/loader"
 	m "github.com/vgarvardt/rklotz/pkg/middleware"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
-	"github.com/vgarvardt/rklotz/pkg/repository"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -36,22 +37,22 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	log.WithFields(log.Fields{"version": version, "instance": instanceId}).Info("Starting rKlotz...")
 
-	storage, err := repository.NewStorage(appConfig.StorageDSN, appConfig.PostsPerPage)
-	failOnError(err, "Failed to get storage instance")
-	defer storage.Close()
+	storageInstance, err := storage.NewStorage(appConfig.StorageDSN, appConfig.PostsPerPage)
+	failOnError(err, "Failed to get storageInstance instance")
+	defer storageInstance.Close()
 
-	loader, err := repository.NewLoader(appConfig.PostsDSN)
-	failOnError(err, "Failed to get loader instance")
+	loaderInstance, err := loader.NewLoader(appConfig.PostsDSN)
+	failOnError(err, "Failed to get loaderInstance instance")
 
-	err = loader.Load(storage)
+	err = loaderInstance.Load(storageInstance)
 	failOnError(err, "Failed to load posts")
 
 	htmlRenderer, err := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI, appConfig.Plugins, appConfig.RootURL)
 	failOnError(err, "Failed to init HTML Renderer")
 	xmlRenderer := renderer.NewXmlRenderer()
 
-	postsHandler := handler.NewPostsHandler(storage, htmlRenderer)
-	feedHandler := handler.NewFeedHandler(storage, xmlRenderer, appConfig.UI, appConfig.RootURL)
+	postsHandler := handler.NewPostsHandler(storageInstance, htmlRenderer)
+	feedHandler := handler.NewFeedHandler(storageInstance, xmlRenderer, appConfig.UI, appConfig.RootURL)
 
 	r := chi.NewRouter()
 

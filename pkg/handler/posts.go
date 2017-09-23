@@ -6,15 +6,15 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
-	"github.com/vgarvardt/rklotz/pkg/repository"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
 type PostsHandler struct {
-	storage  repository.Storage
+	storage  storage.Storage
 	renderer renderer.Renderer
 }
 
-func NewPostsHandler(storage repository.Storage, renderer renderer.Renderer) *PostsHandler {
+func NewPostsHandler(storage storage.Storage, renderer renderer.Renderer) *PostsHandler {
 	return &PostsHandler{storage, renderer}
 }
 
@@ -54,7 +54,7 @@ func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		code := map[bool]int{true: http.StatusNotFound, false: http.StatusInternalServerError}
-		w.WriteHeader(code[err == repository.ErrorNotFound])
+		w.WriteHeader(code[err == storage.ErrorNotFound])
 		w.Write([]byte(err.Error()))
 	} else {
 		tmplData := renderer.HTMLRendererData(r, "post.html", map[string]interface{}{"post": post})

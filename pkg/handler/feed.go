@@ -8,17 +8,17 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
-	"github.com/vgarvardt/rklotz/pkg/repository"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
 type FeedHandler struct {
-	storage    repository.Storage
+	storage    storage.Storage
 	renderer   renderer.Renderer
 	uiSettings config.UISetting
 	rootUrl    config.RootURL
 }
 
-func NewFeedHandler(storage repository.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootUrl config.RootURL) *FeedHandler {
+func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootUrl config.RootURL) *FeedHandler {
 	return &FeedHandler{storage, renderer, uiSettings, rootUrl}
 }
 

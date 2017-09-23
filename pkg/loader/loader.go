@@ -1,8 +1,10 @@
-package repository
+package loader
 
 import (
 	"errors"
 	"net/url"
+
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
 const (
@@ -10,11 +12,11 @@ const (
 )
 
 var (
-	ErrorUnknownLoaderType = errors.New("Uknonwn loader type")
+	ErrorUnknownLoaderType = errors.New("Unknown loader type")
 )
 
 type Loader interface {
-	Load(storage Storage) error
+	Load(storage storage.Storage) error
 }
 
 func NewLoader(dsn string) (Loader, error) {

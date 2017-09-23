@@ -1,4 +1,4 @@
-package repository
+package loader
 
 import (
 	"os"

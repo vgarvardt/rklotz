@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"crypto/md5"
@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
 func getRandomHash(length int) string {
@@ -58,12 +60,23 @@ func loadTestPosts(t *testing.T, storage Storage) {
 	// .../github.com/vgarvardt/rklotz/pkg/repository/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
 
-	fileLoader, err := NewFileLoader(postsBasePath)
-	assert.NoError(t, err)
+	post1, err := model.NewPostFromFile(
+		postsBasePath,
+		filepath.Join(postsBasePath, "hello-world.md"),
+	)
+	require.NoError(t, err)
+	err = storage.Save(post1)
+	require.NoError(t, err)
 
-	err = fileLoader.Load(storage)
-	assert.NoError(t, err)
-	assert.Equal(t, 2, storage.Meta().Posts)
+	post2, err := model.NewPostFromFile(
+		postsBasePath,
+		filepath.Join(postsBasePath, "nested/nested-path.md"),
+	)
+	require.NoError(t, err)
+	err = storage.Save(post2)
+	require.NoError(t, err)
+
+	require.Equal(t, 2, storage.Meta().Posts)
 }
 
 func TestBoltDBStorage_FindByPath(t *testing.T) {

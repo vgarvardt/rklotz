@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ const (
 )
 
 var (
-	ErrorUnknownStorageType = errors.New("Uknonwn storage type")
+	ErrorUnknownStorageType = errors.New("Unknown storage type")
 	ErrorNotFound           = errors.New("Record not found")
 )
 

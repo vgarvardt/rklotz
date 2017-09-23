@@ -1,12 +1,13 @@
-package repository
+package storage
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewStorage(t *testing.T) {
@@ -24,6 +25,6 @@ func TestNewStorage(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, ErrorUnknownStorageType, err)
 
-	_, err = NewLoader("~")
+	_, err = NewStorage("~", 10)
 	assert.Error(t, err)
 }
