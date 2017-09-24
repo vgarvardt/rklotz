@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"math"
 	"os"
 	"path/filepath"
 
@@ -100,7 +99,7 @@ func (s *BoltDBStorage) FindByPath(path string) (*model.Post, error) {
 
 func (s *BoltDBStorage) ListAll(page int) ([]*model.Post, error) {
 	var posts []*model.Post
-	offset := int(page * s.postsPerPage)
+	offset := page * s.postsPerPage
 	err := s.db.AllByIndex("PublishedAt", &posts, storm.Limit(s.postsPerPage), storm.Skip(offset), storm.Reverse())
 	return posts, err
 }
@@ -114,7 +113,7 @@ func (s *BoltDBStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	}
 
 	var posts []*model.Post
-	offset := int(page * s.postsPerPage)
+	offset := page * s.postsPerPage
 	query := s.db.Select(q.In("Path", tagObject.Paths)).Limit(s.postsPerPage).Skip(offset).OrderBy("PublishedAt").Reverse()
 
 	err = query.Find(&posts)
@@ -137,11 +136,7 @@ func (s *BoltDBStorage) Close() error {
 }
 
 func (s *BoltDBStorage) Meta() *model.Meta {
-	return &model.Meta{
-		Posts:   s.postsCount,
-		PerPage: s.postsPerPage,
-		Pages:   int(math.Ceil(float64(s.postsCount) / float64(s.postsPerPage))),
-	}
+	return model.NewMeta(s.postsCount, s.postsPerPage)
 }
 
 func (s *BoltDBStorage) TagMeta(tag string) *model.Meta {
@@ -152,11 +147,7 @@ func (s *BoltDBStorage) TagMeta(tag string) *model.Meta {
 		return &model.Meta{}
 	}
 
-	return &model.Meta{
-		Posts:   len(tagObject.Paths),
-		PerPage: s.postsPerPage,
-		Pages:   int(math.Ceil(float64(len(tagObject.Paths)) / float64(s.postsPerPage))),
-	}
+	return model.NewMeta(len(tagObject.Paths), s.postsPerPage)
 }
 
 func (s *BoltDBStorage) remove() error {

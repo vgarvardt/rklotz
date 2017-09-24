@@ -9,6 +9,7 @@ import (
 
 const (
 	schemeBoldDB = "boltdb"
+	schemeMemory = "memory"
 )
 
 var (
@@ -29,14 +30,16 @@ type Storage interface {
 }
 
 func NewStorage(dsn string, postsPerPage int) (Storage, error) {
-	storageURL, err := url.Parse(dsn)
+	dsnURL, err := url.Parse(dsn)
 	if nil != err {
 		return nil, err
 	}
 
-	switch storageURL.Scheme {
+	switch dsnURL.Scheme {
 	case schemeBoldDB:
-		return NewBoltDBStorage(storageURL.Path, postsPerPage)
+		return NewBoltDBStorage(dsnURL.Path, postsPerPage)
+	case schemeMemory:
+		return NewMemoryStorage(postsPerPage)
 	}
 
 	return nil, ErrorUnknownStorageType

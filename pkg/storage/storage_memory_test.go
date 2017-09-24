@@ -1,51 +1,20 @@
 package storage
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
-func getRandomHash(length int) string {
-	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
-	return hex.EncodeToString(hasher.Sum(nil))[:length]
-}
-
-func getFilePath() string {
-	return fmt.Sprintf("/tmp/rklotz-test.%s.db", getRandomHash(5))
-}
-
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
-}
-
-func TestNewBoltDBStorage(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 10)
+func TestNewMemoryStorage(t *testing.T) {
+	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
-	assert.Equal(t, dbFilePath, storage.path)
 	assert.Equal(t, 10, storage.postsPerPage)
-
-	assert.True(t, fileExists(dbFilePath))
-
-	err = storage.Close()
-	assert.NoError(t, err)
-	assert.False(t, fileExists(dbFilePath))
 }
 
-func TestBoltDBStorage_Finalize(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 10)
+func TestMemoryStorage_Finalize(t *testing.T) {
+	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -53,41 +22,8 @@ func TestBoltDBStorage_Finalize(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func loadTestPosts(t *testing.T, storage Storage) {
-	t.Helper()
-
-	wd, err := os.Getwd()
-	assert.NoError(t, err)
-	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
-
-	// .../github.com/vgarvardt/rklotz/pkg/repository/../../assets/posts
-	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
-
-	post1, err := model.NewPostFromFile(
-		postsBasePath,
-		filepath.Join(postsBasePath, "hello-world.md"),
-	)
-	require.NoError(t, err)
-	err = storage.Save(post1)
-	require.NoError(t, err)
-
-	post2, err := model.NewPostFromFile(
-		postsBasePath,
-		filepath.Join(postsBasePath, "nested/nested-path.md"),
-	)
-	require.NoError(t, err)
-	err = storage.Save(post2)
-	require.NoError(t, err)
-
-	err = storage.Finalize()
-	require.NoError(t, err)
-
-	require.Equal(t, 2, storage.Meta().Posts)
-}
-
-func TestBoltDBStorage_FindByPath(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 10)
+func TestMemoryStorage_FindByPath(t *testing.T) {
+	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -107,9 +43,8 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 	assert.Equal(t, "Nested Path Post Title", post.Title)
 }
 
-func TestBoltDBStorage_ListAll_10(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 10)
+func TestMemoryStorage_ListAll_10(t *testing.T) {
+	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -128,9 +63,8 @@ func TestBoltDBStorage_ListAll_10(t *testing.T) {
 	assert.Equal(t, 0, len(posts))
 }
 
-func TestBoltDBStorage_ListAll_1(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 1)
+func TestMemoryStorage_ListAll_1(t *testing.T) {
+	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -152,9 +86,8 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 	assert.Equal(t, 0, len(posts))
 }
 
-func TestBoltDBStorage_ListTag_10(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 10)
+func TestMemoryStorage_ListTag_10(t *testing.T) {
+	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -175,9 +108,8 @@ func TestBoltDBStorage_ListTag_10(t *testing.T) {
 	assert.Equal(t, 0, len(posts))
 }
 
-func TestBoltDBStorage_ListTag_1(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 1)
+func TestMemoryStorage_ListTag_1(t *testing.T) {
+	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
 	defer storage.Close()
 
@@ -201,9 +133,8 @@ func TestBoltDBStorage_ListTag_1(t *testing.T) {
 	assert.Equal(t, 0, len(posts))
 }
 
-func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
-	dbFilePath := getFilePath()
-	storage, err := NewBoltDBStorage(dbFilePath, 1)
+func TestMemoryStorage_ListTag_ErrorNotFound(t *testing.T) {
+	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
 	defer storage.Close()
 
