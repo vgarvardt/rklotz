@@ -18,29 +18,30 @@ import (
 )
 
 const (
-	TemplateNameDateKey = "template_name"
-
-	dataRequestKey = "__request"
+	templateNameDateKey = "template_name"
+	dataRequestKey      = "__request"
 )
 
-type htmlRenderer struct {
+// HTMLRenderer implements Renderer for HTML content
+type HTMLRenderer struct {
 	templates  map[string]*template.Template
-	instanceId string
+	instanceID string
 	uiSettings config.UISetting
 	plugins    config.Plugins
-	rootUrl    config.RootURL
+	rootURL    config.RootURL
 
 	enabledPluginsMap map[string]bool
 	pluginsSettings   map[string]map[string]template.JS
 }
 
-func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.UISetting, plugins config.Plugins, rootUrl config.RootURL) (*htmlRenderer, error) {
-	instance := &htmlRenderer{
+// NewHTMLRenderer creates new HTMLRenderer instance
+func NewHTMLRenderer(templatesPath string, instanceID string, uiSettings config.UISetting, plugins config.Plugins, rootURL config.RootURL) (*HTMLRenderer, error) {
+	instance := &HTMLRenderer{
 		templates:  make(map[string]*template.Template),
-		instanceId: instanceId,
+		instanceID: instanceID,
 		uiSettings: uiSettings,
 		plugins:    plugins,
-		rootUrl:    rootUrl,
+		rootURL:    rootURL,
 	}
 
 	partials, err := instance.getPartials(templatesPath, uiSettings.Theme, uiSettings.AboutPath)
@@ -67,7 +68,7 @@ func NewHTMLRenderer(templatesPath string, instanceId string, uiSettings config.
 	return instance, nil
 }
 
-func (r *htmlRenderer) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
+func (r *HTMLRenderer) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
 	var partials []string
 
 	walkFn := func(path string, f os.FileInfo, err error) error {
@@ -105,7 +106,7 @@ func (r *htmlRenderer) getPartials(templatesPath, theme, uiAbout string) ([]stri
 	return partials, nil
 }
 
-func (r *htmlRenderer) initPlugins() error {
+func (r *HTMLRenderer) initPlugins() error {
 	r.enabledPluginsMap = make(map[string]bool, len(r.plugins.Enabled))
 	r.pluginsSettings = make(map[string]map[string]template.JS, len(r.plugins.Enabled))
 
@@ -133,7 +134,8 @@ func (r *htmlRenderer) initPlugins() error {
 	return nil
 }
 
-func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{}) {
+// Render renders the data with response code to a HTTP response writer
+func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{}) {
 	templateData := data.(map[string]interface{})
 
 	templateData["lang"] = r.uiSettings.Language
@@ -145,7 +147,7 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	templateData["description"] = r.uiSettings.Description
 	templateData["date_format"] = r.uiSettings.DateFormat
 
-	templateData["instance_id"] = r.instanceId
+	templateData["instance_id"] = r.instanceID
 
 	templateData["plugins"] = r.enabledPluginsMap
 	templateData["plugin"] = r.pluginsSettings
@@ -153,23 +155,24 @@ func (r *htmlRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	rq, ok := templateData[dataRequestKey].(*http.Request)
 	if ok {
 		templateData["url_path"] = rq.URL.Path
-		templateData["root_url"] = r.rootUrl.URL(rq).String()
+		templateData["root_url"] = r.rootURL.URL(rq).String()
 
 		currentURL := &url.URL{}
-		*currentURL = *r.rootUrl.URL(rq)
+		*currentURL = *r.rootURL.URL(rq)
 		currentURL.Path = rq.URL.Path
 		templateData["current_url"] = currentURL.String()
 	}
 
-	templateName := templateData[TemplateNameDateKey].(string)
+	templateName := templateData[templateNameDateKey].(string)
 	err := r.templates[templateName].Execute(w, templateData)
 	if nil != err {
 		log.WithError(err).WithField("template", templateName).Error("Problems with rendering HTML template")
 	}
 }
 
+// HTMLRendererData sets service fields for HTML renderer data
 func HTMLRendererData(r *http.Request, templateName string, data map[string]interface{}) interface{} {
-	data[TemplateNameDateKey] = templateName
+	data[templateNameDateKey] = templateName
 	data[dataRequestKey] = r
 
 	return data

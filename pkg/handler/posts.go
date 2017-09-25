@@ -6,18 +6,21 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
-	"github.com/vgarvardt/rklotz/pkg/repository"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
+// PostsHandler is the handler for posts pages
 type PostsHandler struct {
-	storage  repository.Storage
+	storage  storage.Storage
 	renderer renderer.Renderer
 }
 
-func NewPostsHandler(storage repository.Storage, renderer renderer.Renderer) *PostsHandler {
+// NewPostsHandler creates new PostsHandler instance
+func NewPostsHandler(storage storage.Storage, renderer renderer.Renderer) *PostsHandler {
 	return &PostsHandler{storage, renderer}
 }
 
+// Front is the HTTP handler for the front page with post list
 func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"meta": h.storage.Meta(),
@@ -32,6 +35,7 @@ func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
+// Tag is the HTTP handler for the tag page with post list for a tag
 func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 
@@ -49,12 +53,13 @@ func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
+// Post is the HTTP handler for the post page
 func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.FindByPath(r.URL.Path)
 
 	if err != nil {
 		code := map[bool]int{true: http.StatusNotFound, false: http.StatusInternalServerError}
-		w.WriteHeader(code[err == repository.ErrorNotFound])
+		w.WriteHeader(code[err == storage.ErrorNotFound])
 		w.Write([]byte(err.Error()))
 	} else {
 		tmplData := renderer.HTMLRendererData(r, "post.html", map[string]interface{}{"post": post})

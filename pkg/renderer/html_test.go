@@ -35,7 +35,7 @@ func TestNewHTMLRenderer(t *testing.T) {
 		path.Join(templatesPath, theme, "partial", "posts.html"),
 	}
 
-	instance := &htmlRenderer{}
+	instance := &HTMLRenderer{}
 
 	// default about panel
 	partials, err := instance.getPartials(templatesPath, theme, "")
@@ -60,7 +60,7 @@ func TestHTMLRendererData(t *testing.T) {
 	dataMap, ok := data.(map[string]interface{})
 	assert.True(t, ok)
 
-	assert.Equal(t, templateName, dataMap[TemplateNameDateKey])
+	assert.Equal(t, templateName, dataMap[templateNameDateKey])
 
 	for k, v := range passedData {
 		val, ok := dataMap[k]

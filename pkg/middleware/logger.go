@@ -10,15 +10,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var static []string = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}
+var static = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}
 
+// LoggerRequest implements chi/middleware.LogFormatter interface for requests logging
 type LoggerRequest struct{}
 
+// LoggerEntry implements chi/middleware.LogEntry interface for requests logging
 type LoggerEntry struct {
 	logger log.FieldLogger
 	path   string
 }
 
+// NewLogEntry initiates the beginning of a new LogEntry per request.
 func (l *LoggerRequest) NewLogEntry(r *http.Request) middleware.LogEntry {
 	entry := &LoggerEntry{path: r.URL.Path}
 
@@ -34,6 +37,7 @@ func (l *LoggerRequest) NewLogEntry(r *http.Request) middleware.LogEntry {
 	return entry
 }
 
+// Write records the final log when a request completes
 func (l *LoggerEntry) Write(status, bytes int, elapsed time.Duration) {
 	l.logger = l.logger.WithFields(log.Fields{
 		"code":         status,
@@ -52,6 +56,7 @@ func (l *LoggerEntry) Write(status, bytes int, elapsed time.Duration) {
 	l.logger.Infoln(msg)
 }
 
+// Panic records the final log when a request completes
 func (l *LoggerEntry) Panic(v interface{}, stack []byte) {
 	l.logger = l.logger.WithFields(log.Fields{
 		"stack": string(stack),

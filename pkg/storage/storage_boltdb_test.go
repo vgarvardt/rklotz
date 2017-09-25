@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"crypto/md5"
@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
 func getRandomHash(length int) string {
@@ -30,8 +32,9 @@ func fileExists(path string) bool {
 func TestNewBoltDBStorage(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, dbFilePath, storage.path)
+	assert.Equal(t, 10, storage.postsPerPage)
 
 	assert.True(t, fileExists(dbFilePath))
 
@@ -43,14 +46,16 @@ func TestNewBoltDBStorage(t *testing.T) {
 func TestBoltDBStorage_Finalize(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	err = storage.Finalize()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func loadTestPosts(t *testing.T, storage Storage) {
+	t.Helper()
+
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
 	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
@@ -58,18 +63,32 @@ func loadTestPosts(t *testing.T, storage Storage) {
 	// .../github.com/vgarvardt/rklotz/pkg/repository/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
 
-	fileLoader, err := NewFileLoader(postsBasePath)
-	assert.NoError(t, err)
+	post1, err := model.NewPostFromFile(
+		postsBasePath,
+		filepath.Join(postsBasePath, "hello-world.md"),
+	)
+	require.NoError(t, err)
+	err = storage.Save(post1)
+	require.NoError(t, err)
 
-	err = fileLoader.Load(storage)
-	assert.NoError(t, err)
-	assert.Equal(t, 2, storage.Meta().Posts)
+	post2, err := model.NewPostFromFile(
+		postsBasePath,
+		filepath.Join(postsBasePath, "nested/nested-path.md"),
+	)
+	require.NoError(t, err)
+	err = storage.Save(post2)
+	require.NoError(t, err)
+
+	err = storage.Finalize()
+	require.NoError(t, err)
+
+	require.Equal(t, 2, storage.Meta().Posts)
 }
 
 func TestBoltDBStorage_FindByPath(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
@@ -78,12 +97,12 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 	assert.Equal(t, err, ErrorNotFound)
 
 	post, err := storage.FindByPath("/hello-world")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "/hello-world", post.Path)
 	assert.Equal(t, "Hello World Post Title", post.Title)
 
 	post, err = storage.FindByPath("/nested/nested-path")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "/nested/nested-path", post.Path)
 	assert.Equal(t, "Nested Path Post Title", post.Title)
 }
@@ -91,52 +110,52 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 func TestBoltDBStorage_ListAll_10(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 1, storage.Meta().Pages)
 
 	posts, err := storage.ListAll(0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 2, len(posts))
 
 	assert.Equal(t, "/nested/nested-path", posts[0].Path)
 	assert.Equal(t, "/hello-world", posts[1].Path)
 
 	posts, err = storage.ListAll(1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 0, len(posts))
 }
 
 func TestBoltDBStorage_ListAll_1(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 2, storage.Meta().Pages)
 
 	posts, err := storage.ListAll(0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
 	assert.Equal(t, "/nested/nested-path", posts[0].Path)
 
 	posts, err = storage.ListAll(1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
 	assert.Equal(t, "/hello-world", posts[0].Path)
 
 	posts, err = storage.ListAll(2)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 0, len(posts))
 }
 
 func TestBoltDBStorage_ListTag_10(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
@@ -145,21 +164,21 @@ func TestBoltDBStorage_ListTag_10(t *testing.T) {
 	assert.Equal(t, 1, storage.TagMeta(tag).Pages)
 
 	posts, err := storage.ListTag(tag, 0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 2, len(posts))
 
 	assert.Equal(t, "/nested/nested-path", posts[0].Path)
 	assert.Equal(t, "/hello-world", posts[1].Path)
 
 	posts, err = storage.ListTag(tag, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 0, len(posts))
 }
 
 func TestBoltDBStorage_ListTag_1(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
@@ -168,30 +187,30 @@ func TestBoltDBStorage_ListTag_1(t *testing.T) {
 	assert.Equal(t, 2, storage.TagMeta(tag).Pages)
 
 	posts, err := storage.ListTag(tag, 0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
 	assert.Equal(t, "/nested/nested-path", posts[0].Path)
 
 	posts, err = storage.ListTag(tag, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
 	assert.Equal(t, "/hello-world", posts[0].Path)
 
 	posts, err = storage.ListTag(tag, 2)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, 0, len(posts))
 }
 
 func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer storage.Close()
 
 	loadTestPosts(t, storage)
 
 	tag := getRandomHash(10)
 	_, err = storage.ListTag(tag, 0)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, ErrorNotFound, err)
 }

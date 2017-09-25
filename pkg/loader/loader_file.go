@@ -1,4 +1,4 @@
-package repository
+package loader
 
 import (
 	"os"
@@ -6,17 +6,21 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/vgarvardt/rklotz/pkg/model"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
+// FileLoader is the Loader implementation for local file system
 type FileLoader struct {
 	path string
 }
 
+// NewFileLoader creates new FileLoader instance
 func NewFileLoader(path string) (*FileLoader, error) {
 	return &FileLoader{path}, nil
 }
 
-func (l *FileLoader) Load(storage Storage) error {
+// Load loads posts and saves them one by one in the storage
+func (l *FileLoader) Load(storage storage.Storage) error {
 	err := filepath.Walk(l.path, func(path string, f os.FileInfo, err error) error {
 		if !f.IsDir() {
 			if nil != err {

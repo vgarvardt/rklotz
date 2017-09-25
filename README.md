@@ -68,6 +68,7 @@ Currently The following settings (environment variables) are available:
 * `STORAGE_DSN` (default `boltdb:///tmp/rklotz.db`) - posts storage in run-time in the format `storage://path`.
   Currently the following storage types are supported:
   * `boltdb` - storage on top of [BoltDB](https://github.com/boltdb/bolt) and [Storm](https://github.com/asdine/storm)
+  * `memory` - store all posts in memory, perfect for hundreds or even thousands of posts
 
 ### Web application settings
 
@@ -168,7 +169,7 @@ Plugins configuration available with the following settings:
 
 - [x] Dockerize deployment
 - [x] Get config values from os env
-- [ ] Implement Material Design Lite theme
+- [ ] Implement at least one more theme
 - [x] Write some tests
 - [x] Cover reindex logic with tests
 - [x] Migrate to another Web Framework (maybe echo)
@@ -176,5 +177,5 @@ Plugins configuration available with the following settings:
 - [x] SemVer versioning
 - [x] SSL/TLS with Let's Encrypt
 - [ ] Implement [`badger`](https://github.com/dgraph-io/badger) storage
-- [ ] Implement `memory` storage
+- [x] Implement `memory` storage
 - [ ] Implement `git` loader

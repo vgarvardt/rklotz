@@ -13,6 +13,7 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
+// AppConfig represents the application configuration
 type AppConfig struct {
 	LogLevel     string `envconfig:"LOG_LEVEL"`
 	PostsDSN     string `envconfig:"POSTS_DSN"`
@@ -26,12 +27,14 @@ type AppConfig struct {
 	Plugins Plugins
 }
 
+// WebSettings is the configuration for web application
 type WebSettings struct {
 	Port          int    `envconfig:"WEB_PORT"`
 	StaticPath    string `envconfig:"WEB_STATIC_PATH"`
 	TemplatesPath string `envconfig:"WEB_TEMPLATES_PATH"`
 }
 
+// SSLSettings is the configuration for TLS/SSL
 type SSLSettings struct {
 	Enabled      bool   `envconfig:"SSL_ENABLED"`
 	Port         int    `envconfig:"SSL_PORT"`
@@ -40,6 +43,7 @@ type SSLSettings struct {
 	CacheDir     string `envconfig:"SSL_CACHE_DIR"`
 }
 
+// UISetting is the configuration for user interface
 type UISetting struct {
 	Theme       string `envconfig:"UI_THEME"`
 	Author      string `envconfig:"UI_AUTHOR"`
@@ -54,12 +58,14 @@ type UISetting struct {
 	AboutPath  string `envconfig:"UI_ABOUT_PATH"`
 }
 
+// RootURL is the configuration for app root url
 type RootURL struct {
 	Scheme string `envconfig:"ROOT_URL_SCHEME"`
 	Host   string `envconfig:"ROOT_URL_HOST"`
 	Path   string `envconfig:"ROOT_URL_PATH"`
 }
 
+// URL returns the URL for currently configured root url
 func (u RootURL) URL(r *http.Request) *url.URL {
 	host := u.Host
 	if len(host) < 1 {
@@ -68,11 +74,13 @@ func (u RootURL) URL(r *http.Request) *url.URL {
 	return &url.URL{Scheme: u.Scheme, Host: host, Path: u.Path}
 }
 
+// Plugins is teh configuration for app plugins
 type Plugins struct {
 	Enabled  []string `envconfig:"PLUGINS_ENABLED"`
 	Settings PluginsSettings
 }
 
+// Configure applies configuration for enabled plugins
 func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
 	pluginName, err := plugin.GetName(instance)
 	if err != nil {
@@ -87,6 +95,7 @@ func (p Plugins) Configure(instance plugin.Plugin) (map[string]string, error) {
 	return instance.Configure(pluginSettings.(map[string]string))
 }
 
+// PluginsSettings is the configuration for available plugins
 type PluginsSettings struct {
 	Disqus      map[string]string `envconfig:"PLUGINS_DISQUS"`
 	Ga          map[string]string `envconfig:"PLUGINS_GA"`
@@ -132,6 +141,7 @@ func init() {
 	}
 }
 
+// Load loads app settings from environment variables
 func Load() (*AppConfig, error) {
 	var appConfig AppConfig
 
