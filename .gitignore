@@ -7,8 +7,7 @@
 _obj
 _test
 
-var/*
-!var/config.ini
+profile.coverprofile
 
 dist/*
 vendor/*
