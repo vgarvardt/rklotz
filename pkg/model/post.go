@@ -18,14 +18,17 @@ const (
 )
 
 var (
-	ErrorUnknownFormat    = errors.New("Unknown post format")
+	// ErrorUnknownFormat is the error returned when trying to load a post with unknown format
+	ErrorUnknownFormat = errors.New("Unknown post format")
+	// ErrorBadPostStructure is the error returned when trying to load a post with bad internal structure
 	ErrorBadPostStructure = errors.New("Bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaSeparator)
+	// ErrorBadMetaStructure is the error returned when trying to load a post with bad meta structure
 	ErrorBadMetaStructure = errors.New("Bad post meta structure, must have the following lines: post title, publishing date, post tags")
 )
 
 type formatHandler func(input string) string
 
-var formatsMap map[string]formatHandler = map[string]formatHandler{
+var formatsMap = map[string]formatHandler{
 	"md": func(input string) string {
 		html := string(blackfriday.Run([]byte(input)))
 		// open all links in new tab
@@ -38,6 +41,7 @@ var formatsMap map[string]formatHandler = map[string]formatHandler{
 	},
 }
 
+// Post represents post model
 type Post struct {
 	Path        string `storm:"id"`
 	ID          string `storm:"unique"`
@@ -49,6 +53,7 @@ type Post struct {
 	HTML        string
 }
 
+// NewPostFromFile loads new post instance from file
 func NewPostFromFile(basePath, postPath string) (*Post, error) {
 	post := &Post{Path: postPath[len(basePath) : len(postPath)-len(filepath.Ext(postPath))]}
 

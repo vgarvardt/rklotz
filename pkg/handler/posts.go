@@ -9,15 +9,18 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
+// PostsHandler is the handler for posts pages
 type PostsHandler struct {
 	storage  storage.Storage
 	renderer renderer.Renderer
 }
 
+// NewPostsHandler creates new PostsHandler instance
 func NewPostsHandler(storage storage.Storage, renderer renderer.Renderer) *PostsHandler {
 	return &PostsHandler{storage, renderer}
 }
 
+// Front is the HTTP handler for the front page with post list
 func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"meta": h.storage.Meta(),
@@ -32,6 +35,7 @@ func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
+// Tag is the HTTP handler for the tag page with post list for a tag
 func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 
@@ -49,6 +53,7 @@ func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
+// Post is the HTTP handler for the post page
 func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.FindByPath(r.URL.Path)
 

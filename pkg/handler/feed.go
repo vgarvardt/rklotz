@@ -11,17 +11,20 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
+// FeedHandler is the handler for RSS/Atom feeds
 type FeedHandler struct {
 	storage    storage.Storage
 	renderer   renderer.Renderer
 	uiSettings config.UISetting
-	rootUrl    config.RootURL
+	rootURL    config.RootURL
 }
 
-func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootUrl config.RootURL) *FeedHandler {
-	return &FeedHandler{storage, renderer, uiSettings, rootUrl}
+// NewFeedHandler creates new FeedHandler instance
+func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootURL config.RootURL) *FeedHandler {
+	return &FeedHandler{storage, renderer, uiSettings, rootURL}
 }
 
+// Atom is the HTTP handler for Atom feed
 func (h *FeedHandler) Atom(w http.ResponseWriter, r *http.Request) {
 	feed := feeds.Atom{Feed: h.getFeed(r)}
 	atomFeed := feed.AtomFeed()
@@ -32,6 +35,7 @@ func (h *FeedHandler) Atom(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Rss is the HTTP handler for RSS feed
 func (h *FeedHandler) Rss(w http.ResponseWriter, r *http.Request) {
 	feed := feeds.Rss{Feed: h.getFeed(r)}
 	rssFeed := feed.RssFeed()
@@ -43,10 +47,10 @@ func (h *FeedHandler) Rss(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
-	rootUrl := h.rootUrl.URL(r)
+	rootURL := h.rootURL.URL(r)
 	feed := &feeds.Feed{
 		Title:       h.uiSettings.Title,
-		Link:        &feeds.Link{Href: rootUrl.String()},
+		Link:        &feeds.Link{Href: rootURL.String()},
 		Description: h.uiSettings.Description,
 		Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
 		Copyright:   "This work is copyright © " + h.uiSettings.Author,
@@ -56,11 +60,11 @@ func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
 	posts, _ := h.storage.ListAll(0)
 
 	for _, post := range posts {
-		rootUrl.Path = post.Path
+		rootURL.Path = post.Path
 		item := &feeds.Item{
 			Id:          post.ID,
 			Title:       post.Title,
-			Link:        &feeds.Link{Href: rootUrl.String()},
+			Link:        &feeds.Link{Href: rootURL.String()},
 			Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],
 			Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
 			Created:     post.PublishedAt,

@@ -11,6 +11,7 @@ import (
 
 const tagsNode = "__rklotz_tags"
 
+// BoltDBStorage is the Storage implementation on top of BoltDB
 type BoltDBStorage struct {
 	db   *storm.DB
 	path string
@@ -20,6 +21,7 @@ type BoltDBStorage struct {
 	postsPerPage int
 }
 
+// NewBoltDBStorage creates new BoltDBStorage instance
 func NewBoltDBStorage(path string, postsPerPage int) (*BoltDBStorage, error) {
 	var err error
 
@@ -56,6 +58,7 @@ func NewBoltDBStorage(path string, postsPerPage int) (*BoltDBStorage, error) {
 	return instance, nil
 }
 
+// Save persists new post in the storage
 func (s *BoltDBStorage) Save(post *model.Post) error {
 	err := s.db.Save(post)
 	if nil != err {
@@ -82,10 +85,12 @@ func (s *BoltDBStorage) Save(post *model.Post) error {
 	return nil
 }
 
+// Finalize is called after all posts are persisted in the storage
 func (s *BoltDBStorage) Finalize() error {
 	return nil
 }
 
+// FindByPath searches for a post by path
 func (s *BoltDBStorage) FindByPath(path string) (*model.Post, error) {
 	var post model.Post
 	err := s.db.One("Path", path, &post)
@@ -97,6 +102,7 @@ func (s *BoltDBStorage) FindByPath(path string) (*model.Post, error) {
 	return &post, err
 }
 
+// ListAll returns ordered by date posts page
 func (s *BoltDBStorage) ListAll(page int) ([]*model.Post, error) {
 	var posts []*model.Post
 	offset := page * s.postsPerPage
@@ -104,6 +110,7 @@ func (s *BoltDBStorage) ListAll(page int) ([]*model.Post, error) {
 	return posts, err
 }
 
+// ListTag returns ordered by date posts page for a tag
 func (s *BoltDBStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	var tagObject model.Tag
 
@@ -128,6 +135,7 @@ func (s *BoltDBStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	return posts, nil
 }
 
+// Close closes the storage and frees all resources
 func (s *BoltDBStorage) Close() error {
 	if err := s.db.Close(); err != nil {
 		return err
@@ -135,10 +143,12 @@ func (s *BoltDBStorage) Close() error {
 	return s.remove()
 }
 
+// Meta returns metadata for all persisted posts
 func (s *BoltDBStorage) Meta() *model.Meta {
 	return model.NewMeta(s.postsCount, s.postsPerPage)
 }
 
+// TagMeta returns metadata for all persisted posts for a tag
 func (s *BoltDBStorage) TagMeta(tag string) *model.Meta {
 	var tagObject model.Tag
 

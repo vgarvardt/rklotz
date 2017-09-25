@@ -21,6 +21,7 @@ func (p postSlice) Less(i, j int) bool { return p[i].PublishedAt.Before(p[j].Pub
 // Swap swaps the elements with indexes i and j.
 func (p postSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
+// MemoryStorage is the in memory Storage implementation
 type MemoryStorage struct {
 	posts *sync.Map
 	tags  *sync.Map
@@ -32,6 +33,7 @@ type MemoryStorage struct {
 	postsPerPage int
 }
 
+// NewMemoryStorage creates new MemoryStorage instance
 func NewMemoryStorage(postsPerPage int) (*MemoryStorage, error) {
 	instance := &MemoryStorage{
 		posts:        new(sync.Map),
@@ -43,6 +45,7 @@ func NewMemoryStorage(postsPerPage int) (*MemoryStorage, error) {
 	return instance, nil
 }
 
+// Save persists new post in the storage
 func (s *MemoryStorage) Save(post *model.Post) error {
 	s.posts.Store(post.Path, post)
 	s.postsCount++
@@ -66,6 +69,7 @@ func (s *MemoryStorage) Save(post *model.Post) error {
 	return nil
 }
 
+// Finalize is called after all posts are persisted in the storage
 func (s *MemoryStorage) Finalize() error {
 	s.postsList = make([]*model.Post, s.postsCount)
 	i := 0
@@ -84,6 +88,7 @@ func (s *MemoryStorage) Finalize() error {
 	return nil
 }
 
+// FindByPath searches for a post by path
 func (s *MemoryStorage) FindByPath(path string) (*model.Post, error) {
 	post, ok := s.posts.Load(path)
 	if !ok {
@@ -92,10 +97,12 @@ func (s *MemoryStorage) FindByPath(path string) (*model.Post, error) {
 	return post.(*model.Post), nil
 }
 
+// ListAll returns ordered by date posts page
 func (s *MemoryStorage) ListAll(page int) ([]*model.Post, error) {
 	return s.slicePage(s.postsList, page)
 }
 
+// ListTag returns ordered by date posts page for a tag
 func (s *MemoryStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	tagSlice, ok := s.tagsList.Load(strings.ToLower(tag))
 	if !ok {
@@ -115,14 +122,17 @@ func (s *MemoryStorage) slicePage(slice []*model.Post, page int) ([]*model.Post,
 	return slice[offset:offsetBound], nil
 }
 
+// Close closes the storage and frees all resources
 func (s *MemoryStorage) Close() error {
 	return nil
 }
 
+// Meta returns metadata for all persisted posts
 func (s *MemoryStorage) Meta() *model.Meta {
 	return model.NewMeta(s.postsCount, s.postsPerPage)
 }
 
+// TagMeta returns metadata for all persisted posts for a tag
 func (s *MemoryStorage) TagMeta(tag string) *model.Meta {
 	tagModel, ok := s.tags.Load(strings.ToLower(tag))
 	if !ok {

@@ -23,6 +23,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
+// RunServer initializes and runs web-server instance
 func RunServer(cmd *cobra.Command, args []string) {
 	appConfig, err := config.Load()
 	failOnError(err, "Failed to load config")
@@ -33,9 +34,9 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	hasher := md5.New()
 	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
-	instanceId := hex.EncodeToString(hasher.Sum(nil))[:5]
+	instanceID := hex.EncodeToString(hasher.Sum(nil))[:5]
 
-	log.WithFields(log.Fields{"version": version, "instance": instanceId}).Info("Starting rKlotz...")
+	log.WithFields(log.Fields{"version": version, "instance": instanceID}).Info("Starting rKlotz...")
 
 	storageInstance, err := storage.NewStorage(appConfig.StorageDSN, appConfig.PostsPerPage)
 	failOnError(err, "Failed to get storageInstance instance")
@@ -47,9 +48,9 @@ func RunServer(cmd *cobra.Command, args []string) {
 	err = loaderInstance.Load(storageInstance)
 	failOnError(err, "Failed to load posts")
 
-	htmlRenderer, err := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceId, appConfig.UI, appConfig.Plugins, appConfig.RootURL)
+	htmlRenderer, err := renderer.NewHTMLRenderer(appConfig.Web.TemplatesPath, instanceID, appConfig.UI, appConfig.Plugins, appConfig.RootURL)
 	failOnError(err, "Failed to init HTML Renderer")
-	xmlRenderer := renderer.NewXmlRenderer()
+	xmlRenderer := renderer.NewXMLRenderer()
 
 	postsHandler := handler.NewPostsHandler(storageInstance, htmlRenderer)
 	feedHandler := handler.NewFeedHandler(storageInstance, xmlRenderer, appConfig.UI, appConfig.RootURL)
