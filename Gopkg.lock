@@ -69,7 +69,7 @@
 
 [[projects]]
   name = "github.com/magiconair/properties"
-  packages = ["."]
+  packages = [".","assert"]
   revision = "be5ece7dd465ab0765a9682137865547526d1dfb"
   version = "v1.7.3"
 
@@ -153,7 +153,7 @@
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = ["assert"]
+  packages = ["assert","require"]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
   version = "v1.1.4"
 
@@ -184,6 +184,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0e1197f1a8b085c901a72f9785d629d3c8e6cb13abcffab6d345d17fc29bc271"
+  inputs-digest = "2bea5a937e3edfa51353cf517e84e94d43ab6c7d5c7ecdebd5f8efc2d1c49296"
   solver-name = "gps-cdcl"
   solver-version = 1

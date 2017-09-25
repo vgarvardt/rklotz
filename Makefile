@@ -29,19 +29,14 @@ build:
 	docker build --no-cache --pull -t vgarvardt/rklotz:`cat ./VERSION` .
 
 push:
-	docker push vgarvardt/rklotz:`cat ./VERSION` .
+	docker push vgarvardt/rklotz:`cat ./VERSION`
 
 test:
 	@/bin/sh -c "./build/test.sh $(allpackages)"
 
-lint:
-	@echo "$(OK_COLOR)==> Linting... $(NO_COLOR)"
-	@golint $(allpackages)
-
 clean:
 	@echo "$(OK_COLOR)==> Cleaning project$(NO_COLOR)"
 	@go clean
-	@rm -rf bin $GOPATH/bin
 
 # cd into the GOPATH to workaround ./... not following symlinks
 _allpackages = $(shell ( go list ./... 2>&1 1>&3 | \
