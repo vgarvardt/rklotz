@@ -1,23 +1,29 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 var static = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}
 
 // LoggerRequest implements chi/middleware.LogFormatter interface for requests logging
-type LoggerRequest struct{}
+type LoggerRequest struct {
+	logger *zap.Logger
+}
+
+// NewLoggerRequest creates new logger request middleware instance
+func NewLoggerRequest(logger *zap.Logger) *LoggerRequest {
+	return &LoggerRequest{logger}
+}
 
 // LoggerEntry implements chi/middleware.LogEntry interface for requests logging
 type LoggerEntry struct {
-	logger log.FieldLogger
+	logger *zap.Logger
 	path   string
 }
 
@@ -25,12 +31,12 @@ type LoggerEntry struct {
 func (l *LoggerRequest) NewLogEntry(r *http.Request) middleware.LogEntry {
 	entry := &LoggerEntry{path: r.URL.Path}
 
-	entry.logger = log.WithFields(log.Fields{
-		"method":      r.Method,
-		"path":        r.URL.Path,
-		"remote-addr": r.RemoteAddr,
-		"user-agent":  r.UserAgent(),
-	})
+	entry.logger = l.logger.With(
+		zap.String("method", r.Method),
+		zap.String("path", r.URL.Path),
+		zap.String("remote-addr", r.RemoteAddr),
+		zap.String("user-agent", r.UserAgent()),
+	)
 
 	entry.logger.Debug("Start serving request")
 
@@ -39,29 +45,24 @@ func (l *LoggerRequest) NewLogEntry(r *http.Request) middleware.LogEntry {
 
 // Write records the final log when a request completes
 func (l *LoggerEntry) Write(status, bytes int, elapsed time.Duration) {
-	l.logger = l.logger.WithFields(log.Fields{
-		"code":         status,
-		"bytes_length": bytes,
-		"elapsed_ms":   elapsed.String(),
-	})
+	l.logger = l.logger.With(
+		zap.Int("code", status),
+		zap.Int("bytes_length", bytes),
+		zap.Duration("elapsed_ms", elapsed),
+	)
 
 	msg := "Finished serving request"
 	for i := range static {
 		if strings.HasSuffix(l.path, static[i]) {
-			l.logger.Debugln(msg)
+			l.logger.Debug(msg)
 			return
 		}
 	}
 
-	l.logger.Infoln(msg)
+	l.logger.Info(msg)
 }
 
 // Panic records the final log when a request completes
 func (l *LoggerEntry) Panic(v interface{}, stack []byte) {
-	l.logger = l.logger.WithFields(log.Fields{
-		"stack": string(stack),
-		"panic": fmt.Sprintf("%+v", v),
-	})
-
-	l.logger.Errorln("Panic while serving request")
+	l.logger.Error("Panic while serving request", zap.ByteString("stack", stack), zap.Any("panic", v))
 }

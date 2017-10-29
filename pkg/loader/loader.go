@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/vgarvardt/rklotz/pkg/storage"
+	"go.uber.org/zap"
 )
 
 const (
@@ -23,7 +24,7 @@ type Loader interface {
 }
 
 // NewLoader returns new loader instance by type
-func NewLoader(dsn string) (Loader, error) {
+func NewLoader(dsn string, logger *zap.Logger) (Loader, error) {
 	postsURL, err := url.Parse(dsn)
 	if nil != err {
 		return nil, err
@@ -31,7 +32,7 @@ func NewLoader(dsn string) (Loader, error) {
 
 	switch postsURL.Scheme {
 	case schemeFile:
-		return NewFileLoader(postsURL.Path)
+		return NewFileLoader(postsURL.Path, logger)
 	}
 
 	return nil, ErrorUnknownLoaderType

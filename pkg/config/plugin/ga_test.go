@@ -1,22 +1,19 @@
 package plugin
 
 import (
-	"io/ioutil"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGoogleAnalytics_Configure(t *testing.T) {
-	log.SetOutput(ioutil.Discard)
-
 	p := &GoogleAnalytics{}
 	_, err := p.Configure(map[string]string{})
-	assert.Error(t, err)
-	assert.Equal(t, err, ErrorConfiguring)
+	require.Error(t, err)
+	assert.IsType(t, &ErrorConfiguring{}, err)
 
 	settings, err := p.Configure(map[string]string{"tracking_id": "foo"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, map[string]string{"tracking_id": "foo"}, settings)
 }
