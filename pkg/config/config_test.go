@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
@@ -164,11 +165,11 @@ func TestPlugins_Configure(t *testing.T) {
 	instance, _ := plugin.GetByName("ga")
 
 	config, err := p.Configure(instance)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, map[string]string{"tracking_id": "foo"}, config)
 
 	_, err = p.Configure(&mockPlugin{})
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, plugin.ErrorUnknownPlugin, err)
 
 	for _, instance := range plugin.GetAll() {

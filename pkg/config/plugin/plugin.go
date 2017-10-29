@@ -1,16 +1,10 @@
 package plugin
 
-import (
-	"errors"
-
-	log "github.com/sirupsen/logrus"
-)
+import "errors"
 
 var (
 	// ErrorUnknownPlugin is the error returned when trying to get unknown plugin
 	ErrorUnknownPlugin = errors.New("Unknown plugin")
-	// ErrorConfiguring is the error returned when plugin configuring fails
-	ErrorConfiguring = errors.New("Failed to configure plugin")
 )
 
 var all map[string]Plugin
@@ -60,8 +54,7 @@ func init() {
 func validateRequiredFields(settings map[string]string, fields []string) error {
 	for _, field := range fields {
 		if _, ok := settings[field]; !ok {
-			log.WithField("field", field).Error("Required field missing")
-			return ErrorConfiguring
+			return NewErrorConfiguring(field)
 		}
 	}
 	return nil

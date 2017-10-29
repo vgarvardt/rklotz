@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/leekchan/gtf"
-	log "github.com/sirupsen/logrus"
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
+	"go.uber.org/zap"
 )
 
 const (
@@ -22,41 +22,46 @@ const (
 	dataRequestKey      = "__request"
 )
 
+// HTMLRendererConfig is configuration for HTML renderer
+type HTMLRendererConfig struct {
+	TemplatesPath string
+	InstanceID    string
+	UISettings    config.UISetting
+	Plugins       config.Plugins
+	RootURL       config.RootURL
+}
+
 // HTMLRenderer implements Renderer for HTML content
 type HTMLRenderer struct {
-	templates  map[string]*template.Template
-	instanceID string
-	uiSettings config.UISetting
-	plugins    config.Plugins
-	rootURL    config.RootURL
+	templates map[string]*template.Template
+	config    HTMLRendererConfig
+	logger    *zap.Logger
 
 	enabledPluginsMap map[string]bool
 	pluginsSettings   map[string]map[string]template.JS
 }
 
 // NewHTMLRenderer creates new HTMLRenderer instance
-func NewHTMLRenderer(templatesPath string, instanceID string, uiSettings config.UISetting, plugins config.Plugins, rootURL config.RootURL) (*HTMLRenderer, error) {
+func NewHTMLRenderer(config HTMLRendererConfig, logger *zap.Logger) (*HTMLRenderer, error) {
 	instance := &HTMLRenderer{
-		templates:  make(map[string]*template.Template),
-		instanceID: instanceID,
-		uiSettings: uiSettings,
-		plugins:    plugins,
-		rootURL:    rootURL,
+		templates: make(map[string]*template.Template),
+		config:    config,
+		logger:    logger,
 	}
 
-	partials, err := instance.getPartials(templatesPath, uiSettings.Theme, uiSettings.AboutPath)
+	partials, err := instance.getPartials(config.TemplatesPath, config.UISettings.Theme, config.UISettings.AboutPath)
 	if nil != err {
 		return nil, err
 	}
 
-	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", templatesPath, uiSettings.Theme))
+	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", config.TemplatesPath, config.UISettings.Theme))
 	baseTemplate := template.Must(
-		template.New("base.html").Funcs(getTmplFuncMap(uiSettings.DateFormat)).ParseFiles(baseFiles...))
+		template.New("base.html").Funcs(getTmplFuncMap(config.UISettings.DateFormat)).ParseFiles(baseFiles...))
 
 	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
-		tmplPath := fmt.Sprintf("%s/%s/%s", templatesPath, uiSettings.Theme, tmplName)
+		tmplPath := fmt.Sprintf("%s/%s/%s", config.TemplatesPath, config.UISettings.Theme, tmplName)
 
-		log.WithFields(log.Fields{"name": tmplName, "path": tmplPath}).Debug("Initializing template")
+		instance.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
 		instance.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
@@ -92,13 +97,13 @@ func (r *HTMLRenderer) getPartials(templatesPath, theme, uiAbout string) ([]stri
 
 	_, err = os.Stat(uiAbout)
 	if os.IsNotExist(err) {
-		log.WithField("path", uiAbout).Info("Custom about panel not found, loading default theme about panel")
+		r.logger.Info("Custom about panel not found, loading default theme about panel", zap.String("path", uiAbout))
 		uiAbout = fmt.Sprintf("%s/%s/partial/about.html", templatesPath, theme)
 	} else if nil != err {
-		log.WithError(err).WithField("path", uiAbout).Error("Failed to load custom about panel")
+		r.logger.Error("Failed to load custom about panel", zap.Error(err), zap.String("path", uiAbout))
 		return nil, err
 	} else {
-		log.WithField("path", uiAbout).Info("Loading custom about panel")
+		r.logger.Info("Loading custom about panel", zap.String("path", uiAbout))
 	}
 
 	partials = append(partials, uiAbout)
@@ -107,27 +112,31 @@ func (r *HTMLRenderer) getPartials(templatesPath, theme, uiAbout string) ([]stri
 }
 
 func (r *HTMLRenderer) initPlugins() error {
-	r.enabledPluginsMap = make(map[string]bool, len(r.plugins.Enabled))
-	r.pluginsSettings = make(map[string]map[string]template.JS, len(r.plugins.Enabled))
+	r.enabledPluginsMap = make(map[string]bool, len(r.config.Plugins.Enabled))
+	r.pluginsSettings = make(map[string]map[string]template.JS, len(r.config.Plugins.Enabled))
 
-	for i := range r.plugins.Enabled {
-		r.enabledPluginsMap[r.plugins.Enabled[i]] = true
+	for i := range r.config.Plugins.Enabled {
+		r.enabledPluginsMap[r.config.Plugins.Enabled[i]] = true
 
-		log.WithField("name", r.plugins.Enabled[i]).Info("Loading plugin")
-		p, err := plugin.GetByName(r.plugins.Enabled[i])
+		r.logger.Info("Loading plugin", zap.String("name", r.config.Plugins.Enabled[i]))
+		p, err := plugin.GetByName(r.config.Plugins.Enabled[i])
 		if err != nil {
 			return err
 		}
 
-		log.WithField("name", r.plugins.Enabled[i]).Info("Configuring plugin")
-		settings, err := r.plugins.Configure(p)
+		r.logger.Info("Configuring plugin", zap.String("name", r.config.Plugins.Enabled[i]))
+		settings, err := r.config.Plugins.Configure(p)
 		if err != nil {
+			switch e := err.(type) {
+			case *plugin.ErrorConfiguring:
+				r.logger.Error("Failed to configure plugin", zap.Error(err), zap.String("field", e.Field()))
+			}
 			return err
 		}
 
-		r.pluginsSettings[r.plugins.Enabled[i]] = make(map[string]template.JS)
+		r.pluginsSettings[r.config.Plugins.Enabled[i]] = make(map[string]template.JS)
 		for settingName, settingValue := range settings {
-			r.pluginsSettings[r.plugins.Enabled[i]][settingName] = template.JS(settingValue)
+			r.pluginsSettings[r.config.Plugins.Enabled[i]][settingName] = template.JS(settingValue)
 		}
 	}
 
@@ -138,16 +147,16 @@ func (r *HTMLRenderer) initPlugins() error {
 func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{}) {
 	templateData := data.(map[string]interface{})
 
-	templateData["lang"] = r.uiSettings.Language
-	templateData["title"] = r.uiSettings.Title
-	templateData["heading"] = r.uiSettings.Heading
-	templateData["intro"] = r.uiSettings.Intro
-	templateData["theme"] = r.uiSettings.Theme
-	templateData["author"] = r.uiSettings.Author
-	templateData["description"] = r.uiSettings.Description
-	templateData["date_format"] = r.uiSettings.DateFormat
+	templateData["lang"] = r.config.UISettings.Language
+	templateData["title"] = r.config.UISettings.Title
+	templateData["heading"] = r.config.UISettings.Heading
+	templateData["intro"] = r.config.UISettings.Intro
+	templateData["theme"] = r.config.UISettings.Theme
+	templateData["author"] = r.config.UISettings.Author
+	templateData["description"] = r.config.UISettings.Description
+	templateData["date_format"] = r.config.UISettings.DateFormat
 
-	templateData["instance_id"] = r.instanceID
+	templateData["instance_id"] = r.config.InstanceID
 
 	templateData["plugins"] = r.enabledPluginsMap
 	templateData["plugin"] = r.pluginsSettings
@@ -155,10 +164,10 @@ func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	rq, ok := templateData[dataRequestKey].(*http.Request)
 	if ok {
 		templateData["url_path"] = rq.URL.Path
-		templateData["root_url"] = r.rootURL.URL(rq).String()
+		templateData["root_url"] = r.config.RootURL.URL(rq).String()
 
 		currentURL := &url.URL{}
-		*currentURL = *r.rootURL.URL(rq)
+		*currentURL = *r.config.RootURL.URL(rq)
 		currentURL.Path = rq.URL.Path
 		templateData["current_url"] = currentURL.String()
 	}
@@ -166,7 +175,7 @@ func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	templateName := templateData[templateNameDateKey].(string)
 	err := r.templates[templateName].Execute(w, templateData)
 	if nil != err {
-		log.WithError(err).WithField("template", templateName).Error("Problems with rendering HTML template")
+		r.logger.Error("Problems with rendering HTML template", zap.Error(err), zap.String("template", templateName))
 	}
 }
 

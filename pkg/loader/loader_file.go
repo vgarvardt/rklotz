@@ -4,19 +4,20 @@ import (
 	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/storage"
+	"go.uber.org/zap"
 )
 
 // FileLoader is the Loader implementation for local file system
 type FileLoader struct {
-	path string
+	path   string
+	logger *zap.Logger
 }
 
 // NewFileLoader creates new FileLoader instance
-func NewFileLoader(path string) (*FileLoader, error) {
-	return &FileLoader{path}, nil
+func NewFileLoader(path string, logger *zap.Logger) (*FileLoader, error) {
+	return &FileLoader{path, logger}, nil
 }
 
 // Load loads posts and saves them one by one in the storage
@@ -27,14 +28,13 @@ func (l *FileLoader) Load(storage storage.Storage) error {
 				return err
 			}
 
-			log.WithField("path", path).Debug("Loading post from file")
+			l.logger.Debug("Loading post from file", zap.String("path", path))
 			post, err := model.NewPostFromFile(l.path, path)
 			if err != nil {
 				return err
 			}
 
-			log.WithFields(log.Fields{"path": post.Path, "title": post.Title}).
-				Debug("Saving post to storage")
+			l.logger.Debug("Saving post to storage", zap.String("path", post.Path), zap.String("title", post.Title))
 			err = storage.Save(post)
 			if err != nil {
 				return err

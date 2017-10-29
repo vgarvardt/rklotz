@@ -8,11 +8,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 )
 
 func TestNewHTMLRenderer(t *testing.T) {
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
 
 	// .../github.com/vgarvardt/rklotz/pkg/renderer/../../templates
@@ -35,23 +37,23 @@ func TestNewHTMLRenderer(t *testing.T) {
 		path.Join(templatesPath, theme, "partial", "posts.html"),
 	}
 
-	instance := &HTMLRenderer{}
+	instance := &HTMLRenderer{logger: zap.NewNop()}
 
 	// default about panel
 	partials, err := instance.getPartials(templatesPath, theme, "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "about.html")), partials)
 
 	// custom about panel
 	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "alert.html"))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "alert.html")), partials)
 }
 
 func TestHTMLRendererData(t *testing.T) {
 	urlPath := "/hello/world"
 	r, err := http.NewRequest(http.MethodGet, urlPath, nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	templateName := "hello.html"
 	passedData := map[string]interface{}{"foo": "bar", "bar": "baz"}

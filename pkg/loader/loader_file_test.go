@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vgarvardt/rklotz/pkg/model"
+	"go.uber.org/zap"
 )
 
 type mockStorage struct {
@@ -69,7 +70,7 @@ func TestFileLoader_Load(t *testing.T) {
 
 	storage := &mockStorage{saveCallResult: []error{nil, nil}}
 
-	fileLoader, err := NewFileLoader(postsBasePath)
+	fileLoader, err := NewFileLoader(postsBasePath, zap.NewNop())
 	assert.NoError(t, err)
 
 	err = fileLoader.Load(storage)
