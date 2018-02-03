@@ -10,8 +10,8 @@ ADD static/ /etc/rklotz/static
 ADD templates/ /etc/rklotz/templates
 ADD assets/posts/ /etc/rklotz/posts
 
-ADD dist/rklotz.linux.amd64 /
+ADD dist/linuxamd64/rklotz /
 
 EXPOSE 8080 8443
 
-ENTRYPOINT ["/rklotz.linux.amd64"]
+ENTRYPOINT ["/rklotz"]

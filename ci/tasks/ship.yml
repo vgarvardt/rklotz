@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: golang, tag: "1"}
+
+inputs:
+- name: source-code
+
+caches:
+- path: gopath
+
+run:
+  path: source-code/ci/scripts/ship.sh

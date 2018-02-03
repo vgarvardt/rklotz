@@ -8,5 +8,8 @@ image_resource:
 inputs:
 - name: source-code
 
+caches:
+- path: gopath
+
 run:
-  path: source-code/ci/scripts/run-unit-tests.sh
+  path: source-code/ci/scripts/test.sh

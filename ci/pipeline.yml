@@ -13,33 +13,74 @@ resources:
   check_every: 15m
   webhook_token: ((github_webhook_token))
   source:
-    uri: https://((github_token))@github.com/((github_user))/((github_project))
-    repo: ((github_user))/((github_project))
+    uri: https://((github_token))@github.com/((github_owner))/((github_repository))
+    repo: ((github_owner))/((github_repository))
     access_token: ((github_token))
     disable_forks: true
+
+- name: source-code
+  type: git
+  check_every: 15m
+  webhook_token: ((github_webhook_token))
+  source:
+    uri: https://((github_token))@github.com/((github_owner))/((github_repository))
+    branch: master
+
+- name: git-tags
+  type: git
+  source:
+    uri: https://((github_token))@github.com/((github_owner))/((github_repository))
+    branch: master
+    tag_filter: '[0-9].[0-9].[0-9]'
+
+- name: release-version
+  type: semver
+  source:
+    uri: ((github_repository_uri))
+    branch: version
+    driver: git
+    file: version
+    initial_version: 0.0.0
+    private_key: ((github_private_key))
 
 groups:
 
 - name: rKlotz
   jobs:
-  - pr-unit-tests
+  - test-pr
+  - test
+  - build
+  - promote-a-patch
+  - promote-a-minor
+  - promote-a-major
+  - ship-patch
+  - ship-minor
+  - ship-major
 
 - name: PR
   jobs:
-  - pr-unit-tests
+  - test-pr
 
-#- name: Master
-#  jobs:
-#  - master-unit-tests
+- name: Master
+  jobs:
+  - test
+  - build
+  - promote-a-patch
+  - promote-a-minor
+  - promote-a-major
+  - ship-patch
+  - ship-minor
+  - ship-major
 
 jobs:
 
-- name: pr-unit-tests
+- name: test-pr
   public: true
   plan:
   - get: source-code
     resource: pr-source-code
     trigger: true
+    version: every
 
   - put: source-code
     resource: pr-source-code
@@ -49,9 +90,10 @@ jobs:
       status: pending
 
   - task: unit-tests
-    file: source-code/ci/tasks/run-unit-tests.yml
+    file: source-code/ci/tasks/test.yml
     params:
-      PROJECT_SRC: ((project_src))
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
     on_success:
       put: source-code
       resource: pr-source-code
@@ -66,3 +108,135 @@ jobs:
         path: source-code
         context: unit-tests
         status: failure
+
+- name: test
+  public: true
+  plan:
+
+  - get: source-code
+    trigger: true
+    version: every
+
+  - task: unit-tests
+    file: source-code/ci/tasks/test.yml
+    params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
+
+- name: build
+  public: false
+  plan:
+  - get: source-code
+    passed: [ test ]
+    trigger: true
+
+  - task: build
+    file: source-code/ci/tasks/build.yml
+    params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
+
+- name: promote-a-patch
+  serial_groups: [ release-version ]
+  plan:
+  - get: source-code
+    passed: [ build ]
+
+  - get: release-version
+    params:
+      bump: patch
+
+  - put: git-tags
+    params:
+      only-tag: true
+      repository: source-code
+      tag: release-version/number
+  - put: release-version
+    params:
+      file: release-version/number
+
+- name: promote-a-minor
+  serial_groups: [ release-version ]
+  plan:
+  - get: source-code
+    passed: [ build ]
+
+  - get: release-version
+    params:
+      bump: minor
+
+  - put: git-tags
+    params:
+      only-tag: true
+      repository: source-code
+      tag: release-version/number
+  - put: release-version
+    params:
+      file: release-version/number
+
+- name: promote-a-major
+  serial_groups: [ release-version ]
+  plan:
+  - get: source-code
+    passed: [ build ]
+
+  - get: release-version
+    params:
+      bump: major
+
+  - put: git-tags
+    params:
+      only-tag: true
+      repository: source-code
+      tag: release-version/number
+  - put: release-version
+    params:
+      file: release-version/number
+
+- name: ship-patch
+  public: false
+  plan:
+  - get: source-code
+    resource: git-tags
+    passed:
+    - promote-a-patch
+    trigger: true
+
+  - task: build
+    file: source-code/ci/tasks/ship.yml
+    params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
+      GITHUB_TOKEN: ((github_token))
+
+- name: ship-minor
+  public: false
+  plan:
+  - get: source-code
+    resource: git-tags
+    passed:
+    - promote-a-minor
+    trigger: true
+
+  - task: build
+    file: source-code/ci/tasks/ship.yml
+    params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
+      GITHUB_TOKEN: ((github_token))
+
+- name: ship-major
+  public: false
+  plan:
+  - get: source-code
+    resource: git-tags
+    passed:
+    - promote-a-major
+    trigger: true
+
+  - task: build
+    file: source-code/ci/tasks/ship.yml
+    params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
+      GITHUB_TOKEN: ((github_token))

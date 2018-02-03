@@ -1,0 +1,20 @@
+builds:
+  - main: cmd/rklotz/main.go
+    binary: rklotz
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+
+    env:
+      - CGO_ENABLED=0
+
+    ldflags: -s -w -X github.com/vgarvardt/rklotz/main.version={{.Version}}
+#dockers:
+#  - image: vgarvardt/rklotz
+#    goos: linux
+#    goarch: amd64
+#    tag_templates:
+#      - '{{ .Major }}.{{ .Minor }}.{{ .Patch }}'
