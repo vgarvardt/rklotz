@@ -1,13 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-# Ensure this script fails if anything errors
 set -e
-
-set -ex
 
 source source-code/ci/scripts/helpers/prepare-gopath.sh
 
 cd $SOURCE_GOPATH
 
+echo "===> Run tests..."
 make deps
 make test

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 # Include dotfiles to bash globs
 shopt -s dotglob

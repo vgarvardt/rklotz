@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 source source-code/ci/scripts/helpers/prepare-gopath.sh
 
