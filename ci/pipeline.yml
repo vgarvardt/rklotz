@@ -1,0 +1,68 @@
+---
+resource_types:
+
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+resources:
+
+- name: pr-source-code
+  type: pull-request
+  check_every: 15m
+  webhook_token: ((github_webhook_token))
+  source:
+    uri: https://((github_token))@github.com/((github_user))/((github_project))
+    repo: ((github_user))/((github_project))
+    access_token: ((github_token))
+    disable_forks: true
+
+groups:
+
+- name: rKlotz
+  jobs:
+  - pr-unit-tests
+
+- name: PR
+  jobs:
+  - pr-unit-tests
+
+#- name: Master
+#  jobs:
+#  - master-unit-tests
+
+jobs:
+
+- name: pr-unit-tests
+  public: true
+  plan:
+  - get: source-code
+    resource: pr-source-code
+    trigger: true
+
+  - put: source-code
+    resource: pr-source-code
+    params:
+      path: source-code
+      context: unit-tests
+      status: pending
+
+  - task: unit-tests
+    file: source-code/ci/tasks/run-unit-tests.yml
+    params:
+      PROJECT_SRC: ((project_src))
+    on_success:
+      put: source-code
+      resource: pr-source-code
+      params:
+        path: source-code
+        context: unit-tests
+        status: success
+    on_failure:
+      put: source-code
+      resource: pr-source-code
+      params:
+        path: source-code
+        context: unit-tests
+        status: failure
