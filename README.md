@@ -1,6 +1,5 @@
 # rKlotz
 
-[![Build Status](https://travis-ci.org/vgarvardt/rklotz.svg?branch=master)](https://travis-ci.org/vgarvardt/rklotz)
 [![Coverage Status](https://codecov.io/gh/vgarvardt/rklotz/branch/master/graph/badge.svg)](https://codecov.io/gh/vgarvardt/rklotz)
 
 > Yet another simple single-user file-based golang-driven blog engine
@@ -24,7 +23,7 @@ $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
 $ make deps
 $ make build
-$ docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION`
+$ docker run -it -p 8080:8080 vgarvardt/rklotz
 ```
 
 Then open `http://127.0.0.1:8080` in your browser.
