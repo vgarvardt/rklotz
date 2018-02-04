@@ -48,9 +48,7 @@ groups:
 - name: rKlotz
   jobs:
   - test-pr
-  - coverage-pr
   - test
-  - coverage
   - build
   - promote-a-patch
   - promote-a-minor
@@ -62,12 +60,10 @@ groups:
 - name: PR
   jobs:
   - test-pr
-  - coverage-pr
 
 - name: Master
   jobs:
   - test
-  - coverage
   - build
   - promote-a-patch
   - promote-a-minor
@@ -113,16 +109,7 @@ jobs:
         context: unit-tests
         status: failure
 
-- name: coverage-pr
-  public: true
-  plan:
-  - get: source-code
-    resource: pr-source-code
-    trigger: true
-    version: every
-    passed: [ test-pr ]
-
-  - task: unit-tests
+  - task: code-coverage
     file: source-code/ci/tasks/cover.yml
     params:
       CODECOV_TOKEN: ((codecov_token))
@@ -141,15 +128,7 @@ jobs:
       OWNER: ((github_owner))
       REPO: ((github_repository))
 
-- name: coverage
-  public: true
-  plan:
-  - get: source-code
-    trigger: true
-    version: every
-    passed: [ test ]
-
-  - task: unit-tests
+  - task: code-coverage
     file: source-code/ci/tasks/cover.yml
     params:
       CODECOV_TOKEN: ((codecov_token))
