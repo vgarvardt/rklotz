@@ -112,6 +112,8 @@ jobs:
   - task: code-coverage
     file: source-code/ci/tasks/cover.yml
     params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
       CODECOV_TOKEN: ((codecov_token))
 
 - name: test
@@ -131,6 +133,8 @@ jobs:
   - task: code-coverage
     file: source-code/ci/tasks/cover.yml
     params:
+      OWNER: ((github_owner))
+      REPO: ((github_repository))
       CODECOV_TOKEN: ((codecov_token))
 
 - name: build
