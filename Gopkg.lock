@@ -11,14 +11,14 @@
     "internal",
     "q"
   ]
-  revision = "255212403bcca439778718edf5e2d3d50744eca3"
-  version = "v1.1.0"
+  revision = "68fc73b635f890fe7ba2f3b15ce80c85b28a744f"
+  version = "v2.0.2"
 
 [[projects]]
-  name = "github.com/boltdb/bolt"
+  name = "github.com/coreos/bbolt"
   packages = ["."]
-  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
-  version = "v1.3.1"
+  revision = "48ea1b39c25fc1bab3506fbc712ecbaa842c4d2d"
+  version = "v1.3.1-coreos.6"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -236,6 +236,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "755d1d615c9666812152b0923f2b7659148d0bd7d185e966c180e78148b469ee"
+  inputs-digest = "4f8613901ee1de3cb6aeccd543a292d7c50b374bf62962fb8415eecddbe146e8"
   solver-name = "gps-cdcl"
   solver-version = 1
