@@ -72,7 +72,8 @@ func RunServer(cmd *cobra.Command, args []string) {
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.RequestLogger(m.NewLoggerRequest(logger)))
+	r.Use(m.NewLogger(logger).Handler)
+	r.Use(middleware.RequestLogger(m.NewRequestLogger()))
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", postsHandler.Front)
