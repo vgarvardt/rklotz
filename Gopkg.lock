@@ -206,7 +206,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "2509b142fb2b797aa7587dad548f113b2c0f20ce"
+  revision = "49796115aa4b964c318aad4f3084fdb41e9aa067"
 
 [[projects]]
   branch = "master"

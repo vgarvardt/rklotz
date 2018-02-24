@@ -1,6 +1,6 @@
 FROM alpine
 
-COPY assets/ca-certificates.crt /etc/ssl/certs/
+RUN apk add --no-cache ca-certificates
 
 RUN mkdir -p /etc/rklotz/posts && \
     mkdir -p /etc/rklotz/static && \

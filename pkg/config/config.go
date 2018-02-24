@@ -39,7 +39,6 @@ type SSLSettings struct {
 	Enabled      bool   `envconfig:"SSL_ENABLED"`
 	Port         int    `envconfig:"SSL_PORT"`
 	Host         string `envconfig:"SSL_HOST"`
-	RedirectHTTP bool   `envconfig:"SSL_REDIRECT_HTTP"`
 	CacheDir     string `envconfig:"SSL_CACHE_DIR"`
 }
 
@@ -117,7 +116,6 @@ func init() {
 
 	viper.SetDefault("ssl.enabled", false)
 	viper.SetDefault("ssl.port", 8443)
-	viper.SetDefault("ssl.redirectHTTP", true)
 	viper.SetDefault("ssl.cacheDir", "/tmp")
 
 	viper.SetDefault("ui.theme", "foundation")

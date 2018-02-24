@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"crypto/md5"
 	"crypto/tls"
 	"encoding/hex"
@@ -106,55 +105,42 @@ func serveStatic(r chi.Router, appConfig *config.AppConfig) {
 	})
 }
 
-func listenAndServe(r chi.Router, appConfig *config.AppConfig) {
+func listenAndServe(handler chi.Router, appConfig *config.AppConfig) {
 	if appConfig.SSL.Enabled {
 		logger.Info("SSL is enabled, starting HTTPS server")
 
-		hostPolicy := func(ctx context.Context, host string) error {
-			if host == appConfig.SSL.Host {
-				return nil
-			}
-			return fmt.Errorf("acme/autocert: only %s host is allowed", appConfig.SSL.Host)
-		}
-
-		tlsCertManager := autocert.Manager{
+		tlsCertManager := &autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
-			HostPolicy: hostPolicy,
+			HostPolicy: autocert.HostWhitelist(appConfig.SSL.Host),
 			Cache:      autocert.DirCache(appConfig.SSL.CacheDir),
 			Email:      appConfig.UI.Email,
 		}
 
 		httpsAddress := fmt.Sprintf(":%d", appConfig.SSL.Port)
 		server := &http.Server{
-			Addr:      httpsAddress,
-			Handler:   r,
-			TLSConfig: &tls.Config{GetCertificate: tlsCertManager.GetCertificate},
+			Addr:    httpsAddress,
+			Handler: handler,
+			TLSConfig: &tls.Config{
+				GetCertificate: tlsCertManager.GetCertificate,
+			},
 		}
 
 		go func() {
 			logger.Info("Running HTTPS server...", zap.String("address", httpsAddress))
 			logger.Fatal("Failed to run HTTPS server", zap.Error(server.ListenAndServeTLS("", "")))
 		}()
-	}
-
-	if appConfig.SSL.Enabled && appConfig.SSL.RedirectHTTP {
-		mux := &http.ServeMux{}
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			logger.Debug("Redirecting HTTP request to HTTPS", zap.String("url", r.URL.String()))
-
-			newURI := "https://" + r.Host + r.URL.String()
-			http.Redirect(w, r, newURI, http.StatusFound)
-		})
 
 		httpAddress := fmt.Sprintf(":%d", appConfig.Web.Port)
-		redirectServer := &http.Server{Handler: mux, Addr: httpAddress}
 
 		logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpAddress))
-		logger.Fatal("Failed to run HTTP to HTTPS redirect server", zap.Error(redirectServer.ListenAndServe()))
+		logger.Fatal(
+			"Failed to run HTTP to HTTPS redirect server",
+			zap.Error(http.ListenAndServe(httpAddress, tlsCertManager.HTTPHandler(nil))),
+		)
 	} else {
 		address := fmt.Sprintf(":%d", appConfig.Web.Port)
 		logger.Info("Running HTTP server...", zap.String("address", address))
-		logger.Fatal("Failed to run HTTP server", zap.Error(http.ListenAndServe(address, r)))
+		logger.Fatal("Failed to run HTTP server", zap.Error(http.ListenAndServe(address, handler)))
 	}
 }
 
