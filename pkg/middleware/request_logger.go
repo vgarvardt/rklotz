@@ -12,13 +12,11 @@ import (
 var static = []string{".css", ".js", ".png", ".jpg", ".jpeg", ".ico"}
 
 // RequestLogger implements chi/middleware.LogFormatter interface for requests logging
-type RequestLogger struct {
-	logger *zap.Logger
-}
+type RequestLogger struct{}
 
 // NewRequestLogger creates new logger request middleware instance
-func NewRequestLogger(logger *zap.Logger) *RequestLogger {
-	return &RequestLogger{logger}
+func NewRequestLogger() *RequestLogger {
+	return &RequestLogger{}
 }
 
 // LoggerEntry implements chi/middleware.LogEntry interface for requests logging
@@ -31,7 +29,7 @@ type LoggerEntry struct {
 func (l *RequestLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
 	entry := &LoggerEntry{path: r.URL.Path}
 
-	entry.logger = l.logger.With(
+	entry.logger = GetRequestLogger(r.Context()).With(
 		zap.String("method", r.Method),
 		zap.String("path", r.URL.Path),
 		zap.String("remote-addr", r.RemoteAddr),
