@@ -32,21 +32,19 @@ func NewServerCmd(ctx context.Context) *cobra.Command {
 		Use:   "server",
 		Short: "Runs rKlotz server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return RunServer()
+			cfg, err := config.Load()
+			if err != nil {
+				return wErrors.Wrap(err, "failed to load config")
+			}
+
+			return RunServer(cfg)
 		},
 	}
 }
 
-var logger *zap.Logger
-
 // RunServer initializes and runs web-server instance
-func RunServer() error {
-	appConfig, err := config.Load()
-	if err != nil {
-		return wErrors.Wrap(err, "failed to load config")
-	}
-
-	logger, err = initLogger(appConfig.LogLevel)
+func RunServer(cfg *config.Config) error {
+	logger, err := initLogger(cfg.LogLevel)
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialize logger")
 	}
@@ -58,13 +56,17 @@ func RunServer() error {
 
 	logger.Info("Starting rKlotz...", zap.String("version", version), zap.String("instance", instanceID))
 
-	storageInstance, err := storage.NewStorage(appConfig.StorageDSN, appConfig.PostsPerPage)
+	storageInstance, err := storage.NewStorage(cfg.StorageDSN, cfg.PostsPerPage)
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialise storage")
 	}
-	defer storageInstance.Close()
+	defer func() {
+		if err := storageInstance.Close(); err != nil {
+			logger.Error("Got an error while closing storage", zap.Error(err))
+		}
+	}()
 
-	loaderInstance, err := loader.NewLoader(appConfig.PostsDSN, logger)
+	loaderInstance, err := loader.NewLoader(cfg.PostsDSN, logger)
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialise loader")
 	}
@@ -76,11 +78,11 @@ func RunServer() error {
 
 	htmlRenderer, err := renderer.NewHTMLRenderer(
 		renderer.HTMLRendererConfig{
-			TemplatesPath: appConfig.Web.TemplatesPath,
+			TemplatesPath: cfg.Web.TemplatesPath,
 			InstanceID:    instanceID,
-			UISettings:    appConfig.UI,
-			Plugins:       appConfig.Plugins,
-			RootURL:       appConfig.RootURL,
+			UISettings:    cfg.UI,
+			Plugins:       cfg.Plugins,
+			RootURL:       cfg.RootURL,
 		},
 		logger,
 	)
@@ -91,7 +93,7 @@ func RunServer() error {
 	xmlRenderer := renderer.NewXMLRenderer()
 
 	postsHandler := handler.NewPostsHandler(storageInstance, htmlRenderer)
-	feedHandler := handler.NewFeedHandler(storageInstance, xmlRenderer, appConfig.UI, appConfig.RootURL)
+	feedHandler := handler.NewFeedHandler(storageInstance, xmlRenderer, cfg.UI, cfg.RootURL)
 
 	r := chi.NewRouter()
 
@@ -110,17 +112,17 @@ func RunServer() error {
 		r.Get("/rss", feedHandler.Rss)
 	})
 
-	serveStatic(r, appConfig)
+	serveStatic(r, cfg.Web, cfg.UI.Theme)
 
-	return listenAndServe(r, appConfig)
+	return listenAndServe(r, cfg.SSL, cfg.Web, logger)
 }
 
-func serveStatic(r chi.Router, appConfig *config.AppConfig) {
-	staticRoot := http.Dir(appConfig.Web.StaticPath)
+func serveStatic(r chi.Router, cfgWeb config.WebSettings, theme string) {
+	staticRoot := http.Dir(cfgWeb.StaticPath)
 	staticPath := "/static"
 	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
 
-	faviconPath := filepath.Join(appConfig.Web.StaticPath, appConfig.UI.Theme, "favicon.ico")
+	faviconPath := filepath.Join(cfgWeb.StaticPath, theme, "favicon.ico")
 
 	r.Get(staticPath+"/*", func(w http.ResponseWriter, r *http.Request) {
 		staticHandler.ServeHTTP(w, r)
@@ -131,9 +133,9 @@ func serveStatic(r chi.Router, appConfig *config.AppConfig) {
 	})
 }
 
-func listenAndServe(handler chi.Router, appConfig *config.AppConfig) error {
-	if !appConfig.SSL.Enabled {
-		address := fmt.Sprintf(":%d", appConfig.Web.Port)
+func listenAndServe(handler chi.Router, cfgSSL config.SSLSettings, cfgWeb config.WebSettings, logger *zap.Logger) error {
+	if !cfgSSL.Enabled {
+		address := fmt.Sprintf(":%d", cfgWeb.Port)
 		logger.Info("Running HTTP server...", zap.String("address", address))
 
 		return http.ListenAndServe(address, handler)
@@ -143,12 +145,12 @@ func listenAndServe(handler chi.Router, appConfig *config.AppConfig) error {
 
 	tlsCertManager := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(appConfig.SSL.Host),
-		Cache:      autocert.DirCache(appConfig.SSL.CacheDir),
-		Email:      appConfig.UI.Email,
+		HostPolicy: autocert.HostWhitelist(cfgSSL.Host),
+		Cache:      autocert.DirCache(cfgSSL.CacheDir),
+		Email:      cfgSSL.Email,
 	}
 
-	httpsAddress := fmt.Sprintf(":%d", appConfig.SSL.Port)
+	httpsAddress := fmt.Sprintf(":%d", cfgSSL.Port)
 	server := &http.Server{
 		Addr:    httpsAddress,
 		Handler: handler,
@@ -162,7 +164,7 @@ func listenAndServe(handler chi.Router, appConfig *config.AppConfig) error {
 		logger.Fatal("Failed to run HTTPS server", zap.Error(server.ListenAndServeTLS("", "")))
 	}()
 
-	httpAddress := fmt.Sprintf(":%d", appConfig.Web.Port)
+	httpAddress := fmt.Sprintf(":%d", cfgWeb.Port)
 
 	logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpAddress))
 

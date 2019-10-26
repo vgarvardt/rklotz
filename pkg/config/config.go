@@ -12,8 +12,8 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
-// AppConfig represents the application configuration
-type AppConfig struct {
+// Config represents the application configuration
+type Config struct {
 	LogLevel     string `envconfig:"LOG_LEVEL" default:"info"`
 	PostsDSN     string `envconfig:"POSTS_DSN" default:"file:///etc/rklotz/posts"`
 	PostsPerPage int    `envconfig:"POSTS_PERPAGE" default:"10"`
@@ -38,6 +38,7 @@ type SSLSettings struct {
 	Enabled  bool   `envconfig:"SSL_ENABLED" default:"false"`
 	Port     int    `envconfig:"SSL_PORT" default:"8443"`
 	Host     string `envconfig:"SSL_HOST"`
+	Email    string `envconfig:"SSL_EMAIL" default:"vgarvardt@gmail.com"`
 	CacheDir string `envconfig:"SSL_CACHE_DIR" default:"/tmp"`
 }
 
@@ -110,13 +111,13 @@ type PluginsSettings struct {
 }
 
 // Load loads app settings from environment variables
-func Load() (*AppConfig, error) {
-	var appConfig AppConfig
+func Load() (*Config, error) {
+	var cfg Config
 
-	err := envconfig.Process("", &appConfig)
+	err := envconfig.Process("", &cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &appConfig, nil
+	return &cfg, nil
 }

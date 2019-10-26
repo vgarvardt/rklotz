@@ -43,12 +43,12 @@ func GetAll() map[string]Plugin {
 
 func init() {
 	all = make(map[string]Plugin)
-	all["disqus"] = &Disqus{}
-	all["ga"] = &GoogleAnalytics{}
-	all["gtm"] = &GoogleTagManager{}
-	all["yamka"] = &YandexMetrika{}
-	all["highlightjs"] = &HighlightJS{}
-	all["yasha"] = &YandexShare{}
+	all["disqus"] = new(Disqus)
+	all["ga"] = new(GoogleAnalytics)
+	all["gtm"] = new(GoogleTagManager)
+	all["yamka"] = new(YandexMetrika)
+	all["highlightjs"] = new(HighlightJS)
+	all["yasha"] = new(YandexShare)
 }
 
 func validateRequiredFields(settings map[string]string, fields []string) error {
