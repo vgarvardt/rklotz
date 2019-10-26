@@ -17,7 +17,7 @@ Then open `http://127.0.0.1:8080` in your browser.
 
 ## Build and run locally
 
-You need to have Go 1.7+ and [Docker](https://www.docker.com/) installed and running.
+You need to have Go 1.12+ and [Docker](https://www.docker.com/) installed and running.
 
 ```bash
 $ git clone git@github.com:vgarvardt/rklotz.git
