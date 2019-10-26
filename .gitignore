@@ -9,11 +9,11 @@ _test
 
 profile.coverprofile
 
-dist/*
+build/*
 vendor/*
-ci/vars.yml
 
 static/3rd-party/*
 !static/3rd-party/.placeholder
 
 .docker-run.sh
+coverage.txt

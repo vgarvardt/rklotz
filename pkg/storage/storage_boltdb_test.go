@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
@@ -57,8 +58,7 @@ func loadTestPosts(t *testing.T, storage Storage) {
 	t.Helper()
 
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
-	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
+	require.NoError(t, err)
 
 	// .../github.com/vgarvardt/rklotz/pkg/repository/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")

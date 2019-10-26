@@ -3,14 +3,13 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
-# The import path is the unique absolute name of your repository.
-# All subpackages should always be imported as relative to it.
-# If you change this, run `make clean`.
-IMPORT_PATH := github.com/vgarvardt/rklotz
-PKG_SRC := $(IMPORT_PATH)/cmd/rklotz
+NAME=rklotz
+REPO=github.com/vgarvardt/${NAME}
 
-# Space separated patterns of packages to skip in list, test, format.
-IGNORED_PACKAGES := /vendor/
+# Build configuration
+VERSION ?= "$(shell cat ./VERSION)"
+BUILD_DIR ?= $(CURDIR)/build
+GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X ${REPO}/cmd.version=$(VERSION)"
 
 .PHONY: all clean deps build
 
@@ -18,29 +17,46 @@ all: clean deps build
 
 deps:
 	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
-	go get -u golang.org/x/lint/golint
-	go mod vendor
-	docker run -it --rm -v $(shell pwd)/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install || echo "$(WARN_COLOR)==> Failed to install frontend libs, skipping... $(NO_COLOR)"
+	@go mod vendor
+	@docker run -it --rm -v $(shell pwd)/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install || echo "$(WARN_COLOR)==> Failed to install frontend libs, skipping... $(NO_COLOR)"
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
-	/bin/sh -c "PKG_SRC=$(PKG_SRC) VERSION=`cat ./VERSION` ./build/build.sh"
-	docker build --no-cache --pull -t vgarvardt/rklotz:`cat ./VERSION` .
+	@CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}"
+	@GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}.linux.amd64"
+	@docker build --no-cache --pull -t vgarvardt/rklotz:`cat ./VERSION` .
 
 push:
-	docker push vgarvardt/rklotz:`cat ./VERSION`
+	@docker push vgarvardt/rklotz:`cat ./VERSION`
 
-test:
-	@/bin/sh -c "./build/test.sh $(allpackages)"
+test: lint format vet
+	@echo "$(OK_COLOR)==> Running tests$(NO_COLOR)"
+	@CGO_ENABLED=0 go test -cover ./... -coverprofile=coverage.txt -covermode=atomic
+
+lint: tools.golint
+	@echo "$(OK_COLOR)==> Checking code style with 'golint' tool$(NO_COLOR)"
+	@go list ./... | xargs -n 1 golint -set_exit_status
+
+format:
+	@echo "$(OK_COLOR)==> Checking code formating with 'gofmt' tool$(NO_COLOR)"
+	@gofmt -l -s cmd pkg | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
+
+vet:
+	@echo "$(OK_COLOR)==> Checking code correctness with 'go vet' tool$(NO_COLOR)"
+	@go vet ./...
 
 clean:
 	@echo "$(OK_COLOR)==> Cleaning project$(NO_COLOR)"
-	@go clean
+	@if [ -d ${BUILD_DIR} ] ; then rm -rf ${BUILD_DIR}/* ; fi
 
-# cd into the GOPATH to workaround ./... not following symlinks
-_allpackages = $(shell ( go list ./... 2>&1 1>&3 | \
-    grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)) 1>&2 ) 3>&1 | \
-    grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)))
+#---------------
+#-- tools
+#---------------
 
-# memoize allpackages, so that it's executed only once and only if used
-allpackages = $(if $(__allpackages),,$(eval __allpackages := $$(_allpackages)))$(__allpackages)
+tools: tools.golint
+
+tools.golint:
+	@command -v golint >/dev/null ; if [ $$? -ne 0 ]; then \
+		echo "--> installing golint"; \
+		go get golang.org/x/lint/golint; \
+	fi
