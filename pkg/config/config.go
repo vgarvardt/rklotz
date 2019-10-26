@@ -36,10 +36,10 @@ type WebSettings struct {
 
 // SSLSettings is the configuration for TLS/SSL
 type SSLSettings struct {
-	Enabled      bool   `envconfig:"SSL_ENABLED"`
-	Port         int    `envconfig:"SSL_PORT"`
-	Host         string `envconfig:"SSL_HOST"`
-	CacheDir     string `envconfig:"SSL_CACHE_DIR"`
+	Enabled  bool   `envconfig:"SSL_ENABLED"`
+	Port     int    `envconfig:"SSL_PORT"`
+	Host     string `envconfig:"SSL_HOST"`
+	CacheDir string `envconfig:"SSL_CACHE_DIR"`
 }
 
 // UISetting is the configuration for user interface
