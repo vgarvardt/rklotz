@@ -15,13 +15,13 @@ import (
 type FeedHandler struct {
 	storage    storage.Storage
 	renderer   renderer.Renderer
-	uiSettings config.UISetting
-	rootURL    config.RootURL
+	cfgUI      config.UI
+	cfgRootURL config.RootURL
 }
 
 // NewFeedHandler creates new FeedHandler instance
-func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, uiSettings config.UISetting, rootURL config.RootURL) *FeedHandler {
-	return &FeedHandler{storage, renderer, uiSettings, rootURL}
+func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, cfgUI config.UI, cfgRootURL config.RootURL) *FeedHandler {
+	return &FeedHandler{storage, renderer, cfgUI, cfgRootURL}
 }
 
 // Atom is the HTTP handler for Atom feed
@@ -47,13 +47,13 @@ func (h *FeedHandler) Rss(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
-	rootURL := h.rootURL.URL(r)
+	rootURL := h.cfgRootURL.URL(r)
 	feed := &feeds.Feed{
-		Title:       h.uiSettings.Title,
+		Title:       h.cfgUI.Title,
 		Link:        &feeds.Link{Href: rootURL.String()},
-		Description: h.uiSettings.Description,
-		Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
-		Copyright:   "This work is copyright © " + h.uiSettings.Author,
+		Description: h.cfgUI.Description,
+		Author:      &feeds.Author{Name: h.cfgUI.Author, Email: h.cfgUI.Email},
+		Copyright:   "This work is copyright © " + h.cfgUI.Author,
 	}
 
 	var items []*feeds.Item
@@ -66,7 +66,7 @@ func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
 			Title:       post.Title,
 			Link:        &feeds.Link{Href: rootURL.String()},
 			Description: post.Body[0:int(math.Min(float64(len(post.Body)), 255))],
-			Author:      &feeds.Author{Name: h.uiSettings.Author, Email: h.uiSettings.Email},
+			Author:      &feeds.Author{Name: h.cfgUI.Author, Email: h.cfgUI.Email},
 			Created:     post.PublishedAt,
 		}
 		items = append(items, item)

@@ -62,9 +62,9 @@ func Run(cfg *config.Config, version string) error {
 		renderer.HTMLRendererConfig{
 			TemplatesPath: cfg.Web.TemplatesPath,
 			InstanceID:    instanceID,
-			UISettings:    cfg.UI,
-			Plugins:       cfg.Plugins,
-			RootURL:       cfg.RootURL,
+			UICfg:         cfg.UI,
+			PluginsCfg:    cfg.Plugins,
+			RootURLCfg:    cfg.RootURL,
 		},
 		logger,
 	)
@@ -99,7 +99,7 @@ func Run(cfg *config.Config, version string) error {
 	return listenAndServe(r, cfg.SSL, cfg.Web, logger)
 }
 
-func serveStatic(r chi.Router, cfgWeb config.WebSettings, theme string) {
+func serveStatic(r chi.Router, cfgWeb config.Web, theme string) {
 	staticRoot := http.Dir(cfgWeb.StaticPath)
 	staticPath := "/static"
 	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
@@ -115,7 +115,7 @@ func serveStatic(r chi.Router, cfgWeb config.WebSettings, theme string) {
 	})
 }
 
-func listenAndServe(handler chi.Router, cfgSSL config.SSLSettings, cfgWeb config.WebSettings, logger *zap.Logger) error {
+func listenAndServe(handler chi.Router, cfgSSL config.SSL, cfgWeb config.Web, logger *zap.Logger) error {
 	if !cfgSSL.Enabled {
 		address := fmt.Sprintf(":%d", cfgWeb.Port)
 		logger.Info("Running HTTP server...", zap.String("address", address))
