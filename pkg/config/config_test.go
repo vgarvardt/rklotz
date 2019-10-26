@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
@@ -43,13 +44,7 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, "", appConfig.RootURL.Host)
 	assert.Equal(t, "/", appConfig.RootURL.Path)
 
-	assert.Equal(t, []string{}, appConfig.Plugins.Enabled)
-
-	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Disqus)
-	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Ga)
-	assert.Equal(t, map[string]string{"version": "9.7.0", "theme": "idea"}, appConfig.Plugins.Settings.Highlightjs)
-	assert.Equal(t, map[string]string{}, appConfig.Plugins.Settings.Yamka)
-	assert.Equal(t, map[string]string{"services": "facebook,twitter,gplus", "size": "m", "lang": "en"}, appConfig.Plugins.Settings.Yasha)
+	assert.Len(t, appConfig.Plugins.Enabled, 0)
 }
 
 func TestLoad(t *testing.T) {
@@ -127,7 +122,7 @@ func TestRootURL_URL(t *testing.T) {
 	os.Unsetenv("ROOT_URL_PATH")
 
 	appConfig, err := Load()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	r := &http.Request{Host: "example.com"}
 
