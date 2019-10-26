@@ -1,8 +1,9 @@
 language: go
 
 go:
+  - 1.12
+  - 1.13
   - 1.x
-  - 1.9
 
 install:
   - mkdir -p $GOPATH/bin
@@ -11,5 +12,7 @@ install:
 
 script:
   - make test
+
+after_success:
   - $GOPATH/bin/overalls -project=github.com/vgarvardt/rklotz -covermode=count
   - bash <(curl -s https://codecov.io/bash) -f overalls.coverprofile

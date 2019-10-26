@@ -1,8 +1,7 @@
 FROM alpine
 
-RUN apk add --no-cache ca-certificates
-
-RUN mkdir -p /etc/rklotz/posts && \
+RUN apk add --no-cache ca-certificates && \
+    mkdir -p /etc/rklotz/posts && \
     mkdir -p /etc/rklotz/static && \
     mkdir -p /etc/rklotz/templates
 
