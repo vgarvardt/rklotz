@@ -24,7 +24,7 @@ $ git clone git@github.com:vgarvardt/rklotz.git
 $ cd rklotz
 $ make deps
 $ make build
-$ docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION`
+$ docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION` server
 ```
 
 Then open `http://127.0.0.1:8080` in your browser.
