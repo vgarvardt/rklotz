@@ -6,6 +6,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
+
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 

@@ -15,7 +15,6 @@ import (
 func TestNewHTMLRenderer(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
 
 	// .../github.com/vgarvardt/rklotz/pkg/renderer/../../templates
 	templatesPath := filepath.Join(wd, "..", "..", "templates")

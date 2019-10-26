@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewPostFromFile(t *testing.T) {
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
-	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
+	require.NoError(t, err)
 
 	// .../github.com/vgarvardt/rklotz/pkg/model/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
@@ -21,7 +21,7 @@ func TestNewPostFromFile(t *testing.T) {
 	publishedAt, _ := time.Parse(time.RFC3339, "2017-05-06T16:34:00+02:00")
 
 	post, err := NewPostFromFile(postsBasePath, postPath)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, "/hello-world", post.Path)
 	assert.Equal(t, "Hello World Post Title", post.Title)

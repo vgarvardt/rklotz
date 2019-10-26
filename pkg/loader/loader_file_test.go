@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vgarvardt/rklotz/pkg/model"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+
+	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
 type mockStorage struct {
@@ -62,8 +64,7 @@ func (s *mockStorage) TagMeta(tag string) *model.Meta {
 
 func TestFileLoader_Load(t *testing.T) {
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
-	assert.Contains(t, wd, "github.com/vgarvardt/rklotz")
+	require.NoError(t, err)
 
 	// .../github.com/vgarvardt/rklotz/pkg/model/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
@@ -71,10 +72,10 @@ func TestFileLoader_Load(t *testing.T) {
 	storage := &mockStorage{saveCallResult: []error{nil, nil}}
 
 	fileLoader, err := NewFileLoader(postsBasePath, zap.NewNop())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = fileLoader.Load(storage)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, 2, storage.saveCallCount)
 	assert.Equal(t, 2, len(storage.saveCallParams))
