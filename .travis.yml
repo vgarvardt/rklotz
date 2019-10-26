@@ -5,6 +5,9 @@ go:
   - 1.13
   - 1.x
 
+env:
+  - GO111MODULE=on
+
 install:
   - mkdir -p $GOPATH/bin
   - go get -u github.com/go-playground/overalls
