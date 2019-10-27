@@ -19,13 +19,13 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, 10, cfg.PostsPerPage)
 	assert.Equal(t, "boltdb:///tmp/rklotz.db", cfg.StorageDSN)
 
-	assert.Equal(t, 8080, cfg.Web.Port)
-	assert.Equal(t, "/etc/rklotz/static", cfg.Web.StaticPath)
-	assert.Equal(t, "/etc/rklotz/templates", cfg.Web.TemplatesPath)
+	assert.Equal(t, 8080, cfg.HTTPConfig.Port)
+	assert.Equal(t, "/etc/rklotz/static", cfg.HTTPConfig.StaticPath)
+	assert.Equal(t, "/etc/rklotz/templates", cfg.HTTPConfig.TemplatesPath)
 
-	assert.Equal(t, false, cfg.SSL.Enabled)
-	assert.Equal(t, 8443, cfg.SSL.Port)
-	assert.Equal(t, "/tmp", cfg.SSL.CacheDir)
+	assert.Equal(t, false, cfg.SSLConfig.Enabled)
+	assert.Equal(t, 8443, cfg.SSLConfig.Port)
+	assert.Equal(t, "/tmp", cfg.SSLConfig.CacheDir)
 
 	assert.Equal(t, "foundation", cfg.UIConfig.Theme)
 	assert.Equal(t, "Vladimir Garvardt", cfg.UIConfig.Author)
@@ -86,9 +86,9 @@ func TestLoad(t *testing.T) {
 	assert.Equal(t, 42, appConfig.PostsPerPage)
 	assert.Equal(t, "mysql://root@localhost/rklotz", appConfig.StorageDSN)
 
-	assert.Equal(t, 8081, appConfig.Web.Port)
-	assert.Equal(t, "/path/to/static", appConfig.Web.StaticPath)
-	assert.Equal(t, "/path/to/templates", appConfig.Web.TemplatesPath)
+	assert.Equal(t, 8081, appConfig.HTTPConfig.Port)
+	assert.Equal(t, "/path/to/static", appConfig.HTTPConfig.StaticPath)
+	assert.Equal(t, "/path/to/templates", appConfig.HTTPConfig.TemplatesPath)
 
 	assert.Equal(t, "premium", appConfig.UIConfig.Theme)
 	assert.Equal(t, "Neal Stephenson", appConfig.UIConfig.Author)

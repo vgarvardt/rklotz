@@ -11,7 +11,6 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/acme/autocert"
 
-	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"
 	m "github.com/vgarvardt/rklotz/pkg/middleware"
 )
@@ -39,12 +38,12 @@ func NewRouter(pH *handler.Posts, fH *handler.Feed, logger *zap.Logger) chi.Rout
 }
 
 // ServeStatic registers static handler for the router
-func ServeStatic(r chi.Router, cfgWeb config.Web, theme string) {
-	staticRoot := http.Dir(cfgWeb.StaticPath)
+func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
+	staticRoot := http.Dir(cfgHTTP.StaticPath)
 	staticPath := "/static"
 	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
 
-	faviconPath := filepath.Join(cfgWeb.StaticPath, theme, "favicon.ico")
+	faviconPath := filepath.Join(cfgHTTP.StaticPath, theme, "favicon.ico")
 
 	r.Get(staticPath+"/*", func(w http.ResponseWriter, r *http.Request) {
 		staticHandler.ServeHTTP(w, r)
@@ -56,15 +55,15 @@ func ServeStatic(r chi.Router, cfgWeb config.Web, theme string) {
 }
 
 // ListenAndServe launches web server that listens to HTTP(S) requests
-func ListenAndServe(handler chi.Router, cfgSSL config.SSL, cfgWeb config.Web, logger *zap.Logger) error {
+func ListenAndServe(handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *zap.Logger) error {
 	if !cfgSSL.Enabled {
-		address := fmt.Sprintf(":%d", cfgWeb.Port)
+		address := fmt.Sprintf(":%d", cfgHTTP.Port)
 		logger.Info("Running HTTP server...", zap.String("address", address))
 
 		return http.ListenAndServe(address, handler)
 	}
 
-	logger.Info("SSL is enabled, starting HTTPS server")
+	logger.Info("SSLConfig is enabled, starting HTTPS server")
 
 	tlsCertManager := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
@@ -87,7 +86,7 @@ func ListenAndServe(handler chi.Router, cfgSSL config.SSL, cfgWeb config.Web, lo
 		logger.Fatal("Failed to run HTTPS server", zap.Error(server.ListenAndServeTLS("", "")))
 	}()
 
-	httpAddress := fmt.Sprintf(":%d", cfgWeb.Port)
+	httpAddress := fmt.Sprintf(":%d", cfgHTTP.Port)
 
 	logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpAddress))
 

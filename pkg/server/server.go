@@ -53,7 +53,7 @@ func Run(cfg *config.Config, version string) error {
 
 	htmlRenderer, err := renderer.NewHTML(
 		renderer.HTMLConfig{
-			TemplatesPath: cfg.Web.TemplatesPath,
+			TemplatesPath: cfg.HTTPConfig.TemplatesPath,
 			InstanceID:    instanceID,
 			UICfg:         cfg.UIConfig,
 			PluginsCfg:    cfg.Config,
@@ -72,9 +72,9 @@ func Run(cfg *config.Config, version string) error {
 
 	r := web.NewRouter(postsHandler, feedHandler, logger)
 
-	web.ServeStatic(r, cfg.Web, cfg.UIConfig.Theme)
+	web.ServeStatic(r, cfg.HTTPConfig, cfg.UIConfig.Theme)
 
-	return web.ListenAndServe(r, cfg.SSL, cfg.Web, logger)
+	return web.ListenAndServe(r, cfg.SSLConfig, cfg.HTTPConfig, logger)
 }
 
 func initLogger(level string) (*zap.Logger, error) {
