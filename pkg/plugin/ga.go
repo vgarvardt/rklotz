@@ -8,8 +8,8 @@ func (p *GoogleAnalytics) Defaults() map[string]string {
 	return map[string]string{}
 }
 
-// Configure applies settings map to a plugin
-func (p *GoogleAnalytics) Configure(settings map[string]string) (map[string]string, error) {
+// SetUp applies settings map to a plugin
+func (p *GoogleAnalytics) SetUp(settings map[string]string) (map[string]string, error) {
 	err := validateRequiredFields(settings, []string{"tracking_id"})
 	if nil != err {
 		return nil, err

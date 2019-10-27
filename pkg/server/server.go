@@ -55,9 +55,9 @@ func Run(cfg *config.Config, version string) error {
 		renderer.HTMLConfig{
 			TemplatesPath: cfg.Web.TemplatesPath,
 			InstanceID:    instanceID,
-			UICfg:         cfg.UI,
-			PluginsCfg:    cfg.Plugins,
-			RootURLCfg:    cfg.RootURL,
+			UICfg:         cfg.UIConfig,
+			PluginsCfg:    cfg.Config,
+			RootURLCfg:    cfg.RootURLConfig,
 		},
 		logger,
 	)
@@ -65,14 +65,14 @@ func Run(cfg *config.Config, version string) error {
 		return wErrors.Wrap(err, "failed to initialise HTML renderer")
 	}
 
-	feedRenderer := renderer.NewFeed(cfg.UI, cfg.RootURL)
+	feedRenderer := renderer.NewFeed(cfg.UIConfig, cfg.RootURLConfig)
 
 	postsHandler := handler.NewPosts(storageInstance, htmlRenderer)
 	feedHandler := handler.NewFeed(storageInstance, feedRenderer)
 
 	r := web.NewRouter(postsHandler, feedHandler, logger)
 
-	web.ServeStatic(r, cfg.Web, cfg.UI.Theme)
+	web.ServeStatic(r, cfg.Web, cfg.UIConfig.Theme)
 
 	return web.ListenAndServe(r, cfg.SSL, cfg.Web, logger)
 }

@@ -12,8 +12,7 @@ import (
 	"time"
 
 	"github.com/leekchan/gtf"
-	"github.com/vgarvardt/rklotz/pkg/config"
-	"github.com/vgarvardt/rklotz/pkg/config/plugin"
+	"github.com/vgarvardt/rklotz/pkg/plugin"
 	"go.uber.org/zap"
 )
 
@@ -21,9 +20,9 @@ import (
 type HTMLConfig struct {
 	TemplatesPath string
 	InstanceID    string
-	UICfg         config.UI
-	PluginsCfg    config.Plugins
-	RootURLCfg    config.RootURL
+	UICfg         UIConfig
+	RootURLCfg    RootURLConfig
+	PluginsCfg    plugin.Config
 }
 
 // HTML implements Renderer for HTML content
@@ -120,7 +119,7 @@ func (r *HTML) initPlugins() error {
 		}
 
 		r.logger.Info("Configuring plugin", zap.String("name", r.config.PluginsCfg.Enabled[i]))
-		settings, err := r.config.PluginsCfg.Configure(p)
+		settings, err := r.config.PluginsCfg.SetUp(p)
 		if err != nil {
 			switch e := err.(type) {
 			case *plugin.ErrorConfiguring:

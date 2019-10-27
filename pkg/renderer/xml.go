@@ -9,7 +9,6 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
@@ -22,12 +21,12 @@ const (
 
 // Feed implements Renderer for XML content
 type Feed struct {
-	cfgUI      config.UI
-	cfgRootURL config.RootURL
+	cfgUI      UIConfig
+	cfgRootURL RootURLConfig
 }
 
 // NewFeed creates new Feed instance
-func NewFeed(cfgUI config.UI, cfgRootURL config.RootURL) *Feed {
+func NewFeed(cfgUI UIConfig, cfgRootURL RootURLConfig) *Feed {
 	return &Feed{cfgUI, cfgRootURL}
 }
 
