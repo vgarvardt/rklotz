@@ -5,7 +5,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/vgarvardt/rklotz/pkg/renderer"
+
+	"github.com/vgarvardt/rklotz/pkg/server/renderer"
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 

@@ -6,12 +6,13 @@ import (
 	"time"
 
 	wErrors "github.com/pkg/errors"
-	"github.com/vgarvardt/rklotz/pkg/handler"
+	"go.uber.org/zap"
+
 	"github.com/vgarvardt/rklotz/pkg/loader"
-	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/server/handler"
+	"github.com/vgarvardt/rklotz/pkg/server/renderer"
 	"github.com/vgarvardt/rklotz/pkg/server/web"
 	"github.com/vgarvardt/rklotz/pkg/storage"
-	"go.uber.org/zap"
 )
 
 // Run initializes and runs web-server instance

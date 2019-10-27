@@ -15,8 +15,8 @@ func TestNewHTML(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
-	// .../github.com/vgarvardt/rklotz/pkg/renderer/../../templates
-	templatesPath := filepath.Join(wd, "..", "..", "templates")
+	// .../github.com/vgarvardt/rklotz/pkg/server/renderer/../../../templates
+	templatesPath := filepath.Join(wd, "..", "..", "..", "templates")
 	theme := "foundation"
 	expected := []string{
 		path.Join(templatesPath, "plugins", "disqus.html"),

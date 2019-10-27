@@ -11,8 +11,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/acme/autocert"
 
-	"github.com/vgarvardt/rklotz/pkg/handler"
-	m "github.com/vgarvardt/rklotz/pkg/middleware"
+	"github.com/vgarvardt/rklotz/pkg/server/handler"
+	m "github.com/vgarvardt/rklotz/pkg/server/middleware"
 )
 
 // NewRouter initialises and builds new HTTP router
@@ -22,8 +22,8 @@ func NewRouter(pH *handler.Posts, fH *handler.Feed, logger *zap.Logger) chi.Rout
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(m.NewLogger(logger).Handler)
-	r.Use(middleware.RequestLogger(m.NewRequestLogger()))
-	r.Use(middleware.Recoverer)
+	r.Use(m.NewRequestLogger().Handler)
+	r.Use(m.Recovery)
 
 	r.Get("/", pH.Front)
 	r.Get("/tag/{tag}", pH.Tag)
