@@ -6,7 +6,6 @@ import (
 	wErrors "github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/server"
 )
 
@@ -16,7 +15,7 @@ func NewServerCmd(ctx context.Context) *cobra.Command {
 		Use:   "server",
 		Short: "Runs rKlotz server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := config.Load()
+			cfg, err := server.LoadConfig()
 			if err != nil {
 				return wErrors.Wrap(err, "failed to load config")
 			}

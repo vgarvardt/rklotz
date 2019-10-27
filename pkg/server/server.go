@@ -6,20 +6,18 @@ import (
 	"time"
 
 	wErrors "github.com/pkg/errors"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
-	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"
 	"github.com/vgarvardt/rklotz/pkg/loader"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
 	"github.com/vgarvardt/rklotz/pkg/server/web"
 	"github.com/vgarvardt/rklotz/pkg/storage"
+	"go.uber.org/zap"
 )
 
 // Run initializes and runs web-server instance
-func Run(cfg *config.Config, version string) error {
-	logger, err := initLogger(cfg.LogLevel)
+func Run(cfg *Config, version string) error {
+	logger, err := cfg.LogConfig.BuildLogger()
+
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialize logger")
 	}
@@ -75,24 +73,4 @@ func Run(cfg *config.Config, version string) error {
 	web.ServeStatic(r, cfg.HTTPConfig, cfg.UIConfig.Theme)
 
 	return web.ListenAndServe(r, cfg.SSLConfig, cfg.HTTPConfig, logger)
-}
-
-func initLogger(level string) (*zap.Logger, error) {
-	logConfig := zap.NewProductionConfig()
-
-	logLevel := new(zap.AtomicLevel)
-	if err := logLevel.UnmarshalText([]byte(level)); err != nil {
-		return nil, err
-	}
-
-	logConfig.Development = logLevel.String() == zapcore.DebugLevel.String()
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	logConfig.EncoderConfig.EncodeDuration = zapcore.StringDurationEncoder
-
-	logger, err := logConfig.Build()
-	if err != nil {
-		return nil, err
-	}
-
-	return logger, nil
 }
