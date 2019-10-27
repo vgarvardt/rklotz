@@ -51,8 +51,8 @@ func Run(cfg *config.Config, version string) error {
 		return wErrors.Wrap(err, "failed to load posts")
 	}
 
-	htmlRenderer, err := renderer.NewHTMLRenderer(
-		renderer.HTMLRendererConfig{
+	htmlRenderer, err := renderer.NewHTML(
+		renderer.HTMLConfig{
 			TemplatesPath: cfg.Web.TemplatesPath,
 			InstanceID:    instanceID,
 			UICfg:         cfg.UI,
@@ -65,10 +65,10 @@ func Run(cfg *config.Config, version string) error {
 		return wErrors.Wrap(err, "failed to initialise HTML renderer")
 	}
 
-	xmlRenderer := renderer.NewXMLRenderer()
+	feedRenderer := renderer.NewFeed(cfg.UI, cfg.RootURL)
 
 	postsHandler := handler.NewPosts(storageInstance, htmlRenderer)
-	feedHandler := handler.NewFeed(storageInstance, xmlRenderer, cfg.UI, cfg.RootURL)
+	feedHandler := handler.NewFeed(storageInstance, feedRenderer)
 
 	r := web.NewRouter(postsHandler, feedHandler, logger)
 

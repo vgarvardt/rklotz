@@ -31,7 +31,7 @@ func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 	data["posts"] = posts
 	data["page"] = page
 
-	tmplData := renderer.HTMLRendererData(r, "index.html", data)
+	tmplData := renderer.NewData(r, "index.html", data)
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
@@ -49,7 +49,7 @@ func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
 	data["page"] = page
 	data["tag"] = tag
 
-	tmplData := renderer.HTMLRendererData(r, "tag.html", data)
+	tmplData := renderer.NewData(r, "tag.html", data)
 	h.renderer.Render(w, http.StatusOK, tmplData)
 }
 
@@ -58,13 +58,13 @@ func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.FindByPath(r.URL.Path)
 
 	if err != nil {
-		code := map[bool]int{true: http.StatusNotFound, false: http.StatusInternalServerError}
-		w.WriteHeader(code[err == storage.ErrorNotFound])
-		w.Write([]byte(err.Error()))
-	} else {
-		tmplData := renderer.HTMLRendererData(r, "post.html", map[string]interface{}{"post": post})
-		h.renderer.Render(w, http.StatusOK, tmplData)
+		http.Error(w, err.Error(), map[bool]int{true: http.StatusNotFound, false: http.StatusInternalServerError}[err == storage.ErrorNotFound])
+		return
 	}
+
+	tmplData := renderer.NewData(r, "post.html", map[string]interface{}{"post": post})
+	h.renderer.Render(w, http.StatusOK, tmplData)
+
 }
 
 func (h *Posts) getPageFromURL(r *http.Request) int {

@@ -1,7 +1,6 @@
 package renderer
 
 import (
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -12,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestNewHTMLRenderer(t *testing.T) {
+func TestNewHTML(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
@@ -36,7 +35,7 @@ func TestNewHTMLRenderer(t *testing.T) {
 		path.Join(templatesPath, theme, "partial", "posts.html"),
 	}
 
-	instance := &HTMLRenderer{logger: zap.NewNop()}
+	instance := &HTML{logger: zap.NewNop()}
 
 	// default about panel
 	partials, err := instance.getPartials(templatesPath, theme, "")
@@ -47,25 +46,4 @@ func TestNewHTMLRenderer(t *testing.T) {
 	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "alert.html"))
 	require.NoError(t, err)
 	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "alert.html")), partials)
-}
-
-func TestHTMLRendererData(t *testing.T) {
-	urlPath := "/hello/world"
-	r, err := http.NewRequest(http.MethodGet, urlPath, nil)
-	require.NoError(t, err)
-
-	templateName := "hello.html"
-	passedData := map[string]interface{}{"foo": "bar", "bar": "baz"}
-	data := HTMLRendererData(r, templateName, passedData)
-
-	dataMap, ok := data.(map[string]interface{})
-	assert.True(t, ok)
-
-	assert.Equal(t, templateName, dataMap[templateNameDateKey])
-
-	for k, v := range passedData {
-		val, ok := dataMap[k]
-		assert.True(t, ok)
-		assert.Equal(t, v, val)
-	}
 }
