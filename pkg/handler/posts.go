@@ -9,19 +9,19 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
-// PostsHandler is the handler for posts pages
-type PostsHandler struct {
+// Posts is the handler for posts pages
+type Posts struct {
 	storage  storage.Storage
 	renderer renderer.Renderer
 }
 
-// NewPostsHandler creates new PostsHandler instance
-func NewPostsHandler(storage storage.Storage, renderer renderer.Renderer) *PostsHandler {
-	return &PostsHandler{storage, renderer}
+// NewPosts creates new Posts instance
+func NewPosts(storage storage.Storage, renderer renderer.Renderer) *Posts {
+	return &Posts{storage, renderer}
 }
 
 // Front is the HTTP handler for the front page with post list
-func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
+func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"meta": h.storage.Meta(),
 	}
@@ -36,7 +36,7 @@ func (h *PostsHandler) Front(w http.ResponseWriter, r *http.Request) {
 }
 
 // Tag is the HTTP handler for the tag page with post list for a tag
-func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
+func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 
 	data := map[string]interface{}{
@@ -54,7 +54,7 @@ func (h *PostsHandler) Tag(w http.ResponseWriter, r *http.Request) {
 }
 
 // Post is the HTTP handler for the post page
-func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
+func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.FindByPath(r.URL.Path)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (h *PostsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *PostsHandler) getPageFromURL(r *http.Request) int {
+func (h *Posts) getPageFromURL(r *http.Request) int {
 	var err error
 
 	page := 0

@@ -11,21 +11,21 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
-// FeedHandler is the handler for RSS/Atom feeds
-type FeedHandler struct {
+// Feed is the handler for RSS/Atom feeds
+type Feed struct {
 	storage    storage.Storage
 	renderer   renderer.Renderer
 	cfgUI      config.UI
 	cfgRootURL config.RootURL
 }
 
-// NewFeedHandler creates new FeedHandler instance
-func NewFeedHandler(storage storage.Storage, renderer renderer.Renderer, cfgUI config.UI, cfgRootURL config.RootURL) *FeedHandler {
-	return &FeedHandler{storage, renderer, cfgUI, cfgRootURL}
+// NewFeed creates new Feed instance
+func NewFeed(storage storage.Storage, renderer renderer.Renderer, cfgUI config.UI, cfgRootURL config.RootURL) *Feed {
+	return &Feed{storage, renderer, cfgUI, cfgRootURL}
 }
 
 // Atom is the HTTP handler for Atom feed
-func (h *FeedHandler) Atom(w http.ResponseWriter, r *http.Request) {
+func (h *Feed) Atom(w http.ResponseWriter, r *http.Request) {
 	feed := feeds.Atom{Feed: h.getFeed(r)}
 	atomFeed := feed.AtomFeed()
 	if atom, err := feeds.ToXML(atomFeed); err != nil {
@@ -36,7 +36,7 @@ func (h *FeedHandler) Atom(w http.ResponseWriter, r *http.Request) {
 }
 
 // Rss is the HTTP handler for RSS feed
-func (h *FeedHandler) Rss(w http.ResponseWriter, r *http.Request) {
+func (h *Feed) Rss(w http.ResponseWriter, r *http.Request) {
 	feed := feeds.Rss{Feed: h.getFeed(r)}
 	rssFeed := feed.RssFeed()
 	if rss, err := feeds.ToXML(rssFeed); err != nil {
@@ -46,7 +46,7 @@ func (h *FeedHandler) Rss(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *FeedHandler) getFeed(r *http.Request) *feeds.Feed {
+func (h *Feed) getFeed(r *http.Request) *feeds.Feed {
 	rootURL := h.cfgRootURL.URL(r)
 	feed := &feeds.Feed{
 		Title:       h.cfgUI.Title,
