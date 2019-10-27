@@ -83,8 +83,7 @@ Currently The following settings (environment variables) are available:
 * `SSL_ENABLED` (default `false`) - enables SSL/TLS
 * `SSL_PORT` (default `8443`) - SSL port
 * `SSL_HOST` - host to validate for SSL
-* `SSL_REDIRECT_HTTP` (default `true`) - redirect `http` requests to `https` if SSL is enabled,
-  otherwise both HTTP and HTTPS will be served
+* `SSL_EMAIL` (default `vgarvardt@gmail.com`) - email to register for SSL
 * `SSL_CACHE_DIR` (default `/tmp`) - directory to cache retrieved certificate
 
 ### HTML and UI settings

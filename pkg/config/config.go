@@ -12,37 +12,38 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/config/plugin"
 )
 
-// AppConfig represents the application configuration
-type AppConfig struct {
+// Config represents the application configuration
+type Config struct {
 	LogLevel     string `envconfig:"LOG_LEVEL" default:"info"`
 	PostsDSN     string `envconfig:"POSTS_DSN" default:"file:///etc/rklotz/posts"`
 	PostsPerPage int    `envconfig:"POSTS_PERPAGE" default:"10"`
 	StorageDSN   string `envconfig:"STORAGE_DSN" default:"boltdb:///tmp/rklotz.db"`
 
-	Web     WebSettings
-	SSL     SSLSettings
-	UI      UISetting
-	RootURL RootURL
-	Plugins Plugins
+	Web
+	SSL
+	UI
+	RootURL
+	Plugins
 }
 
-// WebSettings is the configuration for web application
-type WebSettings struct {
+// Web is the configuration for web application
+type Web struct {
 	Port          int    `envconfig:"WEB_PORT" default:"8080"`
 	StaticPath    string `envconfig:"WEB_STATIC_PATH" default:"/etc/rklotz/static"`
 	TemplatesPath string `envconfig:"WEB_TEMPLATES_PATH" default:"/etc/rklotz/templates"`
 }
 
-// SSLSettings is the configuration for TLS/SSL
-type SSLSettings struct {
+// SSL is the configuration for TLS/SSL
+type SSL struct {
 	Enabled  bool   `envconfig:"SSL_ENABLED" default:"false"`
 	Port     int    `envconfig:"SSL_PORT" default:"8443"`
 	Host     string `envconfig:"SSL_HOST"`
+	Email    string `envconfig:"SSL_EMAIL" default:"vgarvardt@gmail.com"`
 	CacheDir string `envconfig:"SSL_CACHE_DIR" default:"/tmp"`
 }
 
-// UISetting is the configuration for user interface
-type UISetting struct {
+// UI is the configuration for user interface
+type UI struct {
 	Theme       string `envconfig:"UI_THEME" default:"foundation"`
 	Author      string `envconfig:"UI_AUTHOR" default:"Vladimir Garvardt"`
 	Email       string `envconfig:"UI_EMAIL" default:"vgarvardt@gmail.com"`
@@ -110,13 +111,13 @@ type PluginsSettings struct {
 }
 
 // Load loads app settings from environment variables
-func Load() (*AppConfig, error) {
-	var appConfig AppConfig
+func Load() (*Config, error) {
+	var cfg Config
 
-	err := envconfig.Process("", &appConfig)
+	err := envconfig.Process("", &cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &appConfig, nil
+	return &cfg, nil
 }
