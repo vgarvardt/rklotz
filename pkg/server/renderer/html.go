@@ -12,8 +12,9 @@ import (
 	"time"
 
 	"github.com/leekchan/gtf"
-	"github.com/vgarvardt/rklotz/pkg/plugin"
 	"go.uber.org/zap"
+
+	"github.com/vgarvardt/rklotz/pkg/server/plugin"
 )
 
 // HTMLConfig is configuration for HTML renderer

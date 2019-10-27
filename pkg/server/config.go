@@ -5,8 +5,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/vgarvardt/rklotz/pkg/plugin"
-	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/server/plugin"
+	"github.com/vgarvardt/rklotz/pkg/server/renderer"
 	"github.com/vgarvardt/rklotz/pkg/server/web"
 )
 

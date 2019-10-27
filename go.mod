@@ -9,6 +9,7 @@ require (
 	github.com/coreos/bbolt v1.3.1-coreos.6 // indirect
 	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/fatih/structs v1.0.0
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
