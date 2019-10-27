@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPlugins_Configure(t *testing.T) {
+func TestPlugins_SetUp(t *testing.T) {
 	p := Config{
 		Settings: Settings{
 			Disqus:      map[string]string{"shortname": "foo"},

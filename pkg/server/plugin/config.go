@@ -2,36 +2,33 @@ package plugin
 
 import (
 	"errors"
+	"reflect"
 	"strings"
-
-	"github.com/fatih/structs"
 )
 
 // Config is teh configuration for app plugins
 type Config struct {
-	Enabled  []string `envconfig:"PLUGINS_ENABLED"`
-	Settings Settings
+	Enabled []string `envconfig:"PLUGINS_ENABLED"`
+	Settings
 }
 
 // SetUp applies configuration for enabled plugins
-func (p Config) SetUp(instance Plugin) (map[string]string, error) {
+func (c Config) SetUp(instance Plugin) (map[string]string, error) {
 	pluginName, err := GetName(instance)
 	if err != nil {
 		return nil, err
 	}
 
-	settingsMap := structs.Map(p.Settings)
-	pluginSettings, ok := settingsMap[strings.Title(pluginName)]
+	pluginSettings, ok := c.Settings.Get(pluginName)
 	if !ok {
 		return nil, errors.New("failed to get plugin settings")
 	}
 
-	pluginSettingsMap := pluginSettings.(map[string]string)
-	if len(pluginSettingsMap) == 0 {
+	if len(pluginSettings) == 0 {
 		return instance.SetUp(instance.Defaults())
 	}
 
-	return instance.SetUp(pluginSettingsMap)
+	return instance.SetUp(pluginSettings)
 }
 
 // Settings is the configuration for available plugins
@@ -42,4 +39,14 @@ type Settings struct {
 	Yamka       map[string]string `envconfig:"PLUGINS_YAMKA"`
 	Highlightjs map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
 	Yasha       map[string]string `envconfig:"PLUGINS_YASHA"`
+}
+
+// Get gets plugin settings by name
+func (s Settings) Get(pluginName string) (map[string]string, bool) {
+	r := reflect.ValueOf(s)
+	f := reflect.Indirect(r).FieldByName(strings.Title(pluginName)).Interface()
+
+	fMap, ok := f.(map[string]string)
+
+	return fMap, ok
 }

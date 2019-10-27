@@ -182,11 +182,8 @@ func getTmplFuncMap(dateFormat string) template.FuncMap {
 	funcs["add"] = func(arg int, value int) int {
 		return value + arg
 	}
-	funcs["safe"] = func(value string) template.HTML {
+	funcs["noescape"] = func(value string) template.HTML {
 		return template.HTML(value)
-	}
-	funcs["date"] = func(format string, value time.Time) string {
-		return value.Format(format)
 	}
 
 	return funcs
