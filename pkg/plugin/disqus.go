@@ -8,8 +8,8 @@ func (p *Disqus) Defaults() map[string]string {
 	return map[string]string{}
 }
 
-// Configure applies settings map to a plugin
-func (p *Disqus) Configure(settings map[string]string) (map[string]string, error) {
+// SetUp applies settings map to a plugin
+func (p *Disqus) SetUp(settings map[string]string) (map[string]string, error) {
 	err := validateRequiredFields(settings, []string{"shortname"})
 	if nil != err {
 		return nil, err

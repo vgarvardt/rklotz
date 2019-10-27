@@ -22,7 +22,7 @@ func (p *mockPlugin) Defaults() map[string]string {
 	return map[string]string{}
 }
 
-func (p *mockPlugin) Configure(settings map[string]string) (map[string]string, error) {
+func (p *mockPlugin) SetUp(settings map[string]string) (map[string]string, error) {
 	return mergeSettings(settings, p.Defaults()), nil
 }
 

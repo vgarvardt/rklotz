@@ -2,25 +2,18 @@ package server
 
 import (
 	"crypto/md5"
-	"crypto/tls"
 	"encoding/hex"
-	"fmt"
-	"net/http"
-	"path/filepath"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 	wErrors "github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/vgarvardt/rklotz/pkg/config"
 	"github.com/vgarvardt/rklotz/pkg/handler"
 	"github.com/vgarvardt/rklotz/pkg/loader"
-	m "github.com/vgarvardt/rklotz/pkg/middleware"
 	"github.com/vgarvardt/rklotz/pkg/renderer"
+	"github.com/vgarvardt/rklotz/pkg/server/web"
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
@@ -58,13 +51,13 @@ func Run(cfg *config.Config, version string) error {
 		return wErrors.Wrap(err, "failed to load posts")
 	}
 
-	htmlRenderer, err := renderer.NewHTMLRenderer(
-		renderer.HTMLRendererConfig{
-			TemplatesPath: cfg.Web.TemplatesPath,
+	htmlRenderer, err := renderer.NewHTML(
+		renderer.HTMLConfig{
+			TemplatesPath: cfg.HTTPConfig.TemplatesPath,
 			InstanceID:    instanceID,
-			UICfg:         cfg.UI,
-			PluginsCfg:    cfg.Plugins,
-			RootURLCfg:    cfg.RootURL,
+			UICfg:         cfg.UIConfig,
+			PluginsCfg:    cfg.Config,
+			RootURLCfg:    cfg.RootURLConfig,
 		},
 		logger,
 	)
@@ -72,85 +65,16 @@ func Run(cfg *config.Config, version string) error {
 		return wErrors.Wrap(err, "failed to initialise HTML renderer")
 	}
 
-	xmlRenderer := renderer.NewXMLRenderer()
+	feedRenderer := renderer.NewFeed(cfg.UIConfig, cfg.RootURLConfig)
 
-	postsHandler := handler.NewPostsHandler(storageInstance, htmlRenderer)
-	feedHandler := handler.NewFeedHandler(storageInstance, xmlRenderer, cfg.UI, cfg.RootURL)
+	postsHandler := handler.NewPosts(storageInstance, htmlRenderer)
+	feedHandler := handler.NewFeed(storageInstance, feedRenderer)
 
-	r := chi.NewRouter()
+	r := web.NewRouter(postsHandler, feedHandler, logger)
 
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(m.NewLogger(logger).Handler)
-	r.Use(middleware.RequestLogger(m.NewRequestLogger()))
-	r.Use(middleware.Recoverer)
+	web.ServeStatic(r, cfg.HTTPConfig, cfg.UIConfig.Theme)
 
-	r.Get("/", postsHandler.Front)
-	r.Get("/tag/{tag}", postsHandler.Tag)
-	r.NotFound(postsHandler.Post)
-
-	r.Route("/feed", func(r chi.Router) {
-		r.Get("/atom", feedHandler.Atom)
-		r.Get("/rss", feedHandler.Rss)
-	})
-
-	serveStatic(r, cfg.Web, cfg.UI.Theme)
-
-	return listenAndServe(r, cfg.SSL, cfg.Web, logger)
-}
-
-func serveStatic(r chi.Router, cfgWeb config.Web, theme string) {
-	staticRoot := http.Dir(cfgWeb.StaticPath)
-	staticPath := "/static"
-	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
-
-	faviconPath := filepath.Join(cfgWeb.StaticPath, theme, "favicon.ico")
-
-	r.Get(staticPath+"/*", func(w http.ResponseWriter, r *http.Request) {
-		staticHandler.ServeHTTP(w, r)
-	})
-
-	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, faviconPath)
-	})
-}
-
-func listenAndServe(handler chi.Router, cfgSSL config.SSL, cfgWeb config.Web, logger *zap.Logger) error {
-	if !cfgSSL.Enabled {
-		address := fmt.Sprintf(":%d", cfgWeb.Port)
-		logger.Info("Running HTTP server...", zap.String("address", address))
-
-		return http.ListenAndServe(address, handler)
-	}
-
-	logger.Info("SSL is enabled, starting HTTPS server")
-
-	tlsCertManager := &autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(cfgSSL.Host),
-		Cache:      autocert.DirCache(cfgSSL.CacheDir),
-		Email:      cfgSSL.Email,
-	}
-
-	httpsAddress := fmt.Sprintf(":%d", cfgSSL.Port)
-	server := &http.Server{
-		Addr:    httpsAddress,
-		Handler: handler,
-		TLSConfig: &tls.Config{
-			GetCertificate: tlsCertManager.GetCertificate,
-		},
-	}
-
-	go func() {
-		logger.Info("Running HTTPS server...", zap.String("address", httpsAddress))
-		logger.Fatal("Failed to run HTTPS server", zap.Error(server.ListenAndServeTLS("", "")))
-	}()
-
-	httpAddress := fmt.Sprintf(":%d", cfgWeb.Port)
-
-	logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpAddress))
-
-	return http.ListenAndServe(httpAddress, tlsCertManager.HTTPHandler(nil))
+	return web.ListenAndServe(r, cfg.SSLConfig, cfg.HTTPConfig, logger)
 }
 
 func initLogger(level string) (*zap.Logger, error) {

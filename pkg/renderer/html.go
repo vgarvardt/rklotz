@@ -12,38 +12,32 @@ import (
 	"time"
 
 	"github.com/leekchan/gtf"
-	"github.com/vgarvardt/rklotz/pkg/config"
-	"github.com/vgarvardt/rklotz/pkg/config/plugin"
+	"github.com/vgarvardt/rklotz/pkg/plugin"
 	"go.uber.org/zap"
 )
 
-const (
-	templateNameDateKey = "template_name"
-	dataRequestKey      = "__request"
-)
-
-// HTMLRendererConfig is configuration for HTML renderer
-type HTMLRendererConfig struct {
+// HTMLConfig is configuration for HTML renderer
+type HTMLConfig struct {
 	TemplatesPath string
 	InstanceID    string
-	UICfg         config.UI
-	PluginsCfg    config.Plugins
-	RootURLCfg    config.RootURL
+	UICfg         UIConfig
+	RootURLCfg    RootURLConfig
+	PluginsCfg    plugin.Config
 }
 
-// HTMLRenderer implements Renderer for HTML content
-type HTMLRenderer struct {
+// HTML implements Renderer for HTML content
+type HTML struct {
 	templates map[string]*template.Template
-	config    HTMLRendererConfig
+	config    HTMLConfig
 	logger    *zap.Logger
 
 	enabledPluginsMap map[string]bool
 	pluginsSettings   map[string]map[string]template.JS
 }
 
-// NewHTMLRenderer creates new HTMLRenderer instance
-func NewHTMLRenderer(config HTMLRendererConfig, logger *zap.Logger) (*HTMLRenderer, error) {
-	instance := &HTMLRenderer{
+// NewHTML creates new HTML instance
+func NewHTML(config HTMLConfig, logger *zap.Logger) (*HTML, error) {
+	instance := &HTML{
 		templates: make(map[string]*template.Template),
 		config:    config,
 		logger:    logger,
@@ -73,7 +67,7 @@ func NewHTMLRenderer(config HTMLRendererConfig, logger *zap.Logger) (*HTMLRender
 	return instance, nil
 }
 
-func (r *HTMLRenderer) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
+func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
 	var partials []string
 
 	walkFn := func(path string, f os.FileInfo, err error) error {
@@ -111,7 +105,7 @@ func (r *HTMLRenderer) getPartials(templatesPath, theme, uiAbout string) ([]stri
 	return partials, nil
 }
 
-func (r *HTMLRenderer) initPlugins() error {
+func (r *HTML) initPlugins() error {
 	r.enabledPluginsMap = make(map[string]bool, len(r.config.PluginsCfg.Enabled))
 	r.pluginsSettings = make(map[string]map[string]template.JS, len(r.config.PluginsCfg.Enabled))
 
@@ -125,7 +119,7 @@ func (r *HTMLRenderer) initPlugins() error {
 		}
 
 		r.logger.Info("Configuring plugin", zap.String("name", r.config.PluginsCfg.Enabled[i]))
-		settings, err := r.config.PluginsCfg.Configure(p)
+		settings, err := r.config.PluginsCfg.SetUp(p)
 		if err != nil {
 			switch e := err.(type) {
 			case *plugin.ErrorConfiguring:
@@ -144,8 +138,11 @@ func (r *HTMLRenderer) initPlugins() error {
 }
 
 // Render renders the data with response code to a HTTP response writer
-func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{}) {
-	templateData := data.(map[string]interface{})
+func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
+	data.m.RLock()
+	defer data.m.RUnlock()
+
+	templateData := data.data
 
 	templateData["lang"] = r.config.UICfg.Language
 	templateData["title"] = r.config.UICfg.Title
@@ -161,30 +158,18 @@ func (r *HTMLRenderer) Render(w http.ResponseWriter, code int, data interface{})
 	templateData["plugins"] = r.enabledPluginsMap
 	templateData["plugin"] = r.pluginsSettings
 
-	rq, ok := templateData[dataRequestKey].(*http.Request)
-	if ok {
-		templateData["url_path"] = rq.URL.Path
-		templateData["root_url"] = r.config.RootURLCfg.URL(rq).String()
+	templateData["url_path"] = data.r.URL.Path
+	templateData["root_url"] = r.config.RootURLCfg.URL(data.r).String()
 
-		currentURL := &url.URL{}
-		*currentURL = *r.config.RootURLCfg.URL(rq)
-		currentURL.Path = rq.URL.Path
-		templateData["current_url"] = currentURL.String()
-	}
+	currentURL := &url.URL{}
+	*currentURL = *r.config.RootURLCfg.URL(data.r)
+	currentURL.Path = data.r.URL.Path
+	templateData["current_url"] = currentURL.String()
 
-	templateName := templateData[templateNameDateKey].(string)
-	err := r.templates[templateName].Execute(w, templateData)
+	err := r.templates[data.template].Execute(w, templateData)
 	if nil != err {
-		r.logger.Error("Problems with rendering HTML template", zap.Error(err), zap.String("template", templateName))
+		r.logger.Error("Problems with rendering HTML template", zap.Error(err), zap.String("template", data.template))
 	}
-}
-
-// HTMLRendererData sets service fields for HTML renderer data
-func HTMLRendererData(r *http.Request, templateName string, data map[string]interface{}) interface{} {
-	data[templateNameDateKey] = templateName
-	data[dataRequestKey] = r
-
-	return data
 }
 
 func getTmplFuncMap(dateFormat string) template.FuncMap {

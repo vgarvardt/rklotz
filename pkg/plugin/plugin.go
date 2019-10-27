@@ -13,8 +13,8 @@ var all map[string]Plugin
 type Plugin interface {
 	// Defaults returns maps of default plugin configurations
 	Defaults() map[string]string
-	// Configure applies settings map to a plugin
-	Configure(settings map[string]string) (map[string]string, error)
+	// SetUp applies settings map to a plugin
+	SetUp(settings map[string]string) (map[string]string, error)
 }
 
 // GetByName returns plugin instance by name

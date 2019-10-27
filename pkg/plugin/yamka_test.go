@@ -9,11 +9,11 @@ import (
 
 func TestYandexMetrika_Configure(t *testing.T) {
 	p := &YandexMetrika{}
-	_, err := p.Configure(map[string]string{})
+	_, err := p.SetUp(map[string]string{})
 	require.Error(t, err)
 	assert.IsType(t, &ErrorConfiguring{}, err)
 
-	settings, err := p.Configure(map[string]string{"id": "foo"})
+	settings, err := p.SetUp(map[string]string{"id": "foo"})
 	require.NoError(t, err)
 	assert.Equal(t, map[string]string{"id": "foo"}, settings)
 }
