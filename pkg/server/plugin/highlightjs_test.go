@@ -14,5 +14,5 @@ func TestHighlightJS_Configure(t *testing.T) {
 
 	settings, err := p.SetUp(map[string]string{"theme": "foo"})
 	require.NoError(t, err)
-	assert.Equal(t, map[string]string{"theme": "foo", "version": "9.7.0"}, settings)
+	assert.Equal(t, map[string]string{"theme": "foo", "version": "9.15.10"}, settings)
 }

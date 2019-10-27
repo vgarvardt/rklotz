@@ -5,7 +5,7 @@ type HighlightJS struct{}
 
 // Defaults returns maps of default plugin configurations
 func (p *HighlightJS) Defaults() map[string]string {
-	return map[string]string{"version": "9.7.0", "theme": "idea"}
+	return map[string]string{"version": "9.15.10", "theme": "idea"}
 }
 
 // SetUp applies settings map to a plugin
