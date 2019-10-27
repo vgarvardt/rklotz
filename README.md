@@ -60,7 +60,6 @@ Currently The following settings (environment variables) are available:
 
 ### Base application settings
 
-* `LOG_LEVEL` (default `info`) - logging level
 * `POSTS_DSN` (default `file:///etc/rklotz/posts`) - posts root path in the format `storage://<path>`.
   Currently the following storage types are supported:
   * `file` - local file system
@@ -69,6 +68,11 @@ Currently The following settings (environment variables) are available:
   Currently the following storage types are supported:
   * `boltdb` - storage on top of [BoltDB](https://github.com/boltdb/bolt) and [Storm](https://github.com/asdine/storm)
   * `memory` - store all posts in memory, perfect for hundreds or even thousands of posts
+
+### Logger settings
+
+* `LOG_LEVEL` (default `info`) - logging level
+* `LOG_TYPE` (default `rklotz`) - logging type (`type` field in the log message)
 
 ### Web application settings
 

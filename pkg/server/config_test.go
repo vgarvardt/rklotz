@@ -1,4 +1,4 @@
-package config
+package server
 
 import (
 	"net/http"
@@ -11,10 +11,10 @@ import (
 )
 
 func TestLoad_DefaultValues(t *testing.T) {
-	cfg, err := Load()
+	cfg, err := LoadConfig()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "info", cfg.LogLevel)
+	assert.Equal(t, "info", cfg.Level)
 	assert.Equal(t, "file:///etc/rklotz/posts", cfg.PostsDSN)
 	assert.Equal(t, 10, cfg.PostsPerPage)
 	assert.Equal(t, "boltdb:///tmp/rklotz.db", cfg.StorageDSN)
@@ -78,10 +78,10 @@ func TestLoad(t *testing.T) {
 	os.Setenv("PLUGINS_HIGHLIGHTJS", "theme:foo,version:9.9.9")
 	os.Setenv("PLUGINS_YASHA", "services:facebook twitter,l10n:de")
 
-	appConfig, err := Load()
+	appConfig, err := LoadConfig()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "debug", appConfig.LogLevel)
+	assert.Equal(t, "debug", appConfig.Level)
 	assert.Equal(t, "file:///path/to/posts", appConfig.PostsDSN)
 	assert.Equal(t, 42, appConfig.PostsPerPage)
 	assert.Equal(t, "mysql://root@localhost/rklotz", appConfig.StorageDSN)
@@ -119,7 +119,7 @@ func TestRootURL_URL(t *testing.T) {
 	os.Unsetenv("ROOT_URL_HOST")
 	os.Unsetenv("ROOT_URL_PATH")
 
-	cfg, err := Load()
+	cfg, err := LoadConfig()
 	require.NoError(t, err)
 
 	r := &http.Request{Host: "example.com"}
