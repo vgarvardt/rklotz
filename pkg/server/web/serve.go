@@ -77,7 +77,18 @@ func ListenAndServe(handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, lo
 		Addr:    httpsAddress,
 		Handler: handler,
 		TLSConfig: &tls.Config{
-			GetCertificate: tlsCertManager.GetCertificate,
+			GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
+				cert, err := tlsCertManager.GetCertificate(info)
+				if err != nil {
+					logger.Error(
+						"TLS cert manager could not get certificate",
+						zap.Error(err),
+						zap.String("server-name", info.ServerName),
+					)
+				}
+
+				return cert, err
+			},
 		},
 	}
 
