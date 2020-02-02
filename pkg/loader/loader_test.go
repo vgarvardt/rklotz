@@ -8,15 +8,15 @@ import (
 )
 
 func TestNewLoader(t *testing.T) {
-	fileLoader, err := NewLoader("file:///path/to/posts", zap.NewNop())
+	fileLoader, err := New("file:///path/to/posts", zap.NewNop())
 	assert.NoError(t, err)
 	assert.IsType(t, &FileLoader{}, fileLoader)
 	assert.Equal(t, "/path/to/posts", fileLoader.(*FileLoader).path)
 
-	_, err = NewLoader("unknown://", zap.NewNop())
+	_, err = New("unknown://", zap.NewNop())
 	assert.Error(t, err)
 	assert.Equal(t, ErrorUnknownLoaderType, err)
 
-	_, err = NewLoader("~", zap.NewNop())
+	_, err = New("~", zap.NewNop())
 	assert.Error(t, err)
 }

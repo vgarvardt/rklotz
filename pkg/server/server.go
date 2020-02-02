@@ -40,7 +40,7 @@ func Run(cfg *Config, version string) error {
 		}
 	}()
 
-	loaderInstance, err := loader.NewLoader(cfg.PostsDSN, logger)
+	loaderInstance, err := loader.New(cfg.PostsDSN, logger)
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialise loader")
 	}
