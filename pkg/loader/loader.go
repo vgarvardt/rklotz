@@ -23,8 +23,8 @@ type Loader interface {
 	Load(storage storage.Storage) error
 }
 
-// NewLoader returns new loader instance by type
-func NewLoader(dsn string, logger *zap.Logger) (Loader, error) {
+// New returns new loader instance by type
+func New(dsn string, logger *zap.Logger) (Loader, error) {
 	postsURL, err := url.Parse(dsn)
 	if nil != err {
 		return nil, err

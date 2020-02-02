@@ -1,12 +1,8 @@
 language: go
 
 go:
-  - 1.12
-  - 1.13
-  - 1.x
-
-env:
-  - GO111MODULE=on
+  - "1.13"
+  - "stable"
 
 install:
   - mkdir -p $GOPATH/bin

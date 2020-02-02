@@ -4,9 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"go.uber.org/zap"
+
 	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/storage"
-	"go.uber.org/zap"
 )
 
 // FileLoader is the Loader implementation for local file system
