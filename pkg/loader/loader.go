@@ -4,8 +4,10 @@ import (
 	"errors"
 	"net/url"
 
-	"github.com/vgarvardt/rklotz/pkg/storage"
 	"go.uber.org/zap"
+
+	"github.com/vgarvardt/rklotz/pkg/formatter"
+	"github.com/vgarvardt/rklotz/pkg/storage"
 )
 
 const (
@@ -30,9 +32,11 @@ func New(dsn string, logger *zap.Logger) (Loader, error) {
 		return nil, err
 	}
 
+	f := formatter.New()
+
 	switch postsURL.Scheme {
 	case schemeFile:
-		return NewFileLoader(postsURL.Path, logger)
+		return NewFileLoader(postsURL.Path, f, logger)
 	}
 
 	return nil, ErrorUnknownLoaderType

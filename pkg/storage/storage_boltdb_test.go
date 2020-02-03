@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/vgarvardt/rklotz/pkg/formatter"
 
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
@@ -48,7 +49,10 @@ func TestBoltDBStorage_Finalize(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	err = storage.Finalize()
 	require.NoError(t, err)
@@ -60,12 +64,15 @@ func loadTestPosts(t *testing.T, storage Storage) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
-	// .../github.com/vgarvardt/rklotz/pkg/repository/../../assets/posts
+	f := formatter.New()
+
+	// ../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
 
 	post1, err := model.NewPostFromFile(
 		postsBasePath,
 		filepath.Join(postsBasePath, "hello-world.md"),
+		f,
 	)
 	require.NoError(t, err)
 	err = storage.Save(post1)
@@ -74,6 +81,7 @@ func loadTestPosts(t *testing.T, storage Storage) {
 	post2, err := model.NewPostFromFile(
 		postsBasePath,
 		filepath.Join(postsBasePath, "nested/nested-path.md"),
+		f,
 	)
 	require.NoError(t, err)
 	err = storage.Save(post2)
@@ -89,7 +97,10 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 
@@ -111,7 +122,10 @@ func TestBoltDBStorage_ListAll_10(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 1, storage.Meta().Pages)
@@ -132,7 +146,10 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 2, storage.Meta().Pages)
@@ -156,7 +173,10 @@ func TestBoltDBStorage_ListTag_10(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 
@@ -179,7 +199,10 @@ func TestBoltDBStorage_ListTag_1(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 
@@ -205,7 +228,10 @@ func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
 	dbFilePath := getFilePath()
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer storage.Close()
+	defer func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	}()
 
 	loadTestPosts(t, storage)
 

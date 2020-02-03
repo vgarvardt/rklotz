@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/vgarvardt/rklotz/pkg/formatter"
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
@@ -71,7 +72,9 @@ func TestFileLoader_Load(t *testing.T) {
 
 	storage := &mockStorage{saveCallResult: []error{nil, nil}}
 
-	fileLoader, err := NewFileLoader(postsBasePath, zap.NewNop())
+	f := formatter.New()
+
+	fileLoader, err := NewFileLoader(postsBasePath, f, zap.NewNop())
 	require.NoError(t, err)
 
 	err = fileLoader.Load(storage)
