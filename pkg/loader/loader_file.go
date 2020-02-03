@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/vgarvardt/rklotz/pkg/formatter"
 	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/model"
@@ -13,12 +14,13 @@ import (
 // FileLoader is the Loader implementation for local file system
 type FileLoader struct {
 	path   string
+	f      formatter.Formatter
 	logger *zap.Logger
 }
 
 // NewFileLoader creates new FileLoader instance
-func NewFileLoader(path string, logger *zap.Logger) (*FileLoader, error) {
-	return &FileLoader{path, logger}, nil
+func NewFileLoader(path string, f formatter.Formatter, logger *zap.Logger) (*FileLoader, error) {
+	return &FileLoader{path, f, logger}, nil
 }
 
 // Load loads posts and saves them one by one in the storage
@@ -30,7 +32,7 @@ func (l *FileLoader) Load(storage storage.Storage) error {
 			}
 
 			l.logger.Debug("Loading post from file", zap.String("path", path))
-			post, err := model.NewPostFromFile(l.path, path)
+			post, err := model.NewPostFromFile(l.path, path, l.f)
 			if err != nil {
 				return err
 			}

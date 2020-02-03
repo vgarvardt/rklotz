@@ -8,6 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/vgarvardt/rklotz/pkg/formatter"
 )
 
 func TestNewPostFromFile(t *testing.T) {
@@ -20,7 +22,7 @@ func TestNewPostFromFile(t *testing.T) {
 
 	publishedAt, _ := time.Parse(time.RFC3339, "2017-05-06T16:34:00+02:00")
 
-	post, err := NewPostFromFile(postsBasePath, postPath)
+	post, err := NewPostFromFile(postsBasePath, postPath, formatter.New())
 	require.NoError(t, err)
 
 	assert.Equal(t, "/hello-world", post.Path)
