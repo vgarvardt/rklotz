@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/server/plugin"
+	"github.com/vgarvardt/rklotz/pkg/server/rqctx"
 )
 
 // HTMLConfig is configuration for HTML renderer
@@ -167,9 +168,15 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	currentURL.Path = data.r.URL.Path
 	templateData["current_url"] = currentURL.String()
 
+	w.WriteHeader(code)
+
 	err := r.templates[data.template].Execute(w, templateData)
 	if nil != err {
-		r.logger.Error("Problems with rendering HTML template", zap.Error(err), zap.String("template", data.template))
+		rqctx.GetLogger(data.r.Context()).Error(
+			"Problems with rendering HTML template",
+			zap.Error(err),
+			zap.String("template", data.template),
+		)
 	}
 }
 

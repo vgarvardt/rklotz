@@ -15,7 +15,7 @@ func TestNewHTML(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
-	// .../github.com/vgarvardt/rklotz/pkg/server/renderer/../../../templates
+	// .../rklotz/pkg/server/renderer/../../../templates
 	templatesPath := filepath.Join(wd, "..", "..", "..", "templates")
 	theme := "foundation"
 	expected := []string{
