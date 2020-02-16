@@ -4,7 +4,7 @@
     {{ template "partial/heading.html" . }}
     {{ template "partial/about.html" . }}
 
-    <h2>Posts on <span class="label secondary radius" style="font-size: inherit;">{{ .tag }}</span></h2>
+    <h2>Posts on <span class="label secondary" style="font-size: inherit;">{{ .tag }}</span></h2>
 
     {{ if lt (len .posts)  1 }}
         <h2>Nothing yet =(</h2>
