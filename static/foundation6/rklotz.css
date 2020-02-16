@@ -15,8 +15,17 @@ html pre, pre *, html code, code * {
     font-family: 'Roboto Mono', monospace;
 }
 
-.top-bar {
+h2 small {
+    color: #6f6f6f;
+}
+
+.top-bar, .top-bar ul {
     padding: 0;
+    background: #333;
+}
+
+.top-bar ul a {
+    color: white;
 }
 
 .top-bar .top-bar-left {
