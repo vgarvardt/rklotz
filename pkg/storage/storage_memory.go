@@ -117,7 +117,7 @@ func (s *MemoryStorage) slicePage(slice []*model.Post, page int) ([]*model.Post,
 		return []*model.Post{}, nil
 	}
 
-	offsetBound := int(math.Min(float64(s.postsCount), float64(offset+s.postsPerPage)))
+	offsetBound := int(math.Min(float64(len(slice)), float64(offset+s.postsPerPage)))
 
 	return slice[offset:offsetBound], nil
 }
