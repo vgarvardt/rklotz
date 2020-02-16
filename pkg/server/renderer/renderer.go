@@ -5,19 +5,26 @@ import (
 	"sync"
 )
 
+// D is the syntax-sugar type for map
+type D map[string]interface{}
+
 // Data is the container type for renderer data
 type Data struct {
 	m        sync.RWMutex
 	r        *http.Request
 	template string
-	data     map[string]interface{}
+	data     D
 }
 
 // NewData sets fields for renderer data
-func NewData(r *http.Request, templateName string, data map[string]interface{}) *Data {
+func NewData(r *http.Request, template string, data D) *Data {
+	if data == nil {
+		data = make(D)
+	}
+
 	return &Data{
 		r:        r,
-		template: templateName,
+		template: template,
 		data:     data,
 	}
 }

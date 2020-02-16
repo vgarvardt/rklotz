@@ -27,7 +27,7 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, 8443, cfg.SSLConfig.Port)
 	assert.Equal(t, "/tmp", cfg.SSLConfig.CacheDir)
 
-	assert.Equal(t, "foundation", cfg.UIConfig.Theme)
+	assert.Equal(t, "foundation6", cfg.UIConfig.Theme)
 	assert.Equal(t, "Vladimir Garvardt", cfg.UIConfig.Author)
 	assert.Equal(t, "vgarvardt@gmail.com", cfg.UIConfig.Email)
 	assert.Equal(t, "rKlotz - simple golang-driven blog engine", cfg.UIConfig.Description)

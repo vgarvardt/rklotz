@@ -1,0 +1,47 @@
+/* Basic Typography */
+html, body {
+    font-size: 1.0em;
+    line-height: 1.65em;
+    font-family: "Play", serif;
+    font-weight: 300;
+    color: #333;
+}
+
+html *, .label, .top-bar-section ul li > a {
+    font-family: "Play", serif;
+}
+
+html pre, pre *, html code, code * {
+    font-family: 'Roboto Mono', monospace;
+}
+
+h2 small {
+    color: #6f6f6f;
+}
+
+.top-bar, .top-bar ul {
+    padding: 0;
+    background: #333;
+}
+
+.top-bar ul a {
+    color: white;
+}
+
+.top-bar .top-bar-left {
+    border-right: solid 1px #4e4e4e;
+}
+
+.menu .menu-text {
+    padding: 0 1rem 0 0;
+}
+
+.menu a {
+    padding: 0 1rem;
+}
+
+a.label.secondary {
+    background-color: #e7e7e7;
+    color: #333;
+    cursor: pointer;
+}

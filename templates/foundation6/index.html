@@ -1,0 +1,14 @@
+{{ define "content" }}
+
+    {{ template "partial/heading.html" . }}
+    {{ template "partial/about.html" . }}
+
+    {{ if lt .meta.Posts 1 }}
+        <h2>Nothing yet =(</h2>
+    {{ else }}
+        {{ template "partial/posts.html" . }}
+
+        {{ template "partial/pagination.html" . }}
+    {{ end }}
+
+{{ end }}

@@ -5,15 +5,15 @@
 {{ end }}
 
 {{ define "content" }}
-	<h1 class="text-center">{{ .post.Title }}</h1>
+    <h1 class="text-center">{{ .post.Title }}</h1>
 
-	{{ template "partial/info.html" .post }}
+    {{ template "partial/info.html" .post }}
 
-	<div>
-		{{ .post.HTML | noescape }}
-	</div>
+    <div>
+        {{ .post.HTML | noescape }}
+    </div>
 
-	{{ if .plugins.yasha }}<p>{{ template "plugins/yasha.html" . }}</p>{{ end }}
+    {{ if .plugins.yasha }}<p>{{ template "plugins/yasha.html" . }}</p>{{ end }}
 
     {{ template "partial/about.html" . }}
 
@@ -22,5 +22,5 @@
 {{ end }}
 
 {{ define "foot_extra" }}
-	{{ if .plugins.highlightjs }}{{ template "plugins/highlightjs-js.html" . }}{{ end }}
+    {{ if .plugins.highlightjs }}{{ template "plugins/highlightjs-js.html" . }}{{ end }}
 {{ end }}

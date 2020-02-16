@@ -18,7 +18,6 @@ all: clean deps build
 deps:
 	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
 	@go mod vendor
-	@docker run -it --rm -v $(shell pwd)/static:/data digitallyseamless/nodejs-bower-grunt bower --allow-root install || echo "$(WARN_COLOR)==> Failed to install frontend libs, skipping... $(NO_COLOR)"
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"

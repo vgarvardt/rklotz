@@ -25,7 +25,7 @@ func (h *Feed) Atom(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "atom", map[string]interface{}{"posts": posts}))
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "atom", renderer.D{"posts": posts}))
 
 }
 
@@ -36,5 +36,5 @@ func (h *Feed) Rss(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "rss", map[string]interface{}{"posts": posts}))
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "rss", renderer.D{"posts": posts}))
 }

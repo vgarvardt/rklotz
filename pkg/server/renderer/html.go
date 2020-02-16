@@ -1,6 +1,8 @@
 package renderer
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -15,12 +17,13 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/server/plugin"
+	"github.com/vgarvardt/rklotz/pkg/server/rqctx"
 )
 
 // HTMLConfig is configuration for HTML renderer
 type HTMLConfig struct {
+	Debug         bool
 	TemplatesPath string
-	InstanceID    string
 	UICfg         UIConfig
 	RootURLCfg    RootURLConfig
 	PluginsCfg    plugin.Config
@@ -28,9 +31,10 @@ type HTMLConfig struct {
 
 // HTML implements Renderer for HTML content
 type HTML struct {
-	templates map[string]*template.Template
-	config    HTMLConfig
-	logger    *zap.Logger
+	templates  map[string]*template.Template
+	config     HTMLConfig
+	logger     *zap.Logger
+	instanceID string
 
 	enabledPluginsMap map[string]bool
 	pluginsSettings   map[string]map[string]template.JS
@@ -44,28 +48,40 @@ func NewHTML(config HTMLConfig, logger *zap.Logger) (*HTML, error) {
 		logger:    logger,
 	}
 
-	partials, err := instance.getPartials(config.TemplatesPath, config.UICfg.Theme, config.UICfg.AboutPath)
+	return instance, instance.initTemplates()
+}
+
+func (r *HTML) newID() string {
+	hasher := md5.New()
+	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	return hex.EncodeToString(hasher.Sum(nil))[:6]
+}
+
+func (r *HTML) initTemplates() error {
+	r.instanceID = r.newID()
+
+	partials, err := r.getPartials(r.config.TemplatesPath, r.config.UICfg.Theme, r.config.UICfg.AboutPath)
 	if nil != err {
-		return nil, err
+		return err
 	}
 
-	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", config.TemplatesPath, config.UICfg.Theme))
+	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", r.config.TemplatesPath, r.config.UICfg.Theme))
 	baseTemplate := template.Must(
-		template.New("base.html").Funcs(getTmplFuncMap(config.UICfg.DateFormat)).ParseFiles(baseFiles...))
+		template.New("base.html").Funcs(getTmplFuncMap(r.config.UICfg.DateFormat)).ParseFiles(baseFiles...))
 
 	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
-		tmplPath := fmt.Sprintf("%s/%s/%s", config.TemplatesPath, config.UICfg.Theme, tmplName)
+		tmplPath := fmt.Sprintf("%s/%s/%s", r.config.TemplatesPath, r.config.UICfg.Theme, tmplName)
 
-		instance.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
-		instance.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
+		r.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
+		r.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
-	err = instance.initPlugins()
+	err = r.initPlugins()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return instance, nil
+	return nil
 }
 
 func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
@@ -143,6 +159,17 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	data.m.RLock()
 	defer data.m.RUnlock()
 
+	if r.config.Debug {
+		rqctx.GetLogger(data.r.Context()).Warn("HTML renderer is in the debug mode, reloading all templates")
+		if err := r.initTemplates(); err != nil {
+			rqctx.GetLogger(data.r.Context()).Error(
+				"Problems with reloading HTML templates",
+				zap.Error(err),
+			)
+			return
+		}
+	}
+
 	templateData := data.data
 
 	templateData["lang"] = r.config.UICfg.Language
@@ -154,8 +181,7 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	templateData["description"] = r.config.UICfg.Description
 	templateData["date_format"] = r.config.UICfg.DateFormat
 
-	templateData["instance_id"] = r.config.InstanceID
-
+	templateData["instance_id"] = r.instanceID
 	templateData["plugins"] = r.enabledPluginsMap
 	templateData["plugin"] = r.pluginsSettings
 
@@ -167,9 +193,15 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	currentURL.Path = data.r.URL.Path
 	templateData["current_url"] = currentURL.String()
 
+	w.WriteHeader(code)
+
 	err := r.templates[data.template].Execute(w, templateData)
 	if nil != err {
-		r.logger.Error("Problems with rendering HTML template", zap.Error(err), zap.String("template", data.template))
+		rqctx.GetLogger(data.r.Context()).Error(
+			"Problems with rendering HTML template",
+			zap.Error(err),
+			zap.String("template", data.template),
+		)
 	}
 }
 
