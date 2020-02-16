@@ -17,7 +17,7 @@ func TestNewHTML(t *testing.T) {
 
 	// .../rklotz/pkg/server/renderer/../../../templates
 	templatesPath := filepath.Join(wd, "..", "..", "..", "templates")
-	theme := "foundation"
+	theme := "foundation6"
 	expected := []string{
 		path.Join(templatesPath, "plugins", "disqus.html"),
 		path.Join(templatesPath, "plugins", "ga.html"),
@@ -28,7 +28,6 @@ func TestNewHTML(t *testing.T) {
 		path.Join(templatesPath, "plugins", "yamka.html"),
 		path.Join(templatesPath, "plugins", "yasha.html"),
 
-		path.Join(templatesPath, theme, "partial", "alert.html"),
 		path.Join(templatesPath, theme, "partial", "heading.html"),
 		path.Join(templatesPath, theme, "partial", "info.html"),
 		path.Join(templatesPath, theme, "partial", "pagination.html"),
@@ -43,7 +42,7 @@ func TestNewHTML(t *testing.T) {
 	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "about.html")), partials)
 
 	// custom about panel
-	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "alert.html"))
+	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "pagination.html"))
 	require.NoError(t, err)
-	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "alert.html")), partials)
+	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "pagination.html")), partials)
 }
