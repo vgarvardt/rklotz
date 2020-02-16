@@ -14,3 +14,25 @@ html *, .label, .top-bar-section ul li > a {
 html pre, pre *, html code, code * {
     font-family: 'Roboto Mono', monospace;
 }
+
+.top-bar {
+    padding: 0;
+}
+
+.top-bar .top-bar-left {
+    border-right: solid 1px #4e4e4e;
+}
+
+.menu .menu-text {
+    padding: 0 1rem 0 0;
+}
+
+.menu a {
+    padding: 0 1rem;
+}
+
+a.label.secondary {
+    background-color: #e7e7e7;
+    color: #333;
+    cursor: pointer;
+}

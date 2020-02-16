@@ -1,12 +1,9 @@
 package server
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"time"
-
 	wErrors "github.com/pkg/errors"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/vgarvardt/rklotz/pkg/loader"
 	"github.com/vgarvardt/rklotz/pkg/server/handler"
@@ -24,11 +21,7 @@ func Run(cfg *Config, version string) error {
 	}
 	defer logger.Sync()
 
-	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
-	instanceID := hex.EncodeToString(hasher.Sum(nil))[:5]
-
-	logger.Info("Starting rKlotz...", zap.String("version", version), zap.String("instance", instanceID))
+	logger.Info("Starting rKlotz...", zap.String("version", version))
 
 	storageInstance, err := storage.NewStorage(cfg.StorageDSN, cfg.PostsPerPage)
 	if err != nil {
@@ -52,8 +45,8 @@ func Run(cfg *Config, version string) error {
 
 	htmlRenderer, err := renderer.NewHTML(
 		renderer.HTMLConfig{
+			Debug:         cfg.LogConfig.Level == zapcore.DebugLevel.String(),
 			TemplatesPath: cfg.HTTPConfig.TemplatesPath,
-			InstanceID:    instanceID,
 			UICfg:         cfg.UIConfig,
 			PluginsCfg:    cfg.Config,
 			RootURLCfg:    cfg.RootURLConfig,

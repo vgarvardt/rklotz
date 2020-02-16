@@ -7,7 +7,7 @@ import (
 
 // UIConfig is the configuration for user interface
 type UIConfig struct {
-	Theme       string `envconfig:"UI_THEME" default:"foundation"`
+	Theme       string `envconfig:"UI_THEME" default:"foundation6"`
 	Author      string `envconfig:"UI_AUTHOR" default:"Vladimir Garvardt"`
 	Email       string `envconfig:"UI_EMAIL" default:"vgarvardt@gmail.com"`
 	Description string `envconfig:"UI_DESCRIPTION" default:"rKlotz - simple golang-driven blog engine"`
