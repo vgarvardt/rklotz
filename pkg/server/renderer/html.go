@@ -193,11 +193,19 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	currentURL.Path = data.r.URL.Path
 	templateData["current_url"] = currentURL.String()
 
+	logger := rqctx.GetLogger(data.r.Context())
+
+	tmpl, found := r.templates[data.template]
+	if !found {
+		logger.Error("Template is not found in the templates registry", zap.String("template", data.template))
+		panic(fmt.Errorf("template is not found in the templates registry %q", data.template))
+	}
+
 	w.WriteHeader(code)
 
-	err := r.templates[data.template].Execute(w, templateData)
+	err := tmpl.Execute(w, templateData)
 	if nil != err {
-		rqctx.GetLogger(data.r.Context()).Error(
+		logger.Error(
 			"Problems with rendering HTML template",
 			zap.Error(err),
 			zap.String("template", data.template),

@@ -67,10 +67,10 @@ func TestFileLoader_Load(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 
-	// .../github.com/vgarvardt/rklotz/pkg/model/../../assets/posts
+	// .../pkg/loader/../../assets/posts
 	postsBasePath := filepath.Join(wd, "..", "..", "assets", "posts")
 
-	storage := &mockStorage{saveCallResult: []error{nil, nil}}
+	storage := &mockStorage{saveCallResult: []error{nil, nil, nil}}
 
 	f := formatter.New()
 
@@ -80,24 +80,31 @@ func TestFileLoader_Load(t *testing.T) {
 	err = fileLoader.Load(storage)
 	require.NoError(t, err)
 
-	assert.Equal(t, 2, storage.saveCallCount)
-	assert.Equal(t, 2, len(storage.saveCallParams))
+	require.Equal(t, 3, storage.saveCallCount)
+	require.Equal(t, 3, len(storage.saveCallParams))
 
-	found := false
-	for _, post := range storage.saveCallParams {
-		if post.Path == "/hello-world" {
-			found = true
-			assert.Equal(t, "Hello World Post Title", post.Title)
-		}
+	for _, p := range []struct {
+		path  string
+		title string
+	}{{
+		path:  "/hello-world",
+		title: "Hello World Post Title",
+	}, {
+		path:  "/nested/nested-path",
+		title: "Nested Path Post Title",
+	}, {
+		path:  "/with-teaser",
+		title: "Post With Teaser",
+	}} {
+		t.Run(p.path, func(t *testing.T) {
+			found := false
+			for _, post := range storage.saveCallParams {
+				if post.Path == p.path {
+					found = true
+					assert.Equal(t, p.title, post.Title)
+				}
+			}
+			assert.True(t, found)
+		})
 	}
-	assert.True(t, found)
-
-	found = false
-	for _, post := range storage.saveCallParams {
-		if post.Path == "/nested/nested-path" {
-			found = true
-			assert.Equal(t, "Nested Path Post Title", post.Title)
-		}
-	}
-	assert.True(t, found)
 }
