@@ -10,7 +10,7 @@
     {{ template "partial/info.html" .post }}
 
     <div>
-        {{ .post.HTML | noescape }}
+        {{ .post.BodyHTML | noescape }}
     </div>
 
     {{ if .plugins.yasha }}<p>{{ template "plugins/yasha.html" . }}</p>{{ end }}

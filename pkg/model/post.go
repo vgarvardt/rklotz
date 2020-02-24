@@ -9,16 +9,19 @@ import (
 	"strings"
 	"time"
 
+	wErrors "github.com/pkg/errors"
+
 	"github.com/vgarvardt/rklotz/pkg/formatter"
 )
 
 const (
-	postMetaSeparator = "+++"
+	postMetaDelimiter   = "+++"
+	postTeaserDelimiter = "+++teaser"
 )
 
 var (
 	// ErrorBadPostStructure is the error returned when trying to load a post with bad internal structure
-	ErrorBadPostStructure = errors.New("Bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaSeparator)
+	ErrorBadPostStructure = errors.New("Bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaDelimiter)
 	// ErrorBadMetaStructure is the error returned when trying to load a post with bad meta structure
 	ErrorBadMetaStructure = errors.New("Bad post meta structure, must have the following lines: post title, publishing date, post tags")
 )
@@ -30,9 +33,12 @@ type Post struct {
 	Title       string
 	PublishedAt time.Time `storm:"index"`
 	Tags        []string
-	Body        string
 	Format      string
-	HTML        string
+
+	Body       string
+	BodyHTML   string
+	Teaser     string
+	TeaserHTML string
 }
 
 // NewPostFromFile loads new post instance from file
@@ -44,7 +50,7 @@ func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, e
 		return nil, err
 	}
 
-	postParts := strings.SplitN(string(fileContents), postMetaSeparator, 2)
+	postParts := strings.SplitN(string(fileContents), postMetaDelimiter, 2)
 	if len(postParts) != 2 {
 		return nil, ErrorBadPostStructure
 	}
@@ -66,14 +72,29 @@ func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, e
 		post.Tags[i] = strings.TrimSpace(tag)
 	}
 
-	post.Body = strings.TrimSpace(postParts[1])
 	post.Format = strings.ToLower(filepath.Ext(postPath)[1:])
 
 	h := sha1.New()
 	h.Write([]byte(post.Path))
 	post.ID = fmt.Sprintf("%x", h.Sum(nil))
 
-	post.HTML, err = f(post.Body, post.Format)
+	bodyParts := strings.SplitN(postParts[1], postTeaserDelimiter, 2)
+	if len(bodyParts) == 2 {
+		post.Teaser = strings.TrimSpace(bodyParts[0])
+		post.Body = post.Teaser + "\n\n" + strings.TrimSpace(bodyParts[1])
+	} else {
+		post.Body = strings.TrimSpace(postParts[1])
+	}
+
+	post.TeaserHTML, err = f(post.Teaser, post.Format)
+	if err != nil {
+		return post, wErrors.Wrap(err, "could not format post teaser")
+	}
+
+	post.BodyHTML, err = f(post.Body, post.Format)
+	if err != nil {
+		return post, wErrors.Wrap(err, "could not format post body")
+	}
 
 	return post, err
 }

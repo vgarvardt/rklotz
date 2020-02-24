@@ -14,7 +14,11 @@
         </div>
 
         <p>
-            {{ .HTML | striptags | truncatechars 255 }} <a href="{{ .Path }}">[Read more]</a>
+            {{- if .TeaserHTML -}}
+                {{ .TeaserHTML | noescape }} <a href="{{ .Path }}">[Read more]</a>
+            {{- else -}}
+                {{ .BodyHTML | striptags | truncatechars 255 }} <a href="{{ .Path }}">[Read more]</a>
+            {{- end -}}
         </p>
 
         <hr>

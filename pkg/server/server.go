@@ -1,6 +1,9 @@
 package server
 
 import (
+	"fmt"
+	"time"
+
 	wErrors "github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -19,7 +22,11 @@ func Run(cfg *Config, version string) error {
 	if err != nil {
 		return wErrors.Wrap(err, "failed to initialize logger")
 	}
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			fmt.Printf("%s Could not sync logger: %v", time.Now().String(), err)
+		}
+	}()
 
 	logger.Info("Starting rKlotz...", zap.String("version", version))
 

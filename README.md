@@ -50,6 +50,9 @@ Post file has the following structure:
   of lines before delimiter
 * *Line 6*: Post body - may be preceded by any number of lines before post body, after delimiter
 
+Post teaser will be extracted from the post body automatically to be displayed on the posts list pages.
+If you want to set post teaser explicitly - use `+++teaser` delimiter.
+
 Post path is determined automatically from its path, relative to posts root path (see settings).
 
 Posts examples are available in [asserts/posts](./assets/posts).
