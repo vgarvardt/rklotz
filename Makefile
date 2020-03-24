@@ -16,8 +16,9 @@ GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X ${REPO}/cmd.version=$(VERSION)"
 all: clean deps build
 
 deps:
-	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
-	@go mod vendor
+	@echo "$(OK_COLOR)==> Installing dev dependencies$(NO_COLOR)"
+	@go get -u github.com/go-playground/overalls
+	@go get -u golang.org/x/lint/golint
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
@@ -32,7 +33,7 @@ test: lint format vet
 	@echo "$(OK_COLOR)==> Running tests$(NO_COLOR)"
 	@CGO_ENABLED=0 go test -cover ./... -coverprofile=coverage.txt -covermode=atomic
 
-lint: tools.golint
+lint:
 	@echo "$(OK_COLOR)==> Checking code style with 'golint' tool$(NO_COLOR)"
 	@go list ./... | xargs -n 1 golint -set_exit_status
 
@@ -47,15 +48,3 @@ vet:
 clean:
 	@echo "$(OK_COLOR)==> Cleaning project$(NO_COLOR)"
 	@if [ -d ${BUILD_DIR} ] ; then rm -rf ${BUILD_DIR}/* ; fi
-
-#---------------
-#-- tools
-#---------------
-
-tools: tools.golint
-
-tools.golint:
-	@command -v golint >/dev/null ; if [ $$? -ne 0 ]; then \
-		echo "--> installing golint"; \
-		go get golang.org/x/lint/golint; \
-	fi
