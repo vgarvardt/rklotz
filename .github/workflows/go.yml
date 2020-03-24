@@ -11,7 +11,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.13, 1.14, "stable"]
+        go-version: [1.13, 1.14]
     name: Test
     runs-on: ubuntu-latest
     steps:
