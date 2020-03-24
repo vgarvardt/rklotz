@@ -16,9 +16,9 @@ GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X ${REPO}/cmd.version=$(VERSION)"
 all: clean deps build
 
 deps:
-	@echo "$(OK_COLOR)==> Installing dev dependencies$(NO_COLOR)"
-	@go install -i github.com/go-playground/overalls
+	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
 	@go install -i golang.org/x/lint/golint
+	@go mod vendor
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
