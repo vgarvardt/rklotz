@@ -1,4 +1,4 @@
-name: Go
+name: Tests
 
 on:
   push:
@@ -26,3 +26,9 @@ jobs:
 
     - name: Run tests
       run: make test
+    
+    - name: Upload coverage
+      if: success()
+      run: |
+        overalls -project=github.com/vgarvardt/rklotz -covermode=count
+        bash <(curl -s https://codecov.io/bash) -f overalls.coverprofile
