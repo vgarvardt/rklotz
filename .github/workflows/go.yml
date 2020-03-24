@@ -8,15 +8,18 @@ on:
 
 jobs:
 
-  build:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.13, 1.14, "stable"]
     name: Test
     runs-on: ubuntu-latest
     steps:
 
-    - name: Set up Go 1.13
+    - name: Set up Go ${{ matrix.go-version }}
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: ${{ matrix.go-version }}
       id: go
 
     - name: Check out code into the Go module directory
