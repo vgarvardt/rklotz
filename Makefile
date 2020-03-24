@@ -17,8 +17,8 @@ all: clean deps build
 
 deps:
 	@echo "$(OK_COLOR)==> Installing dev dependencies$(NO_COLOR)"
-	@go get -u github.com/go-playground/overalls
-	@go get -u golang.org/x/lint/golint
+	@go install -i github.com/go-playground/overalls
+	@go install -i golang.org/x/lint/golint
 
 build:
 	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
