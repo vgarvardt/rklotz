@@ -39,10 +39,10 @@ jobs:
 
       - name: Build and push release image to the registry
         uses: docker/build-push-action@v1
-        if: success() && ${{ matrix.go-version }} == "latest" && ${{ github.event }} == "release"
+        if: success() && github.event_name == 'release' && matrix.go-version == 'latest'
         with:
           repository: "vgarvardt/rklotz"
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          build_args: format("version={0}", github.ref)
-          tags: format("{0},{1}", github.ref, "latest")
+          build_args: format("version={0}", ${{ github.ref }})
+          tags: ${{ github.ref }}
