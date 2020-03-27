@@ -5,6 +5,9 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  release:
+    types:
+      - created
 
 jobs:
 
@@ -33,3 +36,13 @@ jobs:
         with:
           file: ./coverage.txt
           fail_ci_if_error: false
+
+      - name: docker-push
+        uses: docker/build-push-action@v1
+        if: success() && ${{ matrix.go-version }} == "latest" && ${{ github.event }} == "release"
+        with:
+          repository: "vgarvardt/rklotz"
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          build_args: format("version={0}", github.ref)
+          tags: format("{0},{1}", github.ref, "latest")

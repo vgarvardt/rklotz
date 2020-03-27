@@ -21,13 +21,9 @@ deps:
 	@go mod vendor
 
 build:
-	@echo "$(OK_COLOR)==> Building... $(NO_COLOR)"
+	@echo "$(OK_COLOR)==> Building ${VERSION}... $(NO_COLOR)"
 	@CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}"
 	@GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}.linux.amd64"
-	@docker build --no-cache --pull -t vgarvardt/rklotz:`cat ./VERSION` .
-
-push:
-	@docker push vgarvardt/rklotz:`cat ./VERSION`
 
 test: lint format vet
 	@echo "$(OK_COLOR)==> Running tests$(NO_COLOR)"
