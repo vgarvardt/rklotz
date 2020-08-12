@@ -1,27 +1,18 @@
-FROM golang:latest AS build
+FROM ubuntu:20.04
 
-ARG version="0.0.0-dev"
-ENV VERSION=${version}
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY . .
-RUN make build
+COPY static/ /etc/rklotz/static
+COPY templates/ /etc/rklotz/templates
+COPY assets/posts/ /etc/rklotz/posts
 
-#---
-
-FROM alpine
-
-RUN apk add --no-cache ca-certificates && \
-    mkdir -p /etc/rklotz/posts && \
-    mkdir -p /etc/rklotz/static && \
-    mkdir -p /etc/rklotz/templates
-
-COPY --from=build /app/static/ /etc/rklotz/static
-COPY --from=build /app/templates/ /etc/rklotz/templates
-COPY --from=build /app/assets/posts/ /etc/rklotz/posts
-
-COPY --from=build /app/build/rklotz.linux.amd64 /bin/rklotz
+ADD rklotz /bin/rklotz
 RUN chmod a+x /bin/rklotz
+
+# Use nobody user + group
+USER 65534:65534
 
 EXPOSE 8080 8443
 

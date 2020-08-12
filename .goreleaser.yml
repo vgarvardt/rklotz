@@ -31,6 +31,6 @@ dockers:
       - "vgarvardt/rklotz:{{.Tag}}"
     dockerfile: Dockerfile
     extra_files:
-      - static/*
-      - templates/*
-      - assets/posts/*
+      - static
+      - templates
+      - assets/posts
