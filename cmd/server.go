@@ -10,7 +10,7 @@ import (
 )
 
 // NewServerCmd creates new server command
-func NewServerCmd(ctx context.Context) *cobra.Command {
+func NewServerCmd(ctx context.Context, version string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "server",
 		Short: "Runs rKlotz server",
