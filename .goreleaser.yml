@@ -1,0 +1,36 @@
+project_name: rklotz
+
+builds:
+  - id: binary-build
+    main: main.go
+    binary: rklotz
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - 386
+    ignore:
+      - goos: darwin
+        goarch: 386
+
+dockers:
+  - goos: linux
+    goarch: amd64
+    binaries:
+      - rklotz
+    image_templates:
+      - "vgarvardt/rklotz:latest"
+      - "vgarvardt/rklotz:{{.Tag}}"
+    dockerfile: Dockerfile
+    extra_files:
+      - static/*
+      - templates/*
+      - assets/posts/*

@@ -9,7 +9,7 @@ _test
 
 profile.coverprofile
 
-build/*
+dist/*
 vendor/*
 
 static/3rd-party/*

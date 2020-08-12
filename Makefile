@@ -4,42 +4,27 @@ ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
 NAME=rklotz
-REPO=github.com/vgarvardt/${NAME}
 
 # Build configuration
-VERSION ?= "$(shell cat ./VERSION)"
-BUILD_DIR ?= $(CURDIR)/build
-GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X ${REPO}/cmd.version=$(VERSION)"
+VERSION ?= "0.0.0-dev-$(shell git rev-parse --short HEAD)"
+BUILD_DIR ?= $(CURDIR)/dist
+GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X main.version=$(VERSION)"
 
-.PHONY: all clean deps build
+.PHONY: all clean build
 
-all: clean deps build
-
-deps:
-	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
-	@go install -i golang.org/x/lint/golint
-	@go mod vendor
+all: clean build
 
 build:
-	@echo "$(OK_COLOR)==> Building ${VERSION}... $(NO_COLOR)"
-	@CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}"
-	@GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -mod vendor $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}.linux.amd64"
+	@echo "$(OK_COLOR)==> Building (v${VERSION}) ... $(NO_COLOR)"
+	@CGO_ENABLED=0 go build $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}"
 
-test: lint format vet
+test:
 	@echo "$(OK_COLOR)==> Running tests$(NO_COLOR)"
 	@CGO_ENABLED=0 go test -cover ./... -coverprofile=coverage.txt -covermode=atomic
 
 lint:
-	@echo "$(OK_COLOR)==> Checking code style with 'golint' tool$(NO_COLOR)"
-	@go list ./... | xargs -n 1 golint -set_exit_status
-
-format:
-	@echo "$(OK_COLOR)==> Checking code formating with 'gofmt' tool$(NO_COLOR)"
-	@gofmt -l -s cmd pkg | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
-
-vet:
-	@echo "$(OK_COLOR)==> Checking code correctness with 'go vet' tool$(NO_COLOR)"
-	@go vet ./...
+	@echo "$(OK_COLOR)==> Linting with golangci-lint running in docker container$(NO_COLOR)"
+	@docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint run -v
 
 clean:
 	@echo "$(OK_COLOR)==> Cleaning project$(NO_COLOR)"

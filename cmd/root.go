@@ -7,7 +7,7 @@ import (
 )
 
 // NewRootCmd creates the root rklotz command
-func NewRootCmd() *cobra.Command {
+func NewRootCmd(version string) *cobra.Command {
 	ctx := context.Background()
 
 	cmd := &cobra.Command{
@@ -15,8 +15,8 @@ func NewRootCmd() *cobra.Command {
 		Short: "rKlotz is a simple one-user file-based blog engine",
 	}
 
-	cmd.AddCommand(NewVersionCmd(ctx))
-	cmd.AddCommand(NewServerCmd(ctx))
+	cmd.AddCommand(NewVersionCmd(ctx, version))
+	cmd.AddCommand(NewServerCmd(ctx, version))
 
 	return cmd
 }
