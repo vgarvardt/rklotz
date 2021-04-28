@@ -19,4 +19,4 @@ EXPOSE 8080 8443
 ENTRYPOINT ["/bin/rklotz"]
 
 # just to have it
-RUN ["/bin/rklotz", "version"]
+RUN ["/bin/rklotz", "--version"]
