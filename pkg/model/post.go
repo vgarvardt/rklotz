@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	wErrors "github.com/pkg/errors"
-
 	"github.com/vgarvardt/rklotz/pkg/formatter"
 )
 
@@ -88,12 +86,12 @@ func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, e
 
 	post.TeaserHTML, err = f(post.Teaser, post.Format)
 	if err != nil {
-		return post, wErrors.Wrap(err, "could not format post teaser")
+		return post, fmt.Errorf("could not format post teaser: %w", err)
 	}
 
 	post.BodyHTML, err = f(post.Body, post.Format)
 	if err != nil {
-		return post, wErrors.Wrap(err, "could not format post body")
+		return post, fmt.Errorf("could not format post body: %w", err)
 	}
 
 	return post, err

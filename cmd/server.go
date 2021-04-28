@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
-	wErrors "github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/vgarvardt/rklotz/pkg/server"
@@ -17,7 +17,7 @@ func NewServerCmd(ctx context.Context, version string) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := server.LoadConfig()
 			if err != nil {
-				return wErrors.Wrap(err, "failed to load config")
+				return fmt.Errorf("failed to load config: %w", err)
 			}
 
 			return server.Run(cfg, version)
