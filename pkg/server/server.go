@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	wErrors "github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -20,7 +19,7 @@ func Run(cfg *Config, version string) error {
 	logger, err := cfg.LogConfig.BuildLogger()
 
 	if err != nil {
-		return wErrors.Wrap(err, "failed to initialize logger")
+		return fmt.Errorf("failed to initialize logger: %w", err)
 	}
 	defer func() {
 		if err := logger.Sync(); err != nil {
@@ -32,7 +31,7 @@ func Run(cfg *Config, version string) error {
 
 	storageInstance, err := storage.NewStorage(cfg.StorageDSN, cfg.PostsPerPage)
 	if err != nil {
-		return wErrors.Wrap(err, "failed to initialise storage")
+		return fmt.Errorf("failed to initialise storage: %w", err)
 	}
 	defer func() {
 		if err := storageInstance.Close(); err != nil {
@@ -42,12 +41,12 @@ func Run(cfg *Config, version string) error {
 
 	loaderInstance, err := loader.New(cfg.PostsDSN, logger)
 	if err != nil {
-		return wErrors.Wrap(err, "failed to initialise loader")
+		return fmt.Errorf("failed to initialise loader: %w", err)
 	}
 
 	err = loaderInstance.Load(storageInstance)
 	if err != nil {
-		return wErrors.Wrap(err, "failed to load posts")
+		return fmt.Errorf("failed to load posts: %w", err)
 	}
 
 	htmlRenderer, err := renderer.NewHTML(
@@ -61,7 +60,7 @@ func Run(cfg *Config, version string) error {
 		logger,
 	)
 	if err != nil {
-		return wErrors.Wrap(err, "failed to initialise HTML renderer")
+		return fmt.Errorf("failed to initialise HTML renderer: %w", err)
 	}
 
 	feedRenderer := renderer.NewFeed(cfg.UIConfig, cfg.RootURLConfig)

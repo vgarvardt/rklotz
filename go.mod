@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/feeds v1.1.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
-	github.com/pkg/errors v0.9.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
