@@ -7,7 +7,7 @@ NAME=rklotz
 
 # Build configuration
 VERSION ?= "0.0.0-dev-$(shell git rev-parse --short HEAD)"
-BUILD_DIR ?= $(CURDIR)/dist
+BUILD_DIR ?= $(CURDIR)
 GO_LINKER_FLAGS=-ldflags "-s -w" -ldflags "-X main.version=$(VERSION)"
 
 .PHONY: all clean build
