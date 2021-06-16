@@ -7,9 +7,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ADD rklotz /bin/rklotz
 RUN chmod a+x /bin/rklotz
 
-# Use nobody user + group
-USER 65534:65534
-
 COPY static/ /etc/rklotz/static
 COPY templates/ /etc/rklotz/templates
 COPY assets/posts/ /etc/rklotz/posts
