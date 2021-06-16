@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/vgarvardt/rklotz/pkg/server/handler"
 	m "github.com/vgarvardt/rklotz/pkg/server/middleware"
@@ -55,7 +57,7 @@ func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
 }
 
 // ListenAndServe launches web server that listens to HTTP(S) requests
-func ListenAndServe(handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *zap.Logger) error {
+func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *zap.Logger) error {
 	if !cfgSSL.Enabled {
 		address := fmt.Sprintf(":%d", cfgHTTP.Port)
 		logger.Info("Running HTTP server...", zap.String("address", address))
@@ -72,9 +74,8 @@ func ListenAndServe(handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, lo
 		Email:      cfgSSL.Email,
 	}
 
-	httpsAddress := fmt.Sprintf(":%d", cfgSSL.Port)
-	server := &http.Server{
-		Addr:    httpsAddress,
+	httpsServer := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfgSSL.Port),
 		Handler: handler,
 		TLSConfig: &tls.Config{
 			GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
@@ -92,14 +93,33 @@ func ListenAndServe(handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, lo
 		},
 	}
 
-	go func() {
-		logger.Info("Running HTTPS server...", zap.String("address", httpsAddress))
-		logger.Fatal("Failed to run HTTPS server", zap.Error(server.ListenAndServeTLS("", "")))
-	}()
+	httpServer := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfgHTTP.Port),
+		Handler: tlsCertManager.HTTPHandler(nil),
+	}
 
-	httpAddress := fmt.Sprintf(":%d", cfgHTTP.Port)
+	g, ctx := errgroup.WithContext(ctx)
 
-	logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpAddress))
+	g.Go(func() error {
+		logger.Info("Running HTTPS server...", zap.String("address", httpsServer.Addr))
+		if err := httpsServer.ListenAndServeTLS("", ""); err != nil {
+			return fmt.Errorf("failed to run HTTPS server: %w", err)
+		}
+		return nil
+	})
 
-	return http.ListenAndServe(httpAddress, tlsCertManager.HTTPHandler(nil))
+	g.Go(func() error {
+		logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpServer.Addr))
+		if err := httpServer.ListenAndServe(); err != nil {
+			return fmt.Errorf("failed to run HTTPS redirect server: %w", err)
+		}
+		return nil
+	})
+
+	<-ctx.Done()
+	logger.Info("One of the servers stopped, stopping all of them")
+	logger.Info("Stopping HTTPS server", zap.Error(httpsServer.Shutdown(context.Background())))
+	logger.Info("Stopping HTTP to HTTPS redirect server", zap.Error(httpServer.Shutdown(context.Background())))
+
+	return g.Wait()
 }

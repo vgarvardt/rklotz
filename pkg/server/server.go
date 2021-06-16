@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 )
 
 // Run initializes and runs web-server instance
-func Run(cfg *Config, version string) error {
+func Run(ctx context.Context, cfg *Config, version string) error {
 	logger, err := cfg.LogConfig.BuildLogger()
 
 	if err != nil {
@@ -72,5 +73,5 @@ func Run(cfg *Config, version string) error {
 
 	web.ServeStatic(r, cfg.HTTPConfig, cfg.UIConfig.Theme)
 
-	return web.ListenAndServe(r, cfg.SSLConfig, cfg.HTTPConfig, logger)
+	return web.ListenAndServe(ctx, r, cfg.SSLConfig, cfg.HTTPConfig, logger)
 }

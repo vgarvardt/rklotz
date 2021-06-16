@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -10,7 +9,7 @@ import (
 )
 
 // NewServerCmd creates new server command
-func NewServerCmd(ctx context.Context, version string) *cobra.Command {
+func NewServerCmd(version string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "server",
 		Short: "Runs rKlotz server",
@@ -20,7 +19,7 @@ func NewServerCmd(ctx context.Context, version string) *cobra.Command {
 				return fmt.Errorf("failed to load config: %w", err)
 			}
 
-			return server.Run(cfg, version)
+			return server.Run(cmd.Context(), cfg, version)
 		},
 	}
 }
