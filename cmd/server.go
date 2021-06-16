@@ -19,7 +19,7 @@ func NewServerCmd(version string) *cobra.Command {
 				return fmt.Errorf("failed to load config: %w", err)
 			}
 
-			return server.Run(cfg, version)
+			return server.Run(cmd.Context(), cfg, version)
 		},
 	}
 }
