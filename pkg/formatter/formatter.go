@@ -4,7 +4,7 @@ import (
 	"errors"
 	"regexp"
 
-	"github.com/russross/blackfriday"
+	"github.com/russross/blackfriday/v2"
 )
 
 var (
