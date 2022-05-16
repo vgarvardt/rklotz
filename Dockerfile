@@ -1,10 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-ADD rklotz /bin/rklotz
+COPY rklotz /bin/rklotz
 RUN chmod a+x /bin/rklotz
 
 COPY static/ /etc/rklotz/static

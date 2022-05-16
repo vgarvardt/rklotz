@@ -1,10 +1,14 @@
 package formatter
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 
-	"github.com/russross/blackfriday/v2"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 )
 
 var (
@@ -21,22 +25,19 @@ func New() Formatter {
 }
 
 type implFormatter struct {
-	mdHTMLRenderer *blackfriday.HTMLRenderer
+	mdHTML goldmark.Markdown
 }
 
 func newImpl() *implFormatter {
-	impl := new(implFormatter)
-
-	// copied from CommonHTMLFlags with UseXHTML removed and HrefTargetBlank added
-	htmlFlags := blackfriday.Smartypants |
-		blackfriday.SmartypantsFractions | blackfriday.SmartypantsDashes | blackfriday.SmartypantsLatexDashes |
-		blackfriday.HrefTargetBlank
-
-	impl.mdHTMLRenderer = blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
-		Flags: htmlFlags,
-	})
-
-	return impl
+	return &implFormatter{
+		mdHTML: goldmark.New(
+			goldmark.WithExtensions(extension.GFM, extension.Footnote, extension.Typographer),
+			goldmark.WithParserOptions(
+				parser.WithAutoHeadingID(),
+			),
+			goldmark.WithRendererOptions(),
+		),
+	}
 }
 
 func (f *implFormatter) format(raw, format string) (string, error) {
@@ -48,11 +49,23 @@ func (f *implFormatter) format(raw, format string) (string, error) {
 	return "", ErrorUnknownFormat
 }
 
-func (f *implFormatter) formatMD(raw string) string {
-	html := string(blackfriday.Run([]byte(raw), blackfriday.WithRenderer(f.mdHTMLRenderer)))
-	// fix code class to make highlight.js work
-	re := regexp.MustCompile(`<code class="language-(\w+)">`)
-	html = re.ReplaceAllString(html, "<code class=\"$1\">")
+var (
+	reHref = regexp.MustCompile(`<a href="(.+[^"])">`)
+	reCode = regexp.MustCompile(`<code class="language-(\w+)">`)
+)
 
-	return html
+func (f *implFormatter) formatMD(raw string) string {
+	var buf bytes.Buffer
+	if err := f.mdHTML.Convert([]byte(raw), &buf); err != nil {
+		return fmt.Sprintf("<p>Error rendering Markdown: <code>%s</code></p>", err.Error())
+	}
+
+	rendered := buf.String()
+	// TODO: there must be a way to do this using plugins
+	// add target-_blank to urls
+	rendered = reHref.ReplaceAllString(rendered, `<a href="$1" target="_blank">`)
+	// fix code class to make highlight.js work
+	rendered = reCode.ReplaceAllString(rendered, `<code class="$1">`)
+
+	return rendered
 }
