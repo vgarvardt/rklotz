@@ -51,7 +51,6 @@ Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
 In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.</p>
-
 <pre><code class="go">package main
 
 import (
@@ -63,7 +62,6 @@ func main() {
 }
 
 </code></pre>
-
 <p>Vestibulum hendrerit massa libero, et sagittis felis luctus ut. Nunc condimentum aliquet lectus,
 id posuere risus rhoncus et. Vivamus sed diam aliquam, gravida neque ut, luctus purus.
 Mauris fringilla sagittis pretium. In egestas urna lectus, semper vehicula libero eleifend vitae.
