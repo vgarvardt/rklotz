@@ -13,8 +13,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/yuin/goldmark v1.4.12
 	go.uber.org/zap v1.21.0
-	golang.org/x/crypto v0.0.0-20220126234351-aa10faf2a1f8
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
+	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
 )
 
 require (
