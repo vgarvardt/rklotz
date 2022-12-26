@@ -1,31 +1,36 @@
 ---
-name: Testing
+name: "Test"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 jobs:
-  build:
+  test:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: ./go.mod
 
       - name: Run tests
         run: make test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         if: success()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.txt
           fail_ci_if_error: false
