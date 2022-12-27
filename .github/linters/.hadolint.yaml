@@ -1,0 +1,10 @@
+---
+##########################
+## Hadolint config file ##
+##########################
+
+failure-threshold: warning
+
+ignored:
+  # Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+  - DL3008
