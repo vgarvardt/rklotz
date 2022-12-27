@@ -11,7 +11,7 @@ require (
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
-	github.com/yuin/goldmark v1.4.12
+	github.com/yuin/goldmark v1.5.3
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
