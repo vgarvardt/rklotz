@@ -10,7 +10,7 @@
 
     <title>{{ .title }} | {{ block "title" . }}{{ .intro }}{{ end }}</title>
 
-    {{ if .plugins.gtm }}{{ template "plugins/gtm-head.html" . }}{{ end }}
+    {{ if .plugins.gtm }}{{ template "plugins/gtm-head.tpl" . }}{{ end }}
 
     <link href="/feed/atom" type="application/atom+xml" rel="alternate" title="Posts (Atom feed)">
     <link href="/feed/rss" type="application/rss+xml" rel="alternate" title="Posts (RSS feed)">
@@ -27,7 +27,7 @@
 </head>
 
 <body>
-{{ if .plugins.gtm }}{{ template "plugins/gtm-body.html" . }}{{ end }}
+{{ if .plugins.gtm }}{{ template "plugins/gtm-body.tpl" . }}{{ end }}
 
 <div class="grid-container grid-x">
     <div class="cell small-12">
@@ -72,8 +72,8 @@
         crossorigin="anonymous"></script>
 {{ block "foot_extra" . }}{{ end }}
 
-{{ if .plugins.ga }}{{ template "plugins/ga.html" . }}{{ end }}
-{{ if .plugins.yamka }}{{ template "plugins/yamka.html" . }}{{ end }}
+{{ if .plugins.ga }}{{ template "plugins/ga.tpl" . }}{{ end }}
+{{ if .plugins.yamka }}{{ template "plugins/yamka.tpl" . }}{{ end }}
 
 </body>
 

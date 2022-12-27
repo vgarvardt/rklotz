@@ -1,7 +1,8 @@
 package model
 
 import (
-	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
@@ -72,9 +73,8 @@ func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, e
 
 	post.Format = strings.ToLower(filepath.Ext(postPath)[1:])
 
-	h := sha1.New()
-	h.Write([]byte(post.Path))
-	post.ID = fmt.Sprintf("%x", h.Sum(nil))
+	hash := sha256.Sum256([]byte(post.Path))
+	post.ID = hex.EncodeToString(hash[:])
 
 	bodyParts := strings.SplitN(postParts[1], postTeaserDelimiter, 2)
 	if len(bodyParts) == 2 {

@@ -34,8 +34,7 @@ func New(dsn string, logger *zap.Logger) (Loader, error) {
 
 	f := formatter.New()
 
-	switch postsURL.Scheme {
-	case schemeFile:
+	if postsURL.Scheme == schemeFile {
 		return NewFileLoader(postsURL.Path, f, logger)
 	}
 

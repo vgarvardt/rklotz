@@ -64,11 +64,11 @@ Currently, the following settings (environment variables) are available:
 ### Base application settings
 
 * `POSTS_DSN` (default `file:///etc/rklotz/posts`) - posts root path in the format `storage://<path>`.
-  Currently the following storage types are supported:
+  Currently, the following storage types are supported:
   * `file` - local file system
 * `POSTS_PERPAGE` (default `10`) - number of posts per page
 * `STORAGE_DSN` (default `boltdb:///tmp/rklotz.db`) - posts storage in runtime in the format `storage://path`.
-  Currently the following storage types are supported:
+  Currently, the following storage types are supported:
   * `boltdb` - storage on top of [BoltDB](https://github.com/boltdb/bolt) and [Storm](https://github.com/asdine/storm)
   * `memory` - store all posts in memory, perfect for hundreds or even thousands of posts
 
@@ -95,7 +95,7 @@ Currently, the following settings (environment variables) are available:
 
 ### HTML and UI settings
 
-* `UI_THEME` (default `foundation`) - theme name. Themes list available in [templates](./templates)
+* `UI_THEME` (default `foundation6`) - theme name. Themes list available in [templates](./templates)
   (except for `plugins`, that are plugins templates, see bellow)
 * `UI_AUTHOR` (default `Vladimir Garvardt`) - blog author name (HTML head meta)
 * `UI_EMAIL` (default `vgarvardt@gmail.com`) - blog author email

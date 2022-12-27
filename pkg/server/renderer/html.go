@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"html/template"
@@ -52,9 +52,8 @@ func NewHTML(config HTMLConfig, logger *zap.Logger) (*HTML, error) {
 }
 
 func (r *HTML) newID() string {
-	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
-	return hex.EncodeToString(hasher.Sum(nil))[:6]
+	hash := sha256.Sum256([]byte(time.Now().Format(time.RFC3339Nano)))
+	return hex.EncodeToString(hash[:])[:6]
 }
 
 func (r *HTML) initTemplates() error {
@@ -72,7 +71,7 @@ func (r *HTML) initTemplates() error {
 			ParseFiles(baseFiles...),
 	)
 
-	for _, tmplName := range []string{"index.tpl", "post.tpl", "tag.tpl"} {
+	for _, tmplName := range []string{"404.tpl", "500.tpl", "index.tpl", "post.tpl", "tag.tpl"} {
 		tmplPath := fmt.Sprintf("%s/%s/%s", r.config.TemplatesPath, r.config.UICfg.Theme, tmplName)
 
 		r.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
@@ -110,13 +109,14 @@ func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, erro
 	}
 
 	_, err = os.Stat(uiAbout)
-	if os.IsNotExist(err) {
+	switch {
+	case os.IsNotExist(err):
 		r.logger.Info("Custom about panel not found, loading default theme about panel", zap.String("path", uiAbout))
 		uiAbout = fmt.Sprintf("%s/%s/partial/about.tpl", templatesPath, theme)
-	} else if nil != err {
+	case err != nil:
 		r.logger.Error("Failed to load custom about panel", zap.Error(err), zap.String("path", uiAbout))
 		return nil, err
-	} else {
+	default:
 		r.logger.Info("Loading custom about panel", zap.String("path", uiAbout))
 	}
 
@@ -141,8 +141,7 @@ func (r *HTML) initPlugins() error {
 		r.logger.Info("Configuring plugin", zap.String("name", r.config.PluginsCfg.Enabled[i]))
 		settings, err := r.config.PluginsCfg.SetUp(p)
 		if err != nil {
-			switch e := err.(type) {
-			case *plugin.ErrorConfiguring:
+			if e, ok := err.(*plugin.ErrorConfiguring); ok {
 				r.logger.Error("Failed to configure plugin", zap.Error(err), zap.String("field", e.Field()))
 			}
 			return err
@@ -150,6 +149,7 @@ func (r *HTML) initPlugins() error {
 
 		r.pluginsSettings[r.config.PluginsCfg.Enabled[i]] = make(map[string]template.JS)
 		for settingName, settingValue := range settings {
+			/* #nosec G203 -- plugins are supposed to be non-safe and contain JS */
 			r.pluginsSettings[r.config.PluginsCfg.Enabled[i]][settingName] = template.JS(settingValue)
 		}
 	}
@@ -216,6 +216,11 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	}
 }
 
+// Error renders error to a response writer
+func (r *HTML) Error(rq *http.Request, w http.ResponseWriter, code int, err error) {
+	r.Render(w, code, NewData(rq, fmt.Sprintf("%d.tpl", code), D{"error": err.Error()}))
+}
+
 func getTmplFuncMap(dateFormat string) template.FuncMap {
 	funcs := gtf.GtfFuncMap
 
@@ -226,6 +231,7 @@ func getTmplFuncMap(dateFormat string) template.FuncMap {
 		return value + arg
 	}
 	funcs["noescape"] = func(value string) template.HTML {
+		/* #nosec G203 -- function is supposed to be non-safe and contain JS */
 		return template.HTML(value)
 	}
 

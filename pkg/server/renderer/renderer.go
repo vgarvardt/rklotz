@@ -40,6 +40,8 @@ func (d *Data) Set(key string, value interface{}) *Data {
 
 // Renderer is the interface for rendering data to a client in required format
 type Renderer interface {
-	// Render renders the data with response code to a HTTP response writer
+	// Render renders the data with response code to a response writer
 	Render(w http.ResponseWriter, code int, data *Data)
+	// Error renders error to a response writer
+	Error(rq *http.Request, w http.ResponseWriter, code int, err error)
 }
