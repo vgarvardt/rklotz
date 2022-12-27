@@ -20,11 +20,11 @@ Then open `http://127.0.0.1:8080` in your browser.
 You need to have Go 1.12+ and [Docker](https://www.docker.com/) installed and running.
 
 ```bash
-$ git clone git@github.com:vgarvardt/rklotz.git
-$ cd rklotz
-$ make deps
-$ make build
-$ docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION` server
+git clone git@github.com:vgarvardt/rklotz.git
+cd rklotz
+make deps
+make build
+docker run -it -p 8080:8080 vgarvardt/rklotz:`cat ./VERSION` server
 ```
 
 Then open `http://127.0.0.1:8080` in your browser.
@@ -59,7 +59,7 @@ Posts examples are available in [asserts/posts](./assets/posts).
 
 ## Settings
 
-Currently The following settings (environment variables) are available:
+Currently, the following settings (environment variables) are available:
 
 ### Base application settings
 
@@ -67,7 +67,7 @@ Currently The following settings (environment variables) are available:
   Currently the following storage types are supported:
   * `file` - local file system
 * `POSTS_PERPAGE` (default `10`) - number of posts per page
-* `STORAGE_DSN` (default `boltdb:///tmp/rklotz.db`) - posts storage in run-time in the format `storage://path`.
+* `STORAGE_DSN` (default `boltdb:///tmp/rklotz.db`) - posts storage in runtime in the format `storage://path`.
   Currently the following storage types are supported:
   * `boltdb` - storage on top of [BoltDB](https://github.com/boltdb/bolt) and [Storm](https://github.com/asdine/storm)
   * `memory` - store all posts in memory, perfect for hundreds or even thousands of posts
@@ -97,45 +97,45 @@ Currently The following settings (environment variables) are available:
 
 * `UI_THEME` (default `foundation`) - theme name. Themes list available in [templates](./templates)
   (except for `plugins`, that are plugins templates, see bellow)
-* `UI_AUTHOR` (default `Vladimir Garvardt`) - blog author name (html head meta)
+* `UI_AUTHOR` (default `Vladimir Garvardt`) - blog author name (HTML head meta)
 * `UI_EMAIL` (default `vgarvardt@gmail.com`) - blog author email
-* `UI_DESCRIPTION` (default `rKlotz - simple golang-driven blog engine`) - blog description (html head meta)
-* `UI_LANGUAGE` (default `en`) - blog language (html lang)
-* `UI_TITLE` (default `rKlotz`) - blog title (html title)
+* `UI_DESCRIPTION` (default `rKlotz - simple golang-driven blog engine`) - blog description (HTML head meta)
+* `UI_LANGUAGE` (default `en`) - blog language (HTML lang)
+* `UI_TITLE` (default `rKlotz`) - blog title (HTML title)
 * `UI_HEADING` (default `rKlotz`) - blog heading (index page header)
 * `UI_INTRO` (default `simple golang-driven blog engine`) - blog intro (index page header)
 * `UI_DATEFORMAT` (default `2 Jan 2006`) - post publishing date display format.
   Must be compatible with [`time.Format()`](http://golang.org/pkg/time/#Time.Format). See examples in
   [predefined time formats](https://golang.org/pkg/time/#pkg-constants).
-* `UI_ABOUT_PATH` (default `/etc/rklotz/about.html`) - path to custom "about panel".
-  If not found - `<WEB_TEMPLATES_PATH>/<UI_THEME>/partial/about.html` is used.
+* `UI_ABOUT_PATH` (default `/etc/rklotz/about.tpl`) - path to custom "about panel".
+  If not found - `<WEB_TEMPLATES_PATH>/<UI_THEME>/partial/about.tpl` is used.
 
 #### About panel
 
 Template must have the following structure:
 
-```html
-{{ define "partial/about.html" }}
+```gotemplate
+{{ define "partial/about.tpl" }}
     Content goes here. html/template is used for rendering.
 {{ end }}
 ```
 
-See about panel example in [default theme](./templates/foundation/partial/about.html).
+See about panel example in [default theme](./templates/foundation6/partial/about.tpl).
 
 ### Root URL settings
 
-* `ROOT_URL_SCHEME` (default `http`) - blog absolute url scheme. Currently `https` si not supported on rKlotz web
+* `ROOT_URL_SCHEME` (default `http`) - blog absolute URL scheme. Currently `https` si not supported on rKlotz web
   application level (in plans), so use `https` only if you have `SSL/TLS` certificate termination on the level before
   rKlotz (e.g. nginx as reverse proxy before your blog).
-* `ROOT_URL_HOST` (default ``) - blog absolute url host. If empty - request host is used.
-* `ROOT_URL_PATH` (default `/`) - blog absolute url path prefix. In case your blog is hosted on the second (or deeper)
+* `ROOT_URL_HOST` (default ``) - blog absolute URL host. If empty - request host is used.
+* `ROOT_URL_PATH` (default `/`) - blog absolute URL path prefix. In case your blog is hosted on the second (or deeper)
   path level, e.g. `http://example.com/blog` (`ROOT_URL_PATH`=`/blog`)
 
 ### Plugins settings
 
 ### Plugins
 
-rKlots supports plugins. Currently the following are implemented:
+rKlots supports plugins. Currently, the following are implemented:
 
 * [Disqus](https://disqus.com/) (`disqus`) - posts comments
 * [Google Analytics](http://www.google.com/analytics/) (`ga`) - site visits analytics from Google
@@ -163,7 +163,7 @@ Plugins configuration available with the following settings:
   * `theme` (default `idea`) - colour scheme/theme
 * `PLUGINS_YAMKA` - *Yandex Metrika* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available:
-  * `id` (required) - metrika ID 
+  * `id` (required) - metrika ID
 * `PLUGINS_YASHA` - *Yandex Share* plugin configuration in the format `<config1>:<value1>,<config2>:<value2>,...`
   The following configurations are available (see fill list of values on plugin page):
   * `services` (default: `facebook twitter gplus`) - space-separated services list

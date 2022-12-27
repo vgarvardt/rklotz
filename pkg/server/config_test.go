@@ -36,7 +36,7 @@ func TestLoad_DefaultValues(t *testing.T) {
 	assert.Equal(t, "rKlotz", cfg.UIConfig.Heading)
 	assert.Equal(t, "simple golang-driven blog engine", cfg.UIConfig.Intro)
 	assert.Equal(t, "2 Jan 2006", cfg.UIConfig.DateFormat)
-	assert.Equal(t, "/etc/rklotz/about.html", cfg.UIConfig.AboutPath)
+	assert.Equal(t, "/etc/rklotz/about.tpl", cfg.UIConfig.AboutPath)
 
 	assert.Equal(t, "http", cfg.RootURLConfig.Scheme)
 	assert.Equal(t, "", cfg.RootURLConfig.Host)
@@ -64,7 +64,7 @@ func TestLoad(t *testing.T) {
 	os.Setenv("UI_HEADING", "Anathem")
 	os.Setenv("UI_INTRO", "Reamde")
 	os.Setenv("UI_DATEFORMAT", "Mon Jan 2 15:04:05 -0700 MST 2006")
-	os.Setenv("UI_ABOUT_PATH", "/path/to/about.html")
+	os.Setenv("UI_ABOUT_PATH", "/path/to/about.tpl")
 
 	os.Setenv("ROOT_URL_SCHEME", "gopher")
 	os.Setenv("ROOT_URL_HOST", "example.com")
@@ -99,7 +99,7 @@ func TestLoad(t *testing.T) {
 	assert.Equal(t, "Anathem", appConfig.UIConfig.Heading)
 	assert.Equal(t, "Reamde", appConfig.UIConfig.Intro)
 	assert.Equal(t, "Mon Jan 2 15:04:05 -0700 MST 2006", appConfig.UIConfig.DateFormat)
-	assert.Equal(t, "/path/to/about.html", appConfig.UIConfig.AboutPath)
+	assert.Equal(t, "/path/to/about.tpl", appConfig.UIConfig.AboutPath)
 
 	assert.Equal(t, "gopher", appConfig.RootURLConfig.Scheme)
 	assert.Equal(t, "example.com", appConfig.RootURLConfig.Host)

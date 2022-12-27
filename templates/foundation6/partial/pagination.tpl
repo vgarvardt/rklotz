@@ -1,4 +1,4 @@
-{{ define "partial/pagination.html" }}
+{{ define "partial/pagination.tpl" }}
     <nav aria-label="Pagination">
         <ul class="pagination text-center">
             {{ if ne .page 0 }}

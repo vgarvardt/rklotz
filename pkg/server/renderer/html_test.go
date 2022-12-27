@@ -19,19 +19,19 @@ func TestNewHTML(t *testing.T) {
 	templatesPath := filepath.Join(wd, "..", "..", "..", "templates")
 	theme := "foundation6"
 	expected := []string{
-		path.Join(templatesPath, "plugins", "disqus.html"),
-		path.Join(templatesPath, "plugins", "ga.html"),
-		path.Join(templatesPath, "plugins", "gtm-body.html"),
-		path.Join(templatesPath, "plugins", "gtm-head.html"),
-		path.Join(templatesPath, "plugins", "highlightjs-css.html"),
-		path.Join(templatesPath, "plugins", "highlightjs-js.html"),
-		path.Join(templatesPath, "plugins", "yamka.html"),
-		path.Join(templatesPath, "plugins", "yasha.html"),
+		path.Join(templatesPath, "plugins", "disqus.tpl"),
+		path.Join(templatesPath, "plugins", "ga.tpl"),
+		path.Join(templatesPath, "plugins", "gtm-body.tpl"),
+		path.Join(templatesPath, "plugins", "gtm-head.tpl"),
+		path.Join(templatesPath, "plugins", "highlightjs-css.tpl"),
+		path.Join(templatesPath, "plugins", "highlightjs-js.tpl"),
+		path.Join(templatesPath, "plugins", "yamka.tpl"),
+		path.Join(templatesPath, "plugins", "yasha.tpl"),
 
-		path.Join(templatesPath, theme, "partial", "heading.html"),
-		path.Join(templatesPath, theme, "partial", "info.html"),
-		path.Join(templatesPath, theme, "partial", "pagination.html"),
-		path.Join(templatesPath, theme, "partial", "posts.html"),
+		path.Join(templatesPath, theme, "partial", "heading.tpl"),
+		path.Join(templatesPath, theme, "partial", "info.tpl"),
+		path.Join(templatesPath, theme, "partial", "pagination.tpl"),
+		path.Join(templatesPath, theme, "partial", "posts.tpl"),
 	}
 
 	instance := &HTML{logger: zap.NewNop()}
@@ -39,10 +39,10 @@ func TestNewHTML(t *testing.T) {
 	// default about panel
 	partials, err := instance.getPartials(templatesPath, theme, "")
 	require.NoError(t, err)
-	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "about.html")), partials)
+	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "about.tpl")), partials)
 
 	// custom about panel
-	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "pagination.html"))
+	partials, err = instance.getPartials(templatesPath, theme, path.Join(templatesPath, theme, "partial", "pagination.tpl"))
 	require.NoError(t, err)
-	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "pagination.html")), partials)
+	assert.Equal(t, append(expected, path.Join(templatesPath, theme, "partial", "pagination.tpl")), partials)
 }

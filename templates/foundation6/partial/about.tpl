@@ -1,4 +1,4 @@
-{{ define "partial/about.html" }}
+{{ define "partial/about.tpl" }}
     <div class="callout primary">
         <div class="grid-x">
             <div class="cell small-12 medium-2 text-center">
@@ -20,20 +20,20 @@
                         <a href="https://github.com/vgarvardt/rklotz" class="btn btn-default btn-lg btn-block"
                            target="_blank">
                             <i class="fa fa-github fa-fw" aria-hidden="true"></i> <span
-                                    class="network-name">Github</span>
+                                class="network-name">Github</span>
                         </a>
                     </li>
                     <li>
                         <a href="https://twitter.com/vgarvardt" class="btn btn-default btn-lg btn-block"
                            target="_blank">
                             <i class="fa fa-twitter fa-fw" aria-hidden="true"></i> <span
-                                    class="network-name">Twitter</span>
+                                class="network-name">Twitter</span>
                         </a>
                     </li>
                     <li>
-                        <a href="http://itskrig.com" class="btn btn-default btn-lg btn-block" target="_blank">
+                        <a href="https://itskrig.com" class="btn btn-default btn-lg btn-block" target="_blank">
                             <i class="fa fa-globe fa-fw" aria-hidden="true"></i> <span
-                                    class="network-name">Website</span>
+                                class="network-name">Website</span>
                         </a>
                     </li>
                 </ul>

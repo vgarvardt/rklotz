@@ -26,7 +26,7 @@ func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 	page := h.getPageFromURL(r)
 	posts, _ := h.storage.ListAll(page)
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "index.html", renderer.D{
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "index.tpl", renderer.D{
 		"meta":  h.storage.Meta(),
 		"posts": posts,
 		"page":  page,
@@ -40,7 +40,7 @@ func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
 	page := h.getPageFromURL(r)
 	posts, _ := h.storage.ListTag(tag, page)
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "tag.html", renderer.D{
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "tag.tpl", renderer.D{
 		"meta":  h.storage.TagMeta(tag),
 		"posts": posts,
 		"page":  page,
@@ -62,7 +62,7 @@ func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "post.html", renderer.D{"post": post}))
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "post.tpl", renderer.D{"post": post}))
 
 }
 

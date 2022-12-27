@@ -1,4 +1,4 @@
-{{ define "partial/posts.html" }}
+{{ define "partial/posts.tpl" }}
 
     {{ range .posts }}
         <h2><a href="{{ .Path }}">{{ .Title }}</a></h2>
@@ -10,7 +10,7 @@
                 </p>
             {{ end }}
 
-            {{ template "partial/info.html" . }}
+            {{ template "partial/info.tpl" . }}
         </div>
 
         <p>
