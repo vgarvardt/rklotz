@@ -20,21 +20,19 @@ func NewFeed(storage storage.Storage, renderer renderer.Renderer) *Feed {
 
 // Atom is the HTTP handler for Atom feed
 func (h *Feed) Atom(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.storage.ListAll(0)
-	if err != nil {
-		panic(err)
-	}
-
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "atom", renderer.D{"posts": posts}))
-
+	h.feed(w, r, "atom")
 }
 
 // Rss is the HTTP handler for RSS feed
 func (h *Feed) Rss(w http.ResponseWriter, r *http.Request) {
+	h.feed(w, r, "rss")
+}
+
+func (h *Feed) feed(w http.ResponseWriter, r *http.Request, template string) {
 	posts, err := h.storage.ListAll(0)
 	if err != nil {
 		panic(err)
 	}
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "rss", renderer.D{"posts": posts}))
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, template, renderer.D{"posts": posts}))
 }
