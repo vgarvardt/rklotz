@@ -41,8 +41,7 @@ func newImpl() *implFormatter {
 }
 
 func (f *implFormatter) format(raw, format string) (string, error) {
-	switch format {
-	case "md":
+	if format == "md" {
 		return f.formatMD(raw), nil
 	}
 

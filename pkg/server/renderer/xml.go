@@ -85,5 +85,12 @@ func (r *Feed) Render(w http.ResponseWriter, code int, data *Data) {
 
 	w.Header().Set(headerContentType, mimeApplicationXMLCharsetUTF8)
 	w.WriteHeader(code)
-	w.Write([]byte(xmlData))
+	if _, err := w.Write([]byte(xmlData)); err != nil {
+		panic(err)
+	}
+}
+
+// Error renders error to a response writer
+func (r *Feed) Error(_ *http.Request, w http.ResponseWriter, code int, err error) {
+	http.Error(w, err.Error(), code)
 }

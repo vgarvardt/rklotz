@@ -14,7 +14,7 @@ func (p *YandexShare) Defaults() map[string]string {
 func (p *YandexShare) SetUp(settings map[string]string) (map[string]string, error) {
 	// convert spaces to commas in services list as this is how this setting come from environment settings
 	if val, ok := settings["services"]; ok {
-		settings["services"] = strings.Replace(val, " ", ",", -1)
+		settings["services"] = strings.ReplaceAll(val, " ", ",")
 	}
 
 	return mergeSettings(settings, p.Defaults()), nil

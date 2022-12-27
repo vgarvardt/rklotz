@@ -54,10 +54,10 @@ func (s *MemoryStorage) Save(post *model.Post) error {
 		tag := &model.Tag{Tag: post.Tags[i], Paths: []string{post.Path}}
 		tagSlice := postSlice{post}
 
-		loadedTag, ok := s.tags.LoadOrStore(strings.ToLower(post.Tags[i]), tag)
-		loadedTagSlice, ok := s.tagsList.LoadOrStore(strings.ToLower(post.Tags[i]), tagSlice)
+		loadedTag, okTag := s.tags.LoadOrStore(strings.ToLower(post.Tags[i]), tag)
+		loadedTagSlice, okTagSlice := s.tagsList.LoadOrStore(strings.ToLower(post.Tags[i]), tagSlice)
 
-		if ok {
+		if okTag && okTagSlice {
 			loadedTag.(*model.Tag).Paths = append(loadedTag.(*model.Tag).Paths, post.Path)
 			loadedTagSlice = append(loadedTagSlice.(postSlice), post)
 

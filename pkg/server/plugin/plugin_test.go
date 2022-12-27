@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetByName(t *testing.T) {
 	p, err := GetByName("ga")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.IsType(t, &GoogleAnalytics{}, p)
 
 	_, err = GetByName("!!!")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, ErrorUnknownPlugin, err)
 }
 
@@ -27,15 +28,16 @@ func (p *mockPlugin) SetUp(settings map[string]string) (map[string]string, error
 }
 
 func TestGetName(t *testing.T) {
-	p, _ := GetByName("ga")
+	p, err := GetByName("ga")
+	require.NoError(t, err)
 	assert.IsType(t, &GoogleAnalytics{}, p)
 
 	name, err := GetName(p)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "ga", name)
 
-	name, err = GetName(&mockPlugin{})
-	assert.Error(t, err)
+	_, err = GetName(&mockPlugin{})
+	require.Error(t, err)
 	assert.Equal(t, ErrorUnknownPlugin, err)
 }
 

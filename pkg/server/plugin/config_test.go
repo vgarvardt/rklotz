@@ -18,7 +18,8 @@ func TestPlugins_SetUp(t *testing.T) {
 			Yasha:       map[string]string{},
 		},
 	}
-	instance, _ := GetByName("ga")
+	instance, err := GetByName("ga")
+	require.NoError(t, err)
 
 	config, err := p.SetUp(instance)
 	require.NoError(t, err)

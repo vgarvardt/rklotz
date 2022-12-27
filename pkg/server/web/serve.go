@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -59,10 +60,16 @@ func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
 // ListenAndServe launches web server that listens to HTTP(S) requests
 func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *zap.Logger) error {
 	if !cfgSSL.Enabled {
-		address := fmt.Sprintf(":%d", cfgHTTP.Port)
-		logger.Info("Running HTTP server...", zap.String("address", address))
+		server := &http.Server{
+			ReadTimeout:       10 * time.Second,
+			ReadHeaderTimeout: 10 * time.Second,
+			WriteTimeout:      10 * time.Second,
+			Addr:              fmt.Sprintf(":%d", cfgHTTP.Port),
+			Handler:           handler,
+		}
 
-		return http.ListenAndServe(address, handler)
+		logger.Info("Running HTTP server...", zap.String("address", server.Addr))
+		return server.ListenAndServe()
 	}
 
 	logger.Info("SSLConfig is enabled, starting HTTPS server")
@@ -75,9 +82,13 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 	}
 
 	httpsServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfgSSL.Port),
-		Handler: handler,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		Addr:              fmt.Sprintf(":%d", cfgSSL.Port),
+		Handler:           handler,
 		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
 			GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
 				cert, err := tlsCertManager.GetCertificate(info)
 				if err != nil {
@@ -94,8 +105,11 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 	}
 
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfgHTTP.Port),
-		Handler: tlsCertManager.HTTPHandler(nil),
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		Addr:              fmt.Sprintf(":%d", cfgHTTP.Port),
+		Handler:           tlsCertManager.HTTPHandler(nil),
 	}
 
 	g, ctx := errgroup.WithContext(ctx)

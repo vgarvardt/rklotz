@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/vgarvardt/rklotz/pkg/formatter"
 	"go.uber.org/zap"
 
+	"github.com/vgarvardt/rklotz/pkg/formatter"
 	"github.com/vgarvardt/rklotz/pkg/model"
 	"github.com/vgarvardt/rklotz/pkg/storage"
 )

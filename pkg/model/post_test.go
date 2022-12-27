@@ -58,7 +58,8 @@ func TestNewPostFromFile(t *testing.T) {
 		t.Run(tt.path, func(t *testing.T) {
 			postPath := filepath.Join(postsBasePath, tt.path)
 
-			publishedAt, _ := time.Parse(time.RFC3339, tt.publishedAt)
+			publishedAt, err := time.Parse(time.RFC3339, tt.publishedAt)
+			require.NoError(t, err)
 
 			post, err := NewPostFromFile(postsBasePath, postPath, formatter.New())
 			require.NoError(t, err)

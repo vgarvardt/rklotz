@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -24,7 +25,11 @@ func NewPosts(storage storage.Storage, renderer renderer.Renderer) *Posts {
 // Front is the HTTP handler for the front page with post list
 func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 	page := h.getPageFromURL(r)
-	posts, _ := h.storage.ListAll(page)
+	posts, err := h.storage.ListAll(page)
+	if err != nil {
+		h.renderer.Error(r, w, http.StatusInternalServerError, fmt.Errorf("could not list posts: %w", err))
+		return
+	}
 
 	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "index.tpl", renderer.D{
 		"meta":  h.storage.Meta(),
@@ -38,7 +43,11 @@ func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 
 	page := h.getPageFromURL(r)
-	posts, _ := h.storage.ListTag(tag, page)
+	posts, err := h.storage.ListTag(tag, page)
+	if err != nil {
+		h.renderer.Error(r, w, http.StatusInternalServerError, fmt.Errorf("could not list posts for a tag: %w", err))
+		return
+	}
 
 	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "tag.tpl", renderer.D{
 		"meta":  h.storage.TagMeta(tag),
@@ -58,7 +67,7 @@ func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 			false: http.StatusInternalServerError,
 		}[err == storage.ErrorNotFound]
 
-		http.Error(w, err.Error(), status)
+		h.renderer.Error(r, w, status, err)
 		return
 	}
 
