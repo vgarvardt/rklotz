@@ -29,6 +29,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILTER_REGEX_EXCLUDE: '.*assets/posts/.*'
           # go validator works pretty bad in super-linter, we'll use the original one
           VALIDATE_GO: false
           # do not validate SQL - linters are pretty useless in case of this library,
