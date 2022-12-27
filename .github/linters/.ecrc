@@ -4,7 +4,7 @@
   "IgnoreDefaults": false,
   "SpacesAftertabs": false,
   "NoColor": false,
-  "Exclude": ["testfiles", "README.md", "doc.go"],
+  "Exclude": ["testfiles", "README.md", "doc.go", "\\.tpl"],
   "AllowedContentTypes": [],
   "PassedFiles": [],
   "Disable": {

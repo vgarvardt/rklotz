@@ -60,16 +60,19 @@ func (r *HTML) newID() string {
 func (r *HTML) initTemplates() error {
 	r.instanceID = r.newID()
 
-	partials, err := r.getPartials(r.config.TemplatesPath, r.config.UICfg.Theme, r.config.UICfg.AboutPath)
+	baseFiles, err := r.getPartials(r.config.TemplatesPath, r.config.UICfg.Theme, r.config.UICfg.AboutPath)
 	if nil != err {
 		return err
 	}
 
-	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.html", r.config.TemplatesPath, r.config.UICfg.Theme))
+	baseFiles = append(baseFiles, fmt.Sprintf("%s/%s/base.tpl", r.config.TemplatesPath, r.config.UICfg.Theme))
 	baseTemplate := template.Must(
-		template.New("base.html").Funcs(getTmplFuncMap(r.config.UICfg.DateFormat)).ParseFiles(baseFiles...))
+		template.New("base.tpl").
+			Funcs(getTmplFuncMap(r.config.UICfg.DateFormat)).
+			ParseFiles(baseFiles...),
+	)
 
-	for _, tmplName := range []string{"index.html", "post.html", "tag.html"} {
+	for _, tmplName := range []string{"index.tpl", "post.tpl", "tag.tpl"} {
 		tmplPath := fmt.Sprintf("%s/%s/%s", r.config.TemplatesPath, r.config.UICfg.Theme, tmplName)
 
 		r.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
@@ -88,7 +91,7 @@ func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, erro
 	var partials []string
 
 	walkFn := func(path string, f os.FileInfo, err error) error {
-		if nil == err && !f.IsDir() && !strings.HasSuffix(path, "about.html") {
+		if nil == err && !f.IsDir() && !strings.HasSuffix(path, "about.tpl") {
 			partials = append(partials, path)
 		}
 		return err
@@ -109,7 +112,7 @@ func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, erro
 	_, err = os.Stat(uiAbout)
 	if os.IsNotExist(err) {
 		r.logger.Info("Custom about panel not found, loading default theme about panel", zap.String("path", uiAbout))
-		uiAbout = fmt.Sprintf("%s/%s/partial/about.html", templatesPath, theme)
+		uiAbout = fmt.Sprintf("%s/%s/partial/about.tpl", templatesPath, theme)
 	} else if nil != err {
 		r.logger.Error("Failed to load custom about panel", zap.Error(err), zap.String("path", uiAbout))
 		return nil, err

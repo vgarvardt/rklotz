@@ -17,7 +17,7 @@ type UIConfig struct {
 	Intro       string `envconfig:"UI_INTRO" default:"simple golang-driven blog engine"`
 	// DateFormat is format for posts, see http://golang.org/pkg/time/#Time.Format
 	DateFormat string `envconfig:"UI_DATEFORMAT" default:"2 Jan 2006"`
-	AboutPath  string `envconfig:"UI_ABOUT_PATH" default:"/etc/rklotz/about.html"`
+	AboutPath  string `envconfig:"UI_ABOUT_PATH" default:"/etc/rklotz/about.tpl"`
 }
 
 // RootURLConfig is the configuration for app root url

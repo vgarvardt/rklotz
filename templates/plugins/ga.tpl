@@ -1,4 +1,4 @@
-{{ define "plugins/ga.html" -}}
+{{ define "plugins/ga.tpl" -}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ .plugin.ga.tracking_id}}"></script>
 <script>

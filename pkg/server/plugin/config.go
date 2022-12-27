@@ -3,7 +3,9 @@ package plugin
 import (
 	"errors"
 	"reflect"
-	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // Config is teh configuration for app plugins
@@ -44,7 +46,7 @@ type Settings struct {
 // Get gets plugin settings by name
 func (s Settings) Get(pluginName string) (map[string]string, bool) {
 	r := reflect.ValueOf(s)
-	f := reflect.Indirect(r).FieldByName(strings.Title(pluginName)).Interface()
+	f := reflect.Indirect(r).FieldByName(cases.Title(language.English).String(pluginName)).Interface()
 
 	fMap, ok := f.(map[string]string)
 

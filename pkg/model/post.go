@@ -4,7 +4,7 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -19,9 +19,9 @@ const (
 
 var (
 	// ErrorBadPostStructure is the error returned when trying to load a post with bad internal structure
-	ErrorBadPostStructure = errors.New("Bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaDelimiter)
+	ErrorBadPostStructure = errors.New("bad post structure: must be post meta lines, separator, post body. Separator: " + postMetaDelimiter)
 	// ErrorBadMetaStructure is the error returned when trying to load a post with bad meta structure
-	ErrorBadMetaStructure = errors.New("Bad post meta structure, must have the following lines: post title, publishing date, post tags")
+	ErrorBadMetaStructure = errors.New("bad post meta structure, must have the following lines: post title, publishing date, post tags")
 )
 
 // Post represents post model
@@ -43,7 +43,7 @@ type Post struct {
 func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, error) {
 	post := &Post{Path: postPath[len(basePath) : len(postPath)-len(filepath.Ext(postPath))]}
 
-	fileContents, err := ioutil.ReadFile(postPath)
+	fileContents, err := os.ReadFile(postPath)
 	if err != nil {
 		return nil, err
 	}

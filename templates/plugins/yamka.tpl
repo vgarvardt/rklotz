@@ -1,4 +1,4 @@
-{{ define "plugins/yamka.html" -}}
+{{ define "plugins/yamka.tpl" -}}
 <script type="text/javascript">
     (function (d, w, c) {
         (w[c] = w[c] || []).push(function() {

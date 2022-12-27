@@ -1,4 +1,4 @@
-{{ define "partial/info.html" }}
+{{ define "partial/info.tpl" }}
     <p>
         {{ .PublishedAt | format_date }}
         {{ if gt (len .Tags) 0 }}
