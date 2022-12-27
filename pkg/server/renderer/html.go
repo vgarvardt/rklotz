@@ -60,14 +60,17 @@ func (r *HTML) newID() string {
 func (r *HTML) initTemplates() error {
 	r.instanceID = r.newID()
 
-	partials, err := r.getPartials(r.config.TemplatesPath, r.config.UICfg.Theme, r.config.UICfg.AboutPath)
+	baseFiles, err := r.getPartials(r.config.TemplatesPath, r.config.UICfg.Theme, r.config.UICfg.AboutPath)
 	if nil != err {
 		return err
 	}
 
-	baseFiles := append(partials, fmt.Sprintf("%s/%s/base.tpl", r.config.TemplatesPath, r.config.UICfg.Theme))
+	baseFiles = append(baseFiles, fmt.Sprintf("%s/%s/base.tpl", r.config.TemplatesPath, r.config.UICfg.Theme))
 	baseTemplate := template.Must(
-		template.New("base.tpl").Funcs(getTmplFuncMap(r.config.UICfg.DateFormat)).ParseFiles(baseFiles...))
+		template.New("base.tpl").
+			Funcs(getTmplFuncMap(r.config.UICfg.DateFormat)).
+			ParseFiles(baseFiles...),
+	)
 
 	for _, tmplName := range []string{"index.tpl", "post.tpl", "tag.tpl"} {
 		tmplPath := fmt.Sprintf("%s/%s/%s", r.config.TemplatesPath, r.config.UICfg.Theme, tmplName)

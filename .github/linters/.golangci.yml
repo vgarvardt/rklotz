@@ -34,7 +34,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com/vgarvardt/gue)
+      - prefix(github.com/vgarvardt/rklotz)
 
 issues:
   exclude-rules:
