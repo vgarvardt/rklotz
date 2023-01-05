@@ -15,7 +15,7 @@ require (
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
-	golang.org/x/text v0.5.0
+	golang.org/x/text v0.6.0
 )
 
 require (
