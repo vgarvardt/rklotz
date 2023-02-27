@@ -10,7 +10,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/spf13/cobra v1.6.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/yuin/goldmark v1.5.4
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.6.0
