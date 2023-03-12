@@ -26,8 +26,7 @@ jobs:
       - name: Set up Docker BuildX
         uses: docker/setup-buildx-action@v2
         with:
-          driver-opts: |
-            platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
