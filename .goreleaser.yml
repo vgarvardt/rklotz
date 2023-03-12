@@ -20,42 +20,13 @@ builds:
 dockers:
   - goos: linux
     goarch: amd64
-    use: buildx
     ids:
       - binary-build
     image_templates:
-      - "vgarvardt/rklotz:latest-amd64"
-      - "vgarvardt/rklotz:{{.Tag}}-amd64"
-    build_flag_templates:
-      - "--platform=linux/amd64"
+      - "vgarvardt/rklotz:latest"
+      - "vgarvardt/rklotz:{{.Tag}}"
     dockerfile: Dockerfile
     extra_files:
       - static
       - templates
       - assets/posts
-
-  - goos: linux
-    goarch: arm64
-    use: buildx
-    ids:
-      - binary-build
-    image_templates:
-      - "vgarvardt/rklotz:latest-arm64v8"
-      - "vgarvardt/rklotz:{{.Tag}}-arm64v8"
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-    dockerfile: Dockerfile
-    extra_files:
-      - static
-      - templates
-      - assets/posts
-
-docker_manifests:
-  - name_template: vgarvardt/rklotz:latest
-    image_templates:
-      - "vgarvardt/rklotz:latest-amd64"
-      - "vgarvardt/rklotz:latest-arm64v8"
-  - name_template: vgarvardt/rklotz:{{.Tag}}
-    image_templates:
-      - "vgarvardt/rklotz:{{.Tag}}-amd64"
-      - "vgarvardt/rklotz:{{.Tag}}-arm64v8"
