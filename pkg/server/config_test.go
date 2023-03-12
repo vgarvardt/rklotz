@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,7 +12,9 @@ import (
 )
 
 func TestLoad_DefaultValues(t *testing.T) {
-	cfg, err := LoadConfig()
+	ctx := context.Background()
+
+	cfg, err := LoadConfig(ctx)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "info", cfg.Level)
@@ -46,39 +49,41 @@ func TestLoad_DefaultValues(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
-	os.Setenv("LOG_LEVEL", "debug")
-	os.Setenv("POSTS_DSN", "file:///path/to/posts")
-	os.Setenv("POSTS_PERPAGE", "42")
-	os.Setenv("STORAGE_DSN", "mysql://root@localhost/rklotz")
+	ctx := context.Background()
 
-	os.Setenv("WEB_PORT", "8081")
-	os.Setenv("WEB_STATIC_PATH", "/path/to/static")
-	os.Setenv("WEB_TEMPLATES_PATH", "/path/to/templates")
+	t.Setenv("LOG_LEVEL", "debug")
+	t.Setenv("POSTS_DSN", "file:///path/to/posts")
+	t.Setenv("POSTS_PERPAGE", "42")
+	t.Setenv("STORAGE_DSN", "mysql://root@localhost/rklotz")
 
-	os.Setenv("UI_THEME", "premium")
-	os.Setenv("UI_AUTHOR", "Neal Stephenson")
-	os.Setenv("UI_EMAIL", "neal@stephenson.com")
-	os.Setenv("UI_DESCRIPTION", "Novel by Neal Stephenson")
-	os.Setenv("UI_LANGUAGE", "qwghlm")
-	os.Setenv("UI_TITLE", "Cryptonomicon")
-	os.Setenv("UI_HEADING", "Anathem")
-	os.Setenv("UI_INTRO", "Reamde")
-	os.Setenv("UI_DATEFORMAT", "Mon Jan 2 15:04:05 -0700 MST 2006")
-	os.Setenv("UI_ABOUT_PATH", "/path/to/about.tpl")
+	t.Setenv("WEB_PORT", "8081")
+	t.Setenv("WEB_STATIC_PATH", "/path/to/static")
+	t.Setenv("WEB_TEMPLATES_PATH", "/path/to/templates")
 
-	os.Setenv("ROOT_URL_SCHEME", "gopher")
-	os.Setenv("ROOT_URL_HOST", "example.com")
-	os.Setenv("ROOT_URL_PATH", "/blog")
+	t.Setenv("UI_THEME", "premium")
+	t.Setenv("UI_AUTHOR", "Neal Stephenson")
+	t.Setenv("UI_EMAIL", "neal@stephenson.com")
+	t.Setenv("UI_DESCRIPTION", "Novel by Neal Stephenson")
+	t.Setenv("UI_LANGUAGE", "qwghlm")
+	t.Setenv("UI_TITLE", "Cryptonomicon")
+	t.Setenv("UI_HEADING", "Anathem")
+	t.Setenv("UI_INTRO", "Reamde")
+	t.Setenv("UI_DATEFORMAT", "Mon Jan 2 15:04:05 -0700 MST 2006")
+	t.Setenv("UI_ABOUT_PATH", "/path/to/about.tpl")
 
-	os.Setenv("PLUGINS_ENABLED", "foo,bar,baz")
+	t.Setenv("ROOT_URL_SCHEME", "gopher")
+	t.Setenv("ROOT_URL_HOST", "example.com")
+	t.Setenv("ROOT_URL_PATH", "/blog")
 
-	os.Setenv("PLUGINS_DISQUS", "shortname:foo")
-	os.Setenv("PLUGINS_GA", "tracking_id:bar")
-	os.Setenv("PLUGINS_YAMKA", "id:baz")
-	os.Setenv("PLUGINS_HIGHLIGHTJS", "theme:foo,version:9.9.9")
-	os.Setenv("PLUGINS_YASHA", "services:facebook twitter,l10n:de")
+	t.Setenv("PLUGINS_ENABLED", "foo,bar,baz")
 
-	appConfig, err := LoadConfig()
+	t.Setenv("PLUGINS_DISQUS", "shortname:foo")
+	t.Setenv("PLUGINS_GA", "tracking_id:bar")
+	t.Setenv("PLUGINS_YAMKA", "id:baz")
+	t.Setenv("PLUGINS_HIGHLIGHTJS", "theme:foo,version:9.9.9")
+	t.Setenv("PLUGINS_YASHA", "services:facebook twitter,l10n:de")
+
+	appConfig, err := LoadConfig(ctx)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "debug", appConfig.Level)
@@ -115,11 +120,16 @@ func TestLoad(t *testing.T) {
 }
 
 func TestRootURL_URL(t *testing.T) {
-	os.Unsetenv("ROOT_URL_SCHEME")
-	os.Unsetenv("ROOT_URL_HOST")
-	os.Unsetenv("ROOT_URL_PATH")
+	ctx := context.Background()
 
-	cfg, err := LoadConfig()
+	err := os.Unsetenv("ROOT_URL_SCHEME")
+	require.NoError(t, err)
+	err = os.Unsetenv("ROOT_URL_HOST")
+	require.NoError(t, err)
+	err = os.Unsetenv("ROOT_URL_PATH")
+	require.NoError(t, err)
+
+	cfg, err := LoadConfig(ctx)
 	require.NoError(t, err)
 
 	r := &http.Request{Host: "example.com"}

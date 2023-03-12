@@ -7,8 +7,8 @@ require (
 	github.com/felixge/httpsnoop v1.0.3
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gorilla/feeds v1.1.1
-	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
+	github.com/sethvargo/go-envconfig v0.9.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
 	github.com/yuin/goldmark v1.5.4

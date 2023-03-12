@@ -10,7 +10,7 @@ import (
 
 // Config is teh configuration for app plugins
 type Config struct {
-	Enabled []string `envconfig:"PLUGINS_ENABLED"`
+	Enabled []string `env:"PLUGINS_ENABLED"`
 	Settings
 }
 
@@ -35,12 +35,12 @@ func (c Config) SetUp(instance Plugin) (map[string]string, error) {
 
 // Settings is the configuration for available plugins
 type Settings struct {
-	Disqus      map[string]string `envconfig:"PLUGINS_DISQUS"`
-	Ga          map[string]string `envconfig:"PLUGINS_GA"`
-	Gtm         map[string]string `envconfig:"PLUGINS_GTM"`
-	Yamka       map[string]string `envconfig:"PLUGINS_YAMKA"`
-	Highlightjs map[string]string `envconfig:"PLUGINS_HIGHLIGHTJS"`
-	Yasha       map[string]string `envconfig:"PLUGINS_YASHA"`
+	Disqus      map[string]string `env:"PLUGINS_DISQUS"`
+	Ga          map[string]string `env:"PLUGINS_GA"`
+	Gtm         map[string]string `env:"PLUGINS_GTM"`
+	Yamka       map[string]string `env:"PLUGINS_YAMKA"`
+	Highlightjs map[string]string `env:"PLUGINS_HIGHLIGHTJS"`
+	Yasha       map[string]string `env:"PLUGINS_YASHA"`
 }
 
 // Get gets plugin settings by name

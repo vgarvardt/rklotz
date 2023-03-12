@@ -1,7 +1,9 @@
 package server
 
 import (
-	"github.com/kelseyhightower/envconfig"
+	"context"
+
+	"github.com/sethvargo/go-envconfig"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -12,9 +14,9 @@ import (
 
 // Config represents server configuration
 type Config struct {
-	PostsDSN     string `envconfig:"POSTS_DSN" default:"file:///etc/rklotz/posts"`
-	PostsPerPage int    `envconfig:"POSTS_PERPAGE" default:"10"`
-	StorageDSN   string `envconfig:"STORAGE_DSN" default:"boltdb:///tmp/rklotz.db"`
+	PostsDSN     string `env:"POSTS_DSN,default=file:///etc/rklotz/posts"`
+	PostsPerPage int    `env:"POSTS_PERPAGE,default=10"`
+	StorageDSN   string `env:"STORAGE_DSN,default=boltdb:///tmp/rklotz.db"`
 
 	LogConfig
 	web.HTTPConfig
@@ -26,8 +28,8 @@ type Config struct {
 
 // LogConfig represents logger configuration
 type LogConfig struct {
-	Level string `envconfig:"LOG_LEVEL" default:"info"`
-	Type  string `envconfig:"LOG_TYPE" default:"rklotz"`
+	Level string `env:"LOG_LEVEL,default=info"`
+	Type  string `env:"LOG_TYPE,default=rklotz"`
 }
 
 // BuildLogger builds and initialises logger with the values from the config
@@ -55,10 +57,10 @@ func (c *LogConfig) BuildLogger() (*zap.Logger, error) {
 }
 
 // LoadConfig loads app settings from environment variables
-func LoadConfig() (*Config, error) {
+func LoadConfig(ctx context.Context) (*Config, error) {
 	var cfg Config
 
-	err := envconfig.Process("", &cfg)
+	err := envconfig.Process(ctx, &cfg)
 	if err != nil {
 		return nil, err
 	}
