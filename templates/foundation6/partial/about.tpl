@@ -10,7 +10,7 @@
                 <p>
                     Yet another simple single-user file-based golang-driven blog engine.
                     Source code available <a href="https://github.com/vgarvardt/rklotz" target="_blank">on Github</a>.
-                    Usage example: <a href="http://itskrig.com/" target="_blank">itskrig.com</a>
+                    Usage example: <a href="https://itskrig.com/" target="_blank">itskrig.com</a>
                     (<a href="https://github.com/vgarvardt/itskrig.com" target="_blank">source code</a>).
                 </p>
             </div>
@@ -19,20 +19,33 @@
                     <li>
                         <a href="https://github.com/vgarvardt/rklotz" class="btn btn-default btn-lg btn-block"
                            target="_blank">
-                            <i class="fa fa-github fa-fw" aria-hidden="true"></i> <span
+                            <i class="fa-brands fa-github" aria-hidden="true"></i> <span
                                 class="network-name">Github</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/vgarvardt/" class="btn btn-default btn-lg btn-block"
+                           target="_blank">
+                            <i class="fa-brands fa-linkedin"></i> <span class="network-name">LinkedIn</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://mas.to/@vgarvardt" class="btn btn-default btn-lg btn-block"
+                           target="_blank">
+                            <i class="fa-brands fa-mastodon" aria-hidden="true"></i> <span
+                                class="network-name">Mastodon</span>
                         </a>
                     </li>
                     <li>
                         <a href="https://twitter.com/vgarvardt" class="btn btn-default btn-lg btn-block"
                            target="_blank">
-                            <i class="fa fa-twitter fa-fw" aria-hidden="true"></i> <span
+                            <i class="fa-brands fa-twitter" aria-hidden="true"></i> <span
                                 class="network-name">Twitter</span>
                         </a>
                     </li>
                     <li>
                         <a href="https://itskrig.com" class="btn btn-default btn-lg btn-block" target="_blank">
-                            <i class="fa fa-globe fa-fw" aria-hidden="true"></i> <span
+                            <i class="fa-solid fa-globe" aria-hidden="true"></i> <span
                                 class="network-name">Website</span>
                         </a>
                     </li>
