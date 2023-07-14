@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/felixge/httpsnoop v1.0.3
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/gorilla/feeds v1.1.1
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v0.9.0
