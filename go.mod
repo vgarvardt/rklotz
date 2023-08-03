@@ -1,6 +1,6 @@
 module github.com/vgarvardt/rklotz
 
-go 1.18
+go 1.20
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
