@@ -25,7 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.etcd.io/bbolt v1.3.4 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
