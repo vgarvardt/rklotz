@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/feeds v1.1.1
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v0.9.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
 	github.com/yuin/goldmark v1.5.6
 	go.uber.org/zap v1.26.0
