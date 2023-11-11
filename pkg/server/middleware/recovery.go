@@ -4,10 +4,9 @@ package middleware
 // https://github.com/zenazn/goji/tree/master/web/middleware
 
 import (
+	"log/slog"
 	"net/http"
 	"runtime/debug"
-
-	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/server/rqctx"
 )
@@ -23,8 +22,8 @@ func Recovery(next http.Handler) http.Handler {
 			if err := recover(); err != nil {
 				rqctx.GetLogger(r.Context()).Error(
 					"Internal server error handled",
-					zap.Any("error", err),
-					zap.ByteString("trace", debug.Stack()),
+					slog.Any("error", err),
+					slog.String("trace", string(debug.Stack())),
 				)
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}

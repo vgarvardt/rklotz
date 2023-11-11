@@ -2,10 +2,12 @@ package server
 
 import (
 	"context"
+	"log/slog"
+	"os"
 
+	"github.com/cappuccinotm/slogx"
+	"github.com/cappuccinotm/slogx/slogm"
 	"github.com/sethvargo/go-envconfig"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 
 	"github.com/vgarvardt/rklotz/pkg/server/plugin"
 	"github.com/vgarvardt/rklotz/pkg/server/renderer"
@@ -28,30 +30,20 @@ type Config struct {
 
 // LogConfig represents logger configuration
 type LogConfig struct {
-	Level string `env:"LOG_LEVEL,default=info"`
-	Type  string `env:"LOG_TYPE,default=rklotz"`
+	Level slog.Level `env:"LOG_LEVEL,default=info"`
+	Type  string     `env:"LOG_TYPE,default=rklotz"`
 }
 
 // BuildLogger builds and initialises logger with the values from the config
-func (c *LogConfig) BuildLogger() (*zap.Logger, error) {
-	logConfig := zap.NewProductionConfig()
-
-	logLevel := new(zap.AtomicLevel)
-	if err := logLevel.UnmarshalText([]byte(c.Level)); err != nil {
-		return nil, err
+func (c *LogConfig) BuildLogger() (*slog.Logger, error) {
+	so := &slog.HandlerOptions{
+		AddSource: true,
+		Level:     c.Level,
 	}
 
-	logConfig.Level = *logLevel
-	logConfig.Development = logLevel.String() == zapcore.DebugLevel.String()
-	logConfig.Sampling = nil
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	logConfig.EncoderConfig.EncodeDuration = zapcore.StringDurationEncoder
-	logConfig.InitialFields = map[string]interface{}{"type": c.Type}
-
-	logger, err := logConfig.Build()
-	if err != nil {
-		return nil, err
-	}
+	logger := slog.
+		New(slogx.NewChain(slog.NewJSONHandler(os.Stderr, so), slogm.StacktraceOnError())).
+		With(slog.String("type", c.Type))
 
 	return logger, nil
 }

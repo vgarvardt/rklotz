@@ -3,8 +3,10 @@ package renderer
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,8 +15,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cappuccinotm/slogx"
 	"github.com/leekchan/gtf"
-	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/server/plugin"
 	"github.com/vgarvardt/rklotz/pkg/server/rqctx"
@@ -33,7 +35,7 @@ type HTMLConfig struct {
 type HTML struct {
 	templates  map[string]*template.Template
 	config     HTMLConfig
-	logger     *zap.Logger
+	logger     *slog.Logger
 	instanceID string
 
 	enabledPluginsMap map[string]bool
@@ -41,7 +43,7 @@ type HTML struct {
 }
 
 // NewHTML creates new HTML instance
-func NewHTML(config HTMLConfig, logger *zap.Logger) (*HTML, error) {
+func NewHTML(config HTMLConfig, logger *slog.Logger) (*HTML, error) {
 	instance := &HTML{
 		templates: make(map[string]*template.Template),
 		config:    config,
@@ -74,7 +76,7 @@ func (r *HTML) initTemplates() error {
 	for _, tmplName := range []string{"404.tpl", "500.tpl", "index.tpl", "post.tpl", "tag.tpl"} {
 		tmplPath := fmt.Sprintf("%s/%s/%s", r.config.TemplatesPath, r.config.UICfg.Theme, tmplName)
 
-		r.logger.Debug("Initializing template", zap.String("name", tmplName), zap.String("path", tmplPath))
+		r.logger.Debug("Initializing template", slog.String("name", tmplName), slog.String("path", tmplPath))
 		r.templates[tmplName] = template.Must(template.Must(baseTemplate.Clone()).ParseFiles(tmplPath))
 	}
 
@@ -111,13 +113,13 @@ func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, erro
 	_, err = os.Stat(uiAbout)
 	switch {
 	case os.IsNotExist(err):
-		r.logger.Info("Custom about panel not found, loading default theme about panel", zap.String("path", uiAbout))
+		r.logger.Info("Custom about panel not found, loading default theme about panel", slog.String("path", uiAbout))
 		uiAbout = fmt.Sprintf("%s/%s/partial/about.tpl", templatesPath, theme)
 	case err != nil:
-		r.logger.Error("Failed to load custom about panel", zap.Error(err), zap.String("path", uiAbout))
+		r.logger.Error("Failed to load custom about panel", slogx.Error(err), slog.String("path", uiAbout))
 		return nil, err
 	default:
-		r.logger.Info("Loading custom about panel", zap.String("path", uiAbout))
+		r.logger.Info("Loading custom about panel", slog.String("path", uiAbout))
 	}
 
 	partials = append(partials, uiAbout)
@@ -132,17 +134,18 @@ func (r *HTML) initPlugins() error {
 	for i := range r.config.PluginsCfg.Enabled {
 		r.enabledPluginsMap[r.config.PluginsCfg.Enabled[i]] = true
 
-		r.logger.Info("Loading plugin", zap.String("name", r.config.PluginsCfg.Enabled[i]))
+		r.logger.Info("Loading plugin", slog.String("name", r.config.PluginsCfg.Enabled[i]))
 		p, err := plugin.GetByName(r.config.PluginsCfg.Enabled[i])
 		if err != nil {
 			return err
 		}
 
-		r.logger.Info("Configuring plugin", zap.String("name", r.config.PluginsCfg.Enabled[i]))
+		r.logger.Info("Configuring plugin", slog.String("name", r.config.PluginsCfg.Enabled[i]))
 		settings, err := r.config.PluginsCfg.SetUp(p)
 		if err != nil {
-			if e, ok := err.(*plugin.ErrorConfiguring); ok {
-				r.logger.Error("Failed to configure plugin", zap.Error(err), zap.String("field", e.Field()))
+			var e *plugin.ErrorConfiguring
+			if errors.As(err, &e) {
+				r.logger.Error("Failed to configure plugin", slogx.Error(err), slog.String("field", e.Field()))
 			}
 			return err
 		}
@@ -162,12 +165,14 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	data.m.RLock()
 	defer data.m.RUnlock()
 
+	logger := rqctx.GetLogger(data.r.Context())
+
 	if r.config.Debug {
-		rqctx.GetLogger(data.r.Context()).Warn("HTML renderer is in the debug mode, reloading all templates")
+		logger.Warn("HTML renderer is in the debug mode, reloading all templates")
 		if err := r.initTemplates(); err != nil {
-			rqctx.GetLogger(data.r.Context()).Error(
+			logger.Error(
 				"Problems with reloading HTML templates",
-				zap.Error(err),
+				slogx.Error(err),
 			)
 			return
 		}
@@ -196,23 +201,16 @@ func (r *HTML) Render(w http.ResponseWriter, code int, data *Data) {
 	currentURL.Path = data.r.URL.Path
 	templateData["current_url"] = currentURL.String()
 
-	logger := rqctx.GetLogger(data.r.Context())
-
 	tmpl, found := r.templates[data.template]
 	if !found {
-		logger.Error("Template is not found in the templates registry", zap.String("template", data.template))
+		logger.Error("Template is not found in the templates registry", slog.String("template", data.template))
 		panic(fmt.Errorf("template is not found in the templates registry %q", data.template))
 	}
 
 	w.WriteHeader(code)
 
-	err := tmpl.Execute(w, templateData)
-	if nil != err {
-		logger.Error(
-			"Problems with rendering HTML template",
-			zap.Error(err),
-			zap.String("template", data.template),
-		)
+	if err := tmpl.Execute(w, templateData); nil != err {
+		logger.Error("Problems with rendering HTML template", slogx.Error(err), slog.String("template", data.template))
 	}
 }
 

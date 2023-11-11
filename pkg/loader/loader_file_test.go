@@ -1,13 +1,14 @@
 package loader
 
 import (
+	"log/slog"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/cappuccinotm/slogx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 
 	"github.com/vgarvardt/rklotz/pkg/formatter"
 	"github.com/vgarvardt/rklotz/pkg/model"
@@ -31,15 +32,15 @@ func (s *mockStorage) Finalize() error {
 	return nil
 }
 
-func (s *mockStorage) FindByPath(path string) (*model.Post, error) {
+func (s *mockStorage) FindByPath(string) (*model.Post, error) {
 	return nil, nil
 }
 
-func (s *mockStorage) ListAll(page int) ([]*model.Post, error) {
+func (s *mockStorage) ListAll(int) ([]*model.Post, error) {
 	return nil, nil
 }
 
-func (s *mockStorage) ListTag(tag string, page int) ([]*model.Post, error) {
+func (s *mockStorage) ListTag(string, int) ([]*model.Post, error) {
 	return nil, nil
 }
 
@@ -55,7 +56,7 @@ func (s *mockStorage) Meta() *model.Meta {
 	}
 }
 
-func (s *mockStorage) TagMeta(tag string) *model.Meta {
+func (s *mockStorage) TagMeta(string) *model.Meta {
 	return &model.Meta{
 		Posts:   len(s.saveCallParams),
 		PerPage: 0,
@@ -72,9 +73,10 @@ func TestFileLoader_Load(t *testing.T) {
 
 	storage := &mockStorage{saveCallResult: []error{nil, nil, nil}}
 
+	logger := slog.New(slogx.TestHandler(t))
 	f := formatter.New()
 
-	fileLoader, err := NewFileLoader(postsBasePath, f, zap.NewNop())
+	fileLoader, err := NewFileLoader(postsBasePath, f, logger)
 	require.NoError(t, err)
 
 	err = fileLoader.Load(storage)
@@ -97,7 +99,7 @@ func TestFileLoader_Load(t *testing.T) {
 		title: "Post With Teaser",
 	}} {
 		t.Run(p.path, func(t *testing.T) {
-			found := false
+			var found bool
 			for _, post := range storage.saveCallParams {
 				if post.Path == p.path {
 					found = true

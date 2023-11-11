@@ -1,14 +1,15 @@
 package renderer
 
 import (
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
 
+	"github.com/cappuccinotm/slogx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 func TestNewHTML(t *testing.T) {
@@ -34,7 +35,8 @@ func TestNewHTML(t *testing.T) {
 		path.Join(templatesPath, theme, "partial", "posts.tpl"),
 	}
 
-	instance := &HTML{logger: zap.NewNop()}
+	logger := slog.New(slogx.TestHandler(t))
+	instance := &HTML{logger: logger}
 
 	// default about panel
 	partials, err := instance.getPartials(templatesPath, theme, "")

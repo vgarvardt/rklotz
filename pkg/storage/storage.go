@@ -15,9 +15,9 @@ const (
 
 var (
 	// ErrorUnknownStorageType is the error returned when trying to instantiate a storage of unknown type
-	ErrorUnknownStorageType = errors.New("Unknown storage type")
+	ErrorUnknownStorageType = errors.New("unknown storage type")
 	// ErrorNotFound is the error returned when trying to find a post by non-existent path
-	ErrorNotFound = errors.New("Record not found")
+	ErrorNotFound = errors.New("record not found")
 )
 
 // Storage is the interface for posts storage

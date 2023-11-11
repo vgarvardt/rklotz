@@ -2,8 +2,7 @@ package rqctx
 
 import (
 	"context"
-
-	"go.uber.org/zap"
+	"log/slog"
 )
 
 type requestCtxKey int
@@ -19,16 +18,16 @@ func SetID(ctx context.Context, requestID string) context.Context {
 }
 
 // SetLogger sets logger to the request context
-func SetLogger(ctx context.Context, logger *zap.Logger) context.Context {
+func SetLogger(ctx context.Context, logger *slog.Logger) context.Context {
 	return context.WithValue(ctx, requestLoggerKey, logger)
 }
 
 // GetLogger returns a request logger from the given context if one is present
-func GetLogger(ctx context.Context) *zap.Logger {
+func GetLogger(ctx context.Context) *slog.Logger {
 	if ctx == nil {
 		panic("Can not get request logger from empty context")
 	}
-	if requestLogger, ok := ctx.Value(requestLoggerKey).(*zap.Logger); ok {
+	if requestLogger, ok := ctx.Value(requestLoggerKey).(*slog.Logger); ok {
 		return requestLogger
 	}
 

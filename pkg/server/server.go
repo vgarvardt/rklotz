@@ -3,10 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"time"
+	"log/slog"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/cappuccinotm/slogx"
 
 	"github.com/vgarvardt/rklotz/pkg/loader"
 	"github.com/vgarvardt/rklotz/pkg/server/handler"
@@ -18,17 +17,11 @@ import (
 // Run initializes and runs web-server instance
 func Run(ctx context.Context, cfg *Config, version string) error {
 	logger, err := cfg.LogConfig.BuildLogger()
-
 	if err != nil {
 		return fmt.Errorf("failed to initialize logger: %w", err)
 	}
-	defer func() {
-		if err := logger.Sync(); err != nil {
-			fmt.Printf("%s Could not sync logger: %v", time.Now().String(), err)
-		}
-	}()
 
-	logger.Info("Starting rKlotz...", zap.String("version", version))
+	logger.Info("Starting rKlotz...", slog.String("version", version))
 
 	storageInstance, err := storage.NewStorage(cfg.StorageDSN, cfg.PostsPerPage)
 	if err != nil {
@@ -36,7 +29,7 @@ func Run(ctx context.Context, cfg *Config, version string) error {
 	}
 	defer func() {
 		if err := storageInstance.Close(); err != nil {
-			logger.Error("Got an error while closing storage", zap.Error(err))
+			logger.Error("Got an error while closing storage", slogx.Error(err))
 		}
 	}()
 
@@ -52,7 +45,7 @@ func Run(ctx context.Context, cfg *Config, version string) error {
 
 	htmlRenderer, err := renderer.NewHTML(
 		renderer.HTMLConfig{
-			Debug:         cfg.LogConfig.Level == zapcore.DebugLevel.String(),
+			Debug:         cfg.LogConfig.Level == slog.LevelDebug,
 			TemplatesPath: cfg.HTTPConfig.TemplatesPath,
 			UICfg:         cfg.UIConfig,
 			PluginsCfg:    cfg.Config,
