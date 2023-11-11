@@ -16,7 +16,7 @@ all: test build
 .PHONY: build
 build:
 	@echo "$(OK_COLOR)==> Building (v${VERSION}) ... $(NO_COLOR)"
-	@CGO_ENABLED=0 go build $(GO_LINKER_FLAGS) -o "$(BUILD_DIR)/${NAME}"
+	@goreleaser --skip=publish --snapshot --clean
 
 .PHONY: test
 test:
