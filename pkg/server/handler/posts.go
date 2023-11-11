@@ -18,8 +18,8 @@ type Posts struct {
 }
 
 // NewPosts creates new Posts instance
-func NewPosts(storage storage.Storage, renderer renderer.Renderer) *Posts {
-	return &Posts{storage, renderer}
+func NewPosts(s storage.Storage, r renderer.Renderer) *Posts {
+	return &Posts{s, r}
 }
 
 // Front is the HTTP handler for the front page with post list
@@ -72,7 +72,6 @@ func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "post.tpl", renderer.D{"post": post}))
-
 }
 
 func (h *Posts) getPageFromURL(r *http.Request) int {

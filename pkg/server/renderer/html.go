@@ -91,9 +91,9 @@ func (r *HTML) initTemplates() error {
 func (r *HTML) getPartials(templatesPath, theme, uiAbout string) ([]string, error) {
 	var partials []string
 
-	walkFn := func(path string, f os.FileInfo, err error) error {
-		if nil == err && !f.IsDir() && !strings.HasSuffix(path, "about.tpl") {
-			partials = append(partials, path)
+	walkFn := func(fPath string, f os.FileInfo, err error) error {
+		if nil == err && !f.IsDir() && !strings.HasSuffix(fPath, "about.tpl") {
+			partials = append(partials, fPath)
 		}
 		return err
 	}

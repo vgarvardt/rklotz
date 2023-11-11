@@ -23,7 +23,7 @@ func NewFileLoader(path string, f formatter.Formatter, logger *slog.Logger) (*Fi
 }
 
 // Load loads posts and saves them one by one in the storage
-func (l *FileLoader) Load(storage storage.Storage) error {
+func (l *FileLoader) Load(s storage.Storage) error {
 	if err := filepath.Walk(l.path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -37,7 +37,7 @@ func (l *FileLoader) Load(storage storage.Storage) error {
 			}
 
 			l.logger.Debug("Saving post to storage", slog.String("path", post.Path), slog.String("title", post.Title))
-			err = storage.Save(post)
+			err = s.Save(post)
 			if err != nil {
 				return err
 			}
@@ -47,5 +47,5 @@ func (l *FileLoader) Load(storage storage.Storage) error {
 		return err
 	}
 
-	return storage.Finalize()
+	return s.Finalize()
 }

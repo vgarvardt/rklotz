@@ -21,7 +21,7 @@ var (
 // Loader is the interface for posts loader
 type Loader interface {
 	// Load loads posts and saves them one by one in the storage
-	Load(storage storage.Storage) error
+	Load(s storage.Storage) error
 }
 
 // New returns new loader instance by type

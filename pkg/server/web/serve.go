@@ -59,14 +59,14 @@ func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
 }
 
 // ListenAndServe launches web server that listens to HTTP(S) requests
-func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *slog.Logger) error {
+func ListenAndServe(ctx context.Context, router chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *slog.Logger) error {
 	if !cfgSSL.Enabled {
 		server := &http.Server{
 			ReadTimeout:       10 * time.Second,
 			ReadHeaderTimeout: 10 * time.Second,
 			WriteTimeout:      10 * time.Second,
 			Addr:              fmt.Sprintf(":%d", cfgHTTP.Port),
-			Handler:           handler,
+			Handler:           router,
 		}
 
 		logger.Info("Running HTTP server...", slog.String("address", server.Addr))
@@ -87,7 +87,7 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 		ReadHeaderTimeout: 10 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		Addr:              fmt.Sprintf(":%d", cfgSSL.Port),
-		Handler:           handler,
+		Handler:           router,
 		TLSConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {

@@ -140,7 +140,7 @@ func TestMemoryStorage_ListTag_ErrorNotFound(t *testing.T) {
 
 	loadTestPosts(t, storage)
 
-	tag := getRandomHash(10)
+	tag := getRandomHash(t, 10)
 	_, err = storage.ListTag(tag, 0)
 	require.Error(t, err)
 	assert.Equal(t, ErrorNotFound, err)

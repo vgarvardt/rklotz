@@ -6,7 +6,7 @@ import (
 )
 
 // D is the syntax-sugar type for map
-type D map[string]interface{}
+type D map[string]any
 
 // Data is the container type for renderer data
 type Data struct {
@@ -30,7 +30,7 @@ func NewData(r *http.Request, template string, data D) *Data {
 }
 
 // Set sets named value to the data container
-func (d *Data) Set(key string, value interface{}) *Data {
+func (d *Data) Set(key string, value any) *Data {
 	d.m.Lock()
 	defer d.m.Unlock()
 

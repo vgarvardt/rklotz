@@ -8,11 +8,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewStorage(t *testing.T) {
 	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	_, err := hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	require.NoError(t, err)
+
 	dbFilePath := fmt.Sprintf("/tmp/rklotz-test.%s.db", hex.EncodeToString(hasher.Sum(nil))[:5])
 
 	boltDBStorage, err := NewStorage("boltdb://"+dbFilePath, 10)
