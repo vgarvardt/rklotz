@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,7 +18,7 @@ func TestLoad_DefaultValues(t *testing.T) {
 	cfg, err := LoadConfig(ctx)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "info", cfg.Level)
+	assert.Equal(t, slog.LevelInfo, cfg.Level)
 	assert.Equal(t, "file:///etc/rklotz/posts", cfg.PostsDSN)
 	assert.Equal(t, 10, cfg.PostsPerPage)
 	assert.Equal(t, "boltdb:///tmp/rklotz.db", cfg.StorageDSN)
@@ -86,7 +87,7 @@ func TestLoad(t *testing.T) {
 	appConfig, err := LoadConfig(ctx)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "debug", appConfig.Level)
+	assert.Equal(t, slog.LevelDebug, appConfig.Level)
 	assert.Equal(t, "file:///path/to/posts", appConfig.PostsDSN)
 	assert.Equal(t, 42, appConfig.PostsPerPage)
 	assert.Equal(t, "mysql://root@localhost/rklotz", appConfig.StorageDSN)

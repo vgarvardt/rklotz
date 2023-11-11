@@ -4,13 +4,14 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"time"
 
+	"github.com/cappuccinotm/slogx"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"go.uber.org/zap"
 	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/sync/errgroup"
 
@@ -19,7 +20,7 @@ import (
 )
 
 // NewRouter initialises and builds new HTTP router
-func NewRouter(pH *handler.Posts, fH *handler.Feed, logger *zap.Logger) chi.Router {
+func NewRouter(pH *handler.Posts, fH *handler.Feed, logger *slog.Logger) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -58,17 +59,17 @@ func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
 }
 
 // ListenAndServe launches web server that listens to HTTP(S) requests
-func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *zap.Logger) error {
+func ListenAndServe(ctx context.Context, router chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *slog.Logger) error {
 	if !cfgSSL.Enabled {
 		server := &http.Server{
 			ReadTimeout:       10 * time.Second,
 			ReadHeaderTimeout: 10 * time.Second,
 			WriteTimeout:      10 * time.Second,
 			Addr:              fmt.Sprintf(":%d", cfgHTTP.Port),
-			Handler:           handler,
+			Handler:           router,
 		}
 
-		logger.Info("Running HTTP server...", zap.String("address", server.Addr))
+		logger.Info("Running HTTP server...", slog.String("address", server.Addr))
 		return server.ListenAndServe()
 	}
 
@@ -86,7 +87,7 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 		ReadHeaderTimeout: 10 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		Addr:              fmt.Sprintf(":%d", cfgSSL.Port),
-		Handler:           handler,
+		Handler:           router,
 		TLSConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			GetCertificate: func(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
@@ -94,8 +95,8 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 				if err != nil {
 					logger.Error(
 						"TLS cert manager could not get certificate",
-						zap.Error(err),
-						zap.String("server-name", info.ServerName),
+						slogx.Error(err),
+						slog.String("server-name", info.ServerName),
 					)
 				}
 
@@ -115,7 +116,7 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		logger.Info("Running HTTPS server...", zap.String("address", httpsServer.Addr))
+		logger.Info("Running HTTPS server...", slog.String("address", httpsServer.Addr))
 		if err := httpsServer.ListenAndServeTLS("", ""); err != nil {
 			return fmt.Errorf("failed to run HTTPS server: %w", err)
 		}
@@ -123,7 +124,7 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 	})
 
 	g.Go(func() error {
-		logger.Info("Running HTTP to HTTPS redirect server...", zap.String("address", httpServer.Addr))
+		logger.Info("Running HTTP to HTTPS redirect server...", slog.String("address", httpServer.Addr))
 		if err := httpServer.ListenAndServe(); err != nil {
 			return fmt.Errorf("failed to run HTTPS redirect server: %w", err)
 		}
@@ -132,8 +133,8 @@ func ListenAndServe(ctx context.Context, handler chi.Router, cfgSSL SSLConfig, c
 
 	<-ctx.Done()
 	logger.Info("One of the servers stopped, stopping all of them")
-	logger.Info("Stopping HTTPS server", zap.Error(httpsServer.Shutdown(context.Background())))
-	logger.Info("Stopping HTTP to HTTPS redirect server", zap.Error(httpServer.Shutdown(context.Background())))
+	logger.Info("Stopping HTTPS server", slogx.Error(httpsServer.Shutdown(context.Background())))
+	logger.Info("Stopping HTTP to HTTPS redirect server", slogx.Error(httpServer.Shutdown(context.Background())))
 
 	return g.Wait()
 }

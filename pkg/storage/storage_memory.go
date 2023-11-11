@@ -73,14 +73,14 @@ func (s *MemoryStorage) Save(post *model.Post) error {
 func (s *MemoryStorage) Finalize() error {
 	s.postsList = make([]*model.Post, s.postsCount)
 	i := 0
-	s.posts.Range(func(path, post interface{}) bool {
+	s.posts.Range(func(path, post any) bool {
 		s.postsList[i] = post.(*model.Post)
 		i++
 		return true
 	})
 	sort.Sort(sort.Reverse(s.postsList))
 
-	s.tagsList.Range(func(tag, tagSlice interface{}) bool {
+	s.tagsList.Range(func(tag, tagSlice any) bool {
 		sort.Sort(sort.Reverse(tagSlice.(postSlice)))
 		return true
 	})

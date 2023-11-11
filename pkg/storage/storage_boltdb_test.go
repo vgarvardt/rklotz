@@ -16,14 +16,20 @@ import (
 	"github.com/vgarvardt/rklotz/pkg/model"
 )
 
-func getRandomHash(length int) string {
+func getRandomHash(t *testing.T, length int) string {
+	t.Helper()
+
 	hasher := md5.New()
-	hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	_, err := hasher.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	require.NoError(t, err)
+
 	return hex.EncodeToString(hasher.Sum(nil))[:length]
 }
 
-func getFilePath() string {
-	return fmt.Sprintf("/tmp/rklotz-test.%s.db", getRandomHash(5))
+func getFilePath(t *testing.T) string {
+	t.Helper()
+
+	return fmt.Sprintf("/tmp/rklotz-test.%s.db", getRandomHash(t, 5))
 }
 
 func fileExists(path string) bool {
@@ -32,7 +38,7 @@ func fileExists(path string) bool {
 }
 
 func TestNewBoltDBStorage(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
 	assert.Equal(t, dbFilePath, storage.path)
@@ -46,7 +52,7 @@ func TestNewBoltDBStorage(t *testing.T) {
 }
 
 func TestBoltDBStorage_Finalize(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
 	defer func() {
@@ -94,7 +100,7 @@ func loadTestPosts(t *testing.T, storage Storage) {
 }
 
 func TestBoltDBStorage_FindByPath(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
 	defer func() {
@@ -119,7 +125,7 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListAll_10(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
 	defer func() {
@@ -143,7 +149,7 @@ func TestBoltDBStorage_ListAll_10(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListAll_1(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
 	defer func() {
@@ -170,7 +176,7 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListTag_10(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
 	defer func() {
@@ -196,7 +202,7 @@ func TestBoltDBStorage_ListTag_10(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListTag_1(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
 	defer func() {
@@ -225,7 +231,7 @@ func TestBoltDBStorage_ListTag_1(t *testing.T) {
 }
 
 func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
-	dbFilePath := getFilePath()
+	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
 	defer func() {
@@ -235,7 +241,7 @@ func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
 
 	loadTestPosts(t, storage)
 
-	tag := getRandomHash(10)
+	tag := getRandomHash(t, 10)
 	_, err = storage.ListTag(tag, 0)
 	require.Error(t, err)
 	assert.Equal(t, ErrorNotFound, err)

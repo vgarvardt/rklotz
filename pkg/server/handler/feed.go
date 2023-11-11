@@ -14,8 +14,8 @@ type Feed struct {
 }
 
 // NewFeed creates new Feed instance
-func NewFeed(storage storage.Storage, renderer renderer.Renderer) *Feed {
-	return &Feed{storage, renderer}
+func NewFeed(s storage.Storage, r renderer.Renderer) *Feed {
+	return &Feed{s, r}
 }
 
 // Atom is the HTTP handler for Atom feed
