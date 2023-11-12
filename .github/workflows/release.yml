@@ -5,6 +5,7 @@ on:
   release:
     types:
       - created
+  pull_request:
 
 jobs:
   goreleaser:
@@ -14,6 +15,11 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch git tags
+        run: git fetch --force --tags
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -21,22 +27,34 @@ jobs:
           go-version-file: ./go.mod
 
       - name: Docker Login
-        if: success() && startsWith(github.ref, 'refs/tags/')
         env:
           DOCKER_USERNAME: vgarvardt
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
 
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
       - name: Set up Docker BuildX
         uses: docker/setup-buildx-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64v8
 
-      - name: Run GoReleaser
+      - name: Run GoReleaser (Release)
         uses: goreleaser/goreleaser-action@v5
-        if: success() && startsWith(github.ref, 'refs/tags/')
+        if: github.event_name == 'release'
         with:
-          args: release --clean
+          args: 'release --clean'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run GoReleaser (PR)
+        uses: goreleaser/goreleaser-action@v5
+        if: github.event_name == 'pull_request'
+        with:
+          args: '--skip=publish --snapshot --clean'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
