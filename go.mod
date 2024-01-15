@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/cappuccinotm/slogx v0.1.0
+	github.com/cappuccinotm/slogx v1.1.1
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/gorilla/feeds v1.1.2
