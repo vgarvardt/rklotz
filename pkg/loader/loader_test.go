@@ -4,13 +4,13 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/cappuccinotm/slogx"
+	"github.com/cappuccinotm/slogx/slogt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewLoader(t *testing.T) {
-	logger := slog.New(slogx.TestHandler(t))
+	logger := slog.New(slogt.Handler(t, slogt.SplitMultiline))
 
 	fileLoader, err := New("file:///path/to/posts", logger)
 	require.NoError(t, err)
