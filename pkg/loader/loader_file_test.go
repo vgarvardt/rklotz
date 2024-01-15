@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cappuccinotm/slogx"
+	"github.com/cappuccinotm/slogx/slogt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -81,7 +81,7 @@ func TestFileLoader_Load(t *testing.T) {
 
 	storage.On("Finalize").Return(nil).Once()
 
-	logger := slog.New(slogx.TestHandler(t))
+	logger := slog.New(slogt.Handler(t, slogt.SplitMultiline))
 	f := formatter.New()
 
 	fileLoader, err := NewFileLoader(postsBasePath, f, logger)

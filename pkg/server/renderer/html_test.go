@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cappuccinotm/slogx"
+	"github.com/cappuccinotm/slogx/slogt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,7 +35,7 @@ func TestNewHTML(t *testing.T) {
 		path.Join(templatesPath, theme, "partial", "posts.tpl"),
 	}
 
-	logger := slog.New(slogx.TestHandler(t))
+	logger := slog.New(slogt.Handler(t, slogt.SplitMultiline))
 	instance := &HTML{logger: logger}
 
 	// default about panel
