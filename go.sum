@@ -4,8 +4,8 @@ github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863 h1:BRrxwOZBolJN4gIwv
 github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863/go.mod h1:D0JMgToj/WdxCgd30Kc1UcA9E+WdZoJqeVOuYW7iTBM=
 github.com/asdine/storm/v3 v3.2.1 h1:I5AqhkPK6nBZ/qJXySdI7ot5BlXSZ7qvDY1zAn5ZJac=
 github.com/asdine/storm/v3 v3.2.1/go.mod h1:LEpXwGt4pIqrE/XcTvCnZHT5MgZCV6Ub9q7yQzOFWr0=
-github.com/cappuccinotm/slogx v1.1.1 h1:yH+aWfTFvxf8ao+zBiEX8h7Jt+dWH+sTcq34GKTeulY=
-github.com/cappuccinotm/slogx v1.1.1/go.mod h1:Q9lmOfumtErQpVTT5/3nKH++YRJMrYNvGe7Xkqnjr2Q=
+github.com/cappuccinotm/slogx v1.2.0 h1:HnepDInOEeoUdWpgTMqJe3slIrnXZ11G4F6dThcwwN8=
+github.com/cappuccinotm/slogx v1.2.0/go.mod h1:Q9lmOfumtErQpVTT5/3nKH++YRJMrYNvGe7Xkqnjr2Q=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
