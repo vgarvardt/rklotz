@@ -1,11 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/go-chi/chi/v5"
 
 	"github.com/vgarvardt/rklotz/pkg/server/renderer"
 	"github.com/vgarvardt/rklotz/pkg/storage"
@@ -40,7 +39,7 @@ func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 
 // Tag is the HTTP handler for the tag page with post list for a tag
 func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
-	tag := chi.URLParam(r, "tag")
+	tag := r.PathValue("tag")
 
 	page := h.getPageFromURL(r)
 	posts, err := h.storage.ListTag(tag, page)
@@ -65,7 +64,7 @@ func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 		status := map[bool]int{
 			true:  http.StatusNotFound,
 			false: http.StatusInternalServerError,
-		}[err == storage.ErrorNotFound]
+		}[errors.Is(err, storage.ErrorNotFound)]
 
 		h.renderer.Error(r, w, status, err)
 		return

@@ -16,7 +16,10 @@ func TestNewMemoryStorage(t *testing.T) {
 func TestMemoryStorage_Finalize(t *testing.T) {
 	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	err = storage.Finalize()
 	require.NoError(t, err)
@@ -25,12 +28,15 @@ func TestMemoryStorage_Finalize(t *testing.T) {
 func TestMemoryStorage_FindByPath(t *testing.T) {
 	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 
 	_, err = storage.FindByPath("does-not-exist")
-	assert.Equal(t, err, ErrorNotFound)
+	assert.ErrorIs(t, err, ErrorNotFound)
 
 	post, err := storage.FindByPath("/hello-world")
 	require.NoError(t, err)
@@ -46,7 +52,10 @@ func TestMemoryStorage_FindByPath(t *testing.T) {
 func TestMemoryStorage_ListAll_10(t *testing.T) {
 	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 1, storage.Meta().Pages)
@@ -66,7 +75,10 @@ func TestMemoryStorage_ListAll_10(t *testing.T) {
 func TestMemoryStorage_ListAll_1(t *testing.T) {
 	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 2, storage.Meta().Pages)
@@ -89,7 +101,10 @@ func TestMemoryStorage_ListAll_1(t *testing.T) {
 func TestMemoryStorage_ListTag_10(t *testing.T) {
 	storage, err := NewMemoryStorage(10)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 
@@ -111,7 +126,10 @@ func TestMemoryStorage_ListTag_10(t *testing.T) {
 func TestMemoryStorage_ListTag_1(t *testing.T) {
 	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 
@@ -136,12 +154,15 @@ func TestMemoryStorage_ListTag_1(t *testing.T) {
 func TestMemoryStorage_ListTag_ErrorNotFound(t *testing.T) {
 	storage, err := NewMemoryStorage(1)
 	require.NoError(t, err)
-	defer storage.Close()
+	t.Cleanup(func() {
+		err := storage.Close()
+		assert.NoError(t, err)
+	})
 
 	loadTestPosts(t, storage)
 
 	tag := getRandomHash(t, 10)
 	_, err = storage.ListTag(tag, 0)
 	require.Error(t, err)
-	assert.Equal(t, ErrorNotFound, err)
+	assert.ErrorIs(t, ErrorNotFound, err)
 }
