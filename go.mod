@@ -6,7 +6,7 @@ require (
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/cappuccinotm/slogx v1.3.0
 	github.com/felixge/httpsnoop v1.0.4
-	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/gorilla/feeds v1.1.2
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v1.0.0
