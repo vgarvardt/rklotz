@@ -22,11 +22,14 @@ func TestNewStorage(t *testing.T) {
 	assert.NoError(t, err)
 	assert.IsType(t, &BoltDBStorage{}, boltDBStorage)
 	assert.Equal(t, dbFilePath, boltDBStorage.(*BoltDBStorage).path)
-	defer boltDBStorage.Close()
+	t.Cleanup(func() {
+		err := boltDBStorage.Close()
+		assert.NoError(t, err)
+	})
 
 	_, err = NewStorage("unknown://", 10)
 	assert.Error(t, err)
-	assert.Equal(t, ErrorUnknownStorageType, err)
+	assert.ErrorIs(t, ErrorUnknownStorageType, err)
 
 	_, err = NewStorage("~", 10)
 	assert.Error(t, err)

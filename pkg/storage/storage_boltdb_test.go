@@ -55,10 +55,10 @@ func TestBoltDBStorage_Finalize(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	err = storage.Finalize()
 	require.NoError(t, err)
@@ -103,15 +103,15 @@ func TestBoltDBStorage_FindByPath(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 
 	_, err = storage.FindByPath("does-not-exist")
-	assert.Equal(t, err, ErrorNotFound)
+	assert.ErrorIs(t, err, ErrorNotFound)
 
 	post, err := storage.FindByPath("/hello-world")
 	require.NoError(t, err)
@@ -128,10 +128,10 @@ func TestBoltDBStorage_ListAll_10(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 1, storage.Meta().Pages)
@@ -152,10 +152,10 @@ func TestBoltDBStorage_ListAll_1(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 	assert.Equal(t, 2, storage.Meta().Pages)
@@ -179,10 +179,10 @@ func TestBoltDBStorage_ListTag_10(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 10)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 
@@ -205,10 +205,10 @@ func TestBoltDBStorage_ListTag_1(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 
@@ -234,15 +234,15 @@ func TestBoltDBStorage_ListTag_ErrorNotFound(t *testing.T) {
 	dbFilePath := getFilePath(t)
 	storage, err := NewBoltDBStorage(dbFilePath, 1)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := storage.Close()
 		assert.NoError(t, err)
-	}()
+	})
 
 	loadTestPosts(t, storage)
 
 	tag := getRandomHash(t, 10)
 	_, err = storage.ListTag(tag, 0)
 	require.Error(t, err)
-	assert.Equal(t, ErrorNotFound, err)
+	assert.ErrorIs(t, ErrorNotFound, err)
 }
