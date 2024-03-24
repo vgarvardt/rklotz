@@ -96,7 +96,7 @@ Currently, the following settings (environment variables) are available:
 ### HTML and UI settings
 
 * `UI_THEME` (default `foundation6`) - theme name. Themes list available in [templates](./templates)
-  (except for `plugins`, that are plugins templates, see bellow)
+  (except for `plugins`, that are plugins templates, see below)
 * `UI_AUTHOR` (default `Vladimir Garvardt`) - blog author name (HTML head meta)
 * `UI_EMAIL` (default `vgarvardt@gmail.com`) - blog author email
 * `UI_DESCRIPTION` (default `rKlotz - simple golang-driven blog engine`) - blog description (HTML head meta)
