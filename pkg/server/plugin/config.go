@@ -8,7 +8,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Config is teh configuration for app plugins
+// Config is the configuration for app plugins
 type Config struct {
 	Enabled []string `env:"PLUGINS_ENABLED"`
 	Settings

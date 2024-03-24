@@ -25,4 +25,14 @@ test:
 
 .PHONY: lint
 lint:
-	golangci-lint run --config=./.github/linters/.golangci.yml --fix
+	@echo "$(OK_COLOR)==> Running code linters$(NO_COLOR)"
+	@golangci-lint run --config=./.github/linters/.golangci.yml --fix
+
+.PHONY: spell
+spell:
+	@echo "$(OK_COLOR)==> Running spell check linters$(NO_COLOR)"
+	@docker run \
+		--interactive --tty --rm \
+		--volume "$(CURDIR):/workdir" \
+		--workdir "/workdir" \
+		python:3.12-slim bash -c "python -m pip install --upgrade pip && pip install 'codespell>=2.2.4' && codespell"

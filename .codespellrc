@@ -1,0 +1,4 @@
+[codespell]
+skip = go.mod,go.sum,coverage.txt,.codespellrc,./vendor,./.git,./.idea
+check-hidden = true
+ignore-regex = \b(Reamde)\b

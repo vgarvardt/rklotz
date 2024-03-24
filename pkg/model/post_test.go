@@ -83,7 +83,7 @@ const (
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.
 
 Vestibulum hendrerit massa libero, et sagittis felis luctus ut. Nunc condimentum aliquet lectus,
@@ -101,7 +101,7 @@ sit amet hendrerit sem placerat. Aliquam bibendum ex sit amet nisi pharetra cond
 	helloWorldBodyHTML = `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.</p>
 <p>Vestibulum hendrerit massa libero, et sagittis felis luctus ut. Nunc condimentum aliquet lectus,
 id posuere risus rhoncus et. Vivamus sed diam aliquam, gravida neque ut, luctus purus.
@@ -118,7 +118,7 @@ sit amet hendrerit sem placerat. Aliquam bibendum ex sit amet nisi pharetra cond
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.
 
 Vestibulum hendrerit massa libero, et sagittis felis luctus ut. Nunc condimentum aliquet lectus,
@@ -136,7 +136,7 @@ sit amet hendrerit sem placerat. Aliquam bibendum ex sit amet nisi pharetra cond
 	withTeaserBodyHTML = `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.</p>
 <p>Vestibulum hendrerit massa libero, et sagittis felis luctus ut. Nunc condimentum aliquet lectus,
 id posuere risus rhoncus et. Vivamus sed diam aliquam, gravida neque ut, luctus purus.
@@ -153,13 +153,13 @@ sit amet hendrerit sem placerat. Aliquam bibendum ex sit amet nisi pharetra cond
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.
 `
 	withTeaserTeaserHTML = `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus in lorem convallis semper.
 Sed posuere vehicula feugiat. Maecenas facilisis nunc nisl, sit amet ornare quam scelerisque vel.
 Vestibulum non nunc justo. Donec vitae justo ipsum. Cras tempor nec tortor vitae suscipit.
-In vulputate lorem id quam tincidunt, non pulvinar dui varius. Sed a imperdiet orci.
+In vulputate lorem id quam tincidunt, non pulvinar dui various. Sed a imperdiet orci.
 Aliquam et sem in tellus dapibus lobortis. Quisque auctor laoreet massa, in tincidunt lectus rutrum vitae.</p>
 `
 )
