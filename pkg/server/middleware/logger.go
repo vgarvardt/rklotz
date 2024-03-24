@@ -22,10 +22,12 @@ func NewLogger(logger *slog.Logger) *Logger {
 // Handler is the request handler that creates logger instance for each request with corresponding request ID.
 func (m *Logger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestID := middleware.GetReqID(r.Context())
+		ctx := r.Context()
+
+		requestID := middleware.GetReqID(ctx)
 		requestLogger := m.logger.With(slog.String("request-id", requestID))
 
-		newCtx := rqctx.SetID(r.Context(), requestID)
+		newCtx := rqctx.SetID(ctx, requestID)
 		newCtx = rqctx.SetLogger(newCtx, requestLogger)
 		next.ServeHTTP(w, r.WithContext(newCtx))
 	})

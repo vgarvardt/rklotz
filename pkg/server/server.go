@@ -62,9 +62,7 @@ func Run(ctx context.Context, cfg *Config, version string) error {
 	postsHandler := handler.NewPosts(storageInstance, htmlRenderer)
 	feedHandler := handler.NewFeed(storageInstance, feedRenderer)
 
-	r := web.NewRouter(postsHandler, feedHandler, logger)
-
-	web.ServeStatic(r, cfg.HTTPConfig, cfg.UIConfig.Theme)
+	r := web.NewRouter(postsHandler, feedHandler, cfg.HTTPConfig, cfg.UIConfig.Theme, logger)
 
 	return web.ListenAndServe(ctx, r, cfg.SSLConfig, cfg.HTTPConfig, logger)
 }

@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -69,7 +71,7 @@ func (s *BoltDBStorage) Save(post *model.Post) error {
 	for i := range post.Tags {
 		var tag model.Tag
 		err := s.tags.One("Tag", post.Tags[i], &tag)
-		if err == storm.ErrNotFound {
+		if errors.Is(err, storm.ErrNotFound) {
 			tag = model.Tag{Tag: post.Tags[i], Paths: []string{}}
 		} else if nil != err {
 			return err
@@ -94,9 +96,9 @@ func (s *BoltDBStorage) Finalize() error {
 // FindByPath searches for a post by path
 func (s *BoltDBStorage) FindByPath(path string) (*model.Post, error) {
 	var post model.Post
-	err := s.db.One("Path", path, &post)
 
-	if err == storm.ErrNotFound {
+	err := s.db.One("Path", path, &post)
+	if errors.Is(err, storm.ErrNotFound) {
 		return nil, ErrorNotFound
 	}
 
@@ -116,7 +118,7 @@ func (s *BoltDBStorage) ListTag(tag string, page int) ([]*model.Post, error) {
 	var tagObject model.Tag
 
 	err := s.tags.One("Tag", tag, &tagObject)
-	if err == storm.ErrNotFound {
+	if errors.Is(err, storm.ErrNotFound) {
 		return nil, ErrorNotFound
 	}
 
@@ -163,16 +165,13 @@ func (s *BoltDBStorage) TagMeta(tag string) *model.Meta {
 
 func (s *BoltDBStorage) remove() error {
 	_, err := os.Stat(s.path)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return err
-		}
-	} else {
-		err = os.Remove(s.path)
-		if err != nil {
-			return err
-		}
+	if err == nil {
+		return os.Remove(s.path)
 	}
 
-	return nil
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+
+	return err
 }

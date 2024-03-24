@@ -4,9 +4,10 @@ go 1.22
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/cappuccinotm/slogx v1.3.0
+	github.com/cappuccinotm/slogx v1.4.0
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-pkgz/routegroup v1.1.1
 	github.com/gorilla/feeds v1.1.2
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v1.0.1
@@ -24,8 +25,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	go.etcd.io/bbolt v1.3.4 // indirect
-	golang.org/x/net v0.21.0 // indirect
+	go.etcd.io/bbolt v1.3.9 // indirect
+	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
