@@ -24,11 +24,13 @@ func NewRequestLogger() *RequestLogger {
 // Handler is the request handler that logs request data
 func (m *RequestLogger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rqctx.GetLogger(r.Context()).Debug("Started request", slog.String("method", r.Method), slog.String("path", r.URL.Path))
+		logger := rqctx.GetLogger(r.Context())
+
+		logger.Debug("Started request", slog.String("method", r.Method), slog.String("path", r.URL.Path))
 
 		metrics := httpsnoop.CaptureMetrics(next, w, r)
 
-		logEntry := rqctx.GetLogger(r.Context()).With(
+		logEntry := logger.With(
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
 			slog.String("host", r.Host),

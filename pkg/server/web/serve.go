@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/cappuccinotm/slogx"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-pkgz/routegroup"
 	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/sync/errgroup"
 
@@ -19,47 +19,46 @@ import (
 	m "github.com/vgarvardt/rklotz/pkg/server/middleware"
 )
 
+const staticPath = "/static"
+
 // NewRouter initialises and builds new HTTP router
-func NewRouter(pH *handler.Posts, fH *handler.Feed, logger *slog.Logger) chi.Router {
-	r := chi.NewRouter()
+func NewRouter(ph *handler.Posts, fh *handler.Feed, cfgHTTP HTTPConfig, theme string, logger *slog.Logger) http.Handler {
+	mux := routegroup.New(http.NewServeMux())
 
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(m.NewLogger(logger).Handler)
-	r.Use(m.NewRequestLogger().Handler)
-	r.Use(m.Recovery)
+	mux.Use(
+		middleware.RequestID,
+		middleware.RealIP,
+		m.NewLogger(logger).Handler,
+		m.NewRequestLogger().Handler,
+		m.Recovery,
+	)
 
-	r.Get("/", pH.Front)
-	r.Get("/tag/{tag}", pH.Tag)
-	r.NotFound(pH.Post)
+	mux.HandleFunc("GET /{$}", ph.Front)
+	mux.HandleFunc("GET /tag/{tag}", ph.Tag)
+	mux.HandleFunc("/", ph.Post)
 
-	r.Route("/feed", func(r chi.Router) {
-		r.Get("/atom", fH.Atom)
-		r.Get("/rss", fH.Rss)
+	mux.Mount("/feed").Route(func(b *routegroup.Bundle) {
+		b.HandleFunc("GET /atom", fh.Atom)
+		b.HandleFunc("GET /rss", fh.Rss)
 	})
 
-	return r
-}
-
-// ServeStatic registers static handler for the router
-func ServeStatic(r chi.Router, cfgHTTP HTTPConfig, theme string) {
 	staticRoot := http.Dir(cfgHTTP.StaticPath)
-	staticPath := "/static"
 	staticHandler := http.StripPrefix(staticPath, http.FileServer(staticRoot))
-
 	faviconPath := filepath.Join(cfgHTTP.StaticPath, theme, "favicon.ico")
 
-	r.Get(staticPath+"/*", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET "+staticPath+"/", func(w http.ResponseWriter, r *http.Request) {
 		staticHandler.ServeHTTP(w, r)
 	})
 
-	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, faviconPath)
 	})
+
+	return mux
 }
 
 // ListenAndServe launches web server that listens to HTTP(S) requests
-func ListenAndServe(ctx context.Context, router chi.Router, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *slog.Logger) error {
+func ListenAndServe(ctx context.Context, router http.Handler, cfgSSL SSLConfig, cfgHTTP HTTPConfig, logger *slog.Logger) error {
 	if !cfgSSL.Enabled {
 		server := &http.Server{
 			ReadTimeout:       10 * time.Second,

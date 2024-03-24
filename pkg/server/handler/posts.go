@@ -59,7 +59,6 @@ func (h *Posts) Tag(w http.ResponseWriter, r *http.Request) {
 // Post is the HTTP handler for the post page
 func (h *Posts) Post(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.FindByPath(r.URL.Path)
-
 	if err != nil {
 		status := map[bool]int{
 			true:  http.StatusNotFound,
