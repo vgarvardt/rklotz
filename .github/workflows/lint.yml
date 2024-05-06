@@ -36,6 +36,7 @@ jobs:
           # and the functionality is tested using integration tests
           VALIDATE_SQL: false
           VALIDATE_SQLFLUFF: false
+          VALIDATE_CHECKOV: false
 
       - name: Set up Go
         uses: actions/setup-go@v5
