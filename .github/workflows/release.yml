@@ -44,7 +44,7 @@ jobs:
           platforms: linux/amd64,linux/arm64v8
 
       - name: Run GoReleaser (Release)
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         if: github.event_name == 'release'
         with:
           args: 'release --clean'
@@ -52,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run GoReleaser (PR)
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         if: github.event_name == 'pull_request'
         with:
           args: '--skip=publish --snapshot --clean'

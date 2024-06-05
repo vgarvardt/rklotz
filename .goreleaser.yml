@@ -1,4 +1,6 @@
 ---
+version: 2
+
 project_name: rklotz
 
 builds:
