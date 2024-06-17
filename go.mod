@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/feeds v1.1.2
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v1.0.3
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark v1.7.1
 	golang.org/x/crypto v0.24.0
