@@ -61,7 +61,7 @@ func NewPostFromFile(basePath, postPath string, f formatter.Formatter) (*Post, e
 
 	post.Title = postMeta[0]
 
-	post.PublishedAt, err = time.Parse(time.RFC822Z, postMeta[1])
+	post.PublishedAt, err = time.Parse(time.RFC822Z, strings.ReplaceAll(postMeta[1], "\r", ""))
 	if nil != err {
 		return nil, err
 	}

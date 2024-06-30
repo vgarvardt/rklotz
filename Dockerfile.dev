@@ -1,0 +1,23 @@
+FROM golang:1.22-alpine AS base
+WORKDIR /app/
+
+COPY go.mod go.sum ./
+COPY static/ /etc/rklotz/static
+COPY templates/ /etc/rklotz/templates
+COPY assets/posts/ /etc/rklotz/posts
+
+RUN mkdir -p dist && \
+    mkdir -p tmp/db && \
+    go mod download
+
+FROM base as dev
+WORKDIR /app/
+COPY . .
+RUN go install github.com/air-verse/air@latest && \
+    go build -o /dist/app main.go && \
+    mv /app/dist/app /bin/rklotz && \
+    chmod a+x /bin/rklotz
+
+CMD ["/bin/rklotz", "server"]
+
+ENTRYPOINT ["air", "-c", ".air-unix.toml", "-d"]

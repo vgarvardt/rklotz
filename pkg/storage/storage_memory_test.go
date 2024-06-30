@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,15 +39,15 @@ func TestMemoryStorage_FindByPath(t *testing.T) {
 	_, err = storage.FindByPath("does-not-exist")
 	assert.ErrorIs(t, err, ErrorNotFound)
 
-	post, err := storage.FindByPath("/hello-world")
+	post, err := storage.FindByPath(filepath.FromSlash("/hello-world"))
 	require.NoError(t, err)
-	assert.Equal(t, "/hello-world", post.Path)
-	assert.Equal(t, "Hello World Post Title", post.Title)
+	assert.Equal(t, filepath.FromSlash("/hello-world"), post.Path)
+	assert.Equal(t, "Hello World Post Title\r", post.Title)
 
-	post, err = storage.FindByPath("/nested/nested-path")
+	post, err = storage.FindByPath(filepath.FromSlash("/nested/nested-path"))
 	require.NoError(t, err)
-	assert.Equal(t, "/nested/nested-path", post.Path)
-	assert.Equal(t, "Nested Path Post Title", post.Title)
+	assert.Equal(t, filepath.FromSlash("/nested/nested-path"), post.Path)
+	assert.Equal(t, "Nested Path Post Title\r", post.Title)
 }
 
 func TestMemoryStorage_ListAll_10(t *testing.T) {
@@ -64,8 +65,8 @@ func TestMemoryStorage_ListAll_10(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(posts))
 
-	assert.Equal(t, "/nested/nested-path", posts[0].Path)
-	assert.Equal(t, "/hello-world", posts[1].Path)
+	assert.Equal(t, filepath.FromSlash("/nested/nested-path"), posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/hello-world"), posts[1].Path)
 
 	posts, err = storage.ListAll(1)
 	require.NoError(t, err)
@@ -86,12 +87,12 @@ func TestMemoryStorage_ListAll_1(t *testing.T) {
 	posts, err := storage.ListAll(0)
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
-	assert.Equal(t, "/nested/nested-path", posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/nested/nested-path"), posts[0].Path)
 
 	posts, err = storage.ListAll(1)
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
-	assert.Equal(t, "/hello-world", posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/hello-world"), posts[0].Path)
 
 	posts, err = storage.ListAll(2)
 	require.NoError(t, err)
@@ -115,8 +116,8 @@ func TestMemoryStorage_ListTag_10(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(posts))
 
-	assert.Equal(t, "/nested/nested-path", posts[0].Path)
-	assert.Equal(t, "/hello-world", posts[1].Path)
+	assert.Equal(t, filepath.FromSlash("/nested/nested-path"), posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/hello-world"), posts[1].Path)
 
 	posts, err = storage.ListTag(tag, 1)
 	require.NoError(t, err)
@@ -139,12 +140,12 @@ func TestMemoryStorage_ListTag_1(t *testing.T) {
 	posts, err := storage.ListTag(tag, 0)
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
-	assert.Equal(t, "/nested/nested-path", posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/nested/nested-path"), posts[0].Path)
 
 	posts, err = storage.ListTag(tag, 1)
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(posts))
-	assert.Equal(t, "/hello-world", posts[0].Path)
+	assert.Equal(t, filepath.FromSlash("/hello-world"), posts[0].Path)
 
 	posts, err = storage.ListTag(tag, 2)
 	require.NoError(t, err)

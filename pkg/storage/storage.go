@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"io"
+	"log/slog"
 	"net/url"
 
 	"github.com/vgarvardt/rklotz/pkg/model"
@@ -11,6 +12,7 @@ import (
 const (
 	schemeBoldDB = "boltdb"
 	schemeMemory = "memory"
+	schemeBadger = "badger"
 )
 
 var (
@@ -48,11 +50,15 @@ func NewStorage(dsn string, postsPerPage int) (Storage, error) {
 		return nil, err
 	}
 
+	slog.Debug("used storage", slog.Any("value", dsnURL.Scheme))
+
 	switch dsnURL.Scheme {
 	case schemeBoldDB:
 		return NewBoltDBStorage(dsnURL.Path, postsPerPage)
 	case schemeMemory:
 		return NewMemoryStorage(postsPerPage)
+	case schemeBadger:
+		return NewBadgerStorage(dsnURL.Path, postsPerPage)
 	}
 
 	return nil, ErrorUnknownStorageType

@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  rklotz:
+    restart: on-failure
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+      target: dev
+    environment:
+      - POSTS_DSN=file:///etc/rklotz/posts
+      - STORAGE_DSN=badger:///app/tmp/db
+      - WEB_STATIC_PATH=/etc/rklotz/static
+      - WEB_TEMPLATES_PATH=/etc/rklotz/templates
+    volumes:
+      - ./:/app
+    ports:
+      - "8082:8080" # http port
