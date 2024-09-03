@@ -47,7 +47,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         if: github.event_name == 'release'
         with:
-          args: 'release --clean'
+          args: "release --clean"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,6 +55,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         if: github.event_name == 'pull_request'
         with:
-          args: '--skip=publish --snapshot --clean'
+          args: "--skip=publish --snapshot --clean"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
