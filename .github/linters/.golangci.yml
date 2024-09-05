@@ -45,7 +45,7 @@ linters-settings:
           - disableStutteringCheck
       - name: import-alias-naming
         disabled: false
-        arguments: ['^[a-z][a-zA-Z0-9]{0,}$']
+        arguments: ["^[a-z][a-zA-Z0-9]{0,}$"]
       - name: context-as-argument
         disabled: false
       - name: import-shadowing
@@ -70,9 +70,9 @@ linters-settings:
       - name: unhandled-error
         disabled: false
         arguments:
-          - 'fmt.Printf'
-          - 'io.Copy'
-          - 'bytes.Buffer.Write'
+          - "fmt.Printf"
+          - "io.Copy"
+          - "bytes.Buffer.Write"
       - name: var-naming
         disabled: false
 

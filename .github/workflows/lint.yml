@@ -37,6 +37,10 @@ jobs:
           VALIDATE_SQL: false
           VALIDATE_SQLFLUFF: false
           VALIDATE_CHECKOV: false
+          # it forces all list items to be on a single line in .github/linters/.jscpd.json that is not pretty at all
+          VALIDATE_JSON_PRETTIER: false
+          # reports README.md but does not fix anything, linter should be enough
+          VALIDATE_MARKDOWN_PRETTIER: false
 
       - name: Set up Go
         uses: actions/setup-go@v5
