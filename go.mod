@@ -12,7 +12,7 @@ require (
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v1.1.0
 	github.com/spf13/cobra v1.8.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/crypto v0.29.0
 	golang.org/x/sync v0.9.0
