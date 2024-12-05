@@ -9,9 +9,19 @@ updates:
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(go)"
+    groups:
+      golang-x:
+        applies-to: version-updates
+        patterns:
+          - golang.org/x
+          - golang.org/x/*
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "chore(gha)"
