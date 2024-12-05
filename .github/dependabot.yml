@@ -12,11 +12,12 @@ updates:
       interval: 'weekly'
     commit-message:
       prefix: 'chore(go)'
-    golang-x:
-      applies-to: version-updates
-      patterns:
-        - golang.org/x
-        - golang.org/x/*
+    groups:
+      golang-x:
+        applies-to: version-updates
+        patterns:
+          - golang.org/x
+          - golang.org/x/*
 
   - package-ecosystem: 'github-actions'
     directory: '/'
