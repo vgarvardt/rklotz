@@ -6,12 +6,12 @@
 
 version: 2
 updates:
-  - package-ecosystem: 'gomod'
-    directory: '/'
+  - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
-      interval: 'weekly'
+      interval: "weekly"
     commit-message:
-      prefix: 'chore(go)'
+      prefix: "chore(go)"
     groups:
       golang-x:
         applies-to: version-updates
@@ -19,9 +19,9 @@ updates:
           - golang.org/x
           - golang.org/x/*
 
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: 'weekly'
+      interval: "weekly"
     commit-message:
-      prefix: 'chore(gha)'
+      prefix: "chore(gha)"
