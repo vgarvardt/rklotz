@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/crypto v0.29.0
-	golang.org/x/sync v0.9.0
+	golang.org/x/sync v0.10.0
 	golang.org/x/text v0.20.0
 )
 
