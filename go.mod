@@ -6,7 +6,7 @@ require (
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/cappuccinotm/slogx v1.4.0
 	github.com/felixge/httpsnoop v1.0.4
-	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-pkgz/routegroup v1.1.1
 	github.com/gorilla/feeds v1.2.0
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
