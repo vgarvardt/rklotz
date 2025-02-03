@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/cappuccinotm/slogx v1.4.0
+	github.com/cappuccinotm/slogx v1.4.2
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-pkgz/routegroup v1.3.0
