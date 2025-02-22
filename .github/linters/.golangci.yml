@@ -30,9 +30,6 @@ linters-settings:
       - io.Copy
       - fmt.Printf
       - bytes.Buffer.Write
-  maligned:
-    # print struct with more effective memory layout or not, false by default
-    suggest-new: true
   revive:
     # disable all rules by default in case new linters will be added
     # enable this flag from time to time to see if we should fix/add more here
