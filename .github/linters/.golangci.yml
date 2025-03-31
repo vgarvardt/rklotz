@@ -94,12 +94,12 @@ linters:
       - legacy
       - std-error-handling
     rules:
-      - linters:
+      - path: _test\.go
+        linters:
           - dupl
           - goconst
           - gosec
           - staticcheck
-        path: _test\.go
     paths:
       - third_party$
       - builtin$
