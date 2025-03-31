@@ -1,121 +1,124 @@
 ---
-# configure golangci-lint
-# based on https://github.com/github/super-linter/blob/main/TEMPLATES/.golangci.yml
+version: "2"
 linters:
-  # see https://golangci-lint.run/usage/linters/
   enable:
-    - gosec
-    - unconvert
-    - goconst
-    - goimports
-    - gocritic
-    - govet
-    - revive
-    - gofmt
-    - gci
-    - gosimple
-    - ineffassign
     - gocheckcompilerdirectives
+    - goconst
+    - gocritic
+    - gosec
+    - revive
     - sloglint
     - unconvert
     - whitespace
-linters-settings:
-  errcheck:
-    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
-    # default is false: such cases aren't reported by default.
-    check-blank: true
-    # List of functions to exclude from checking, where each entry is a single function to exclude.
-    # See https://github.com/kisielk/errcheck#excluding-functions for details.
-    exclude-functions:
-      - io.Copy
-      - fmt.Printf
-      - bytes.Buffer.Write
-  revive:
-    # disable all rules by default in case new linters will be added
-    # enable this flag from time to time to see if we should fix/add more here
-    enable-all-rules: false
-    # see https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md
+  settings:
+    errcheck:
+      check-blank: true
+      exclude-functions:
+        - io.Copy
+        - fmt.Printf
+        - bytes.Buffer.Write
+    revive:
+      enable-all-rules: false
+      rules:
+        - name: exported
+          arguments:
+            - disableStutteringCheck
+          disabled: false
+        - name: import-alias-naming
+          arguments:
+            - ^[a-z][a-zA-Z0-9]{0,}$
+          disabled: false
+        - name: context-as-argument
+          disabled: false
+        - name: import-shadowing
+          disabled: false
+        - name: var-declaration
+          disabled: false
+        - name: use-any
+          disabled: false
+        - name: cognitive-complexity
+          arguments:
+            - 30
+          disabled: false
+        - name: cyclomatic
+          arguments:
+            - 30
+          disabled: false
+        - name: line-length-limit
+          arguments:
+            - 180
+          disabled: false
+        - name: comment-spacings
+          disabled: false
+        - name: increment-decrement
+          disabled: false
+        - name: unhandled-error
+          arguments:
+            - fmt.Printf
+            - io.Copy
+            - bytes.Buffer.Write
+          disabled: false
+        - name: var-naming
+          disabled: false
+        - name: add-constant
+          disabled: true
+        - name: bare-return
+          disabled: true
+        - name: flag-parameter
+          disabled: true
+        - name: function-length
+          disabled: true
+        - name: unused-receiver
+          disabled: true
+        - name: max-public-structs
+          disabled: true
+        - name: unchecked-type-assertion
+          disabled: true
+        - name: function-result-limit
+          disabled: true
+        - name: confusing-naming
+          disabled: true
+        - name: get-return
+          disabled: true
+        - name: nested-structs
+          disabled: true
+        - name: argument-limit
+          disabled: true
+    staticcheck:
+      checks:
+        - all
+  exclusions:
+    generated: lax
+    presets:
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      - name: exported
-        disabled: false
-        arguments:
-          - disableStutteringCheck
-      - name: import-alias-naming
-        disabled: false
-        arguments: ["^[a-z][a-zA-Z0-9]{0,}$"]
-      - name: context-as-argument
-        disabled: false
-      - name: import-shadowing
-        disabled: false
-      - name: var-declaration
-        disabled: false
-      - name: use-any
-        disabled: false
-      - name: cognitive-complexity
-        disabled: false
-        arguments: [30]
-      - name: cyclomatic
-        disabled: false
-        arguments: [30]
-      - name: line-length-limit
-        disabled: false
-        arguments: [180]
-      - name: comment-spacings
-        disabled: false
-      - name: increment-decrement
-        disabled: false
-      - name: unhandled-error
-        disabled: false
-        arguments:
-          - "fmt.Printf"
-          - "io.Copy"
-          - "bytes.Buffer.Write"
-      - name: var-naming
-        disabled: false
-
-      - name: add-constant
-        disabled: true
-      - name: bare-return
-        disabled: true
-      - name: flag-parameter
-        disabled: true
-      - name: function-length
-        disabled: true
-      - name: unused-receiver
-        disabled: true
-      - name: max-public-structs
-        disabled: true
-      - name: unchecked-type-assertion
-        disabled: true
-      - name: function-result-limit
-        disabled: true
-      - name: confusing-naming
-        disabled: true
-      - name: get-return
-        disabled: true
-      - name: nested-structs
-        disabled: true
-      - name: argument-limit
-        disabled: true
-  gci:
-    custom-order: true
-    sections:
-      - standard
-      - default
-      - prefix(github.com/vgarvardt/rklotz)
-  staticcheck:
-    checks:
-      - all
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - dupl
-        - gosec
-        - goconst
-        - staticcheck
-  include:
-    # based on the https://www.pixelstech.net/article/1650069870-golangci-lint-to-enable-comment-check-for-exported-functions
-    - EXC0012 # EXC0012 revive: Annoying issue about not having a comment. The rare codebase has such comments
-    - EXC0014 # EXC0014 revive: Annoying issue about not having a comment. The rare codebase has such comments
+      - linters:
+          - dupl
+          - goconst
+          - gosec
+          - staticcheck
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/vgarvardt/rklotz)
+      custom-order: true
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
