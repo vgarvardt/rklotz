@@ -13,7 +13,7 @@ require (
 	github.com/sethvargo/go-envconfig v1.2.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
-	github.com/yuin/goldmark v1.7.8
+	github.com/yuin/goldmark v1.7.10
 	golang.org/x/crypto v0.37.0
 	golang.org/x/sync v0.13.0
 	golang.org/x/text v0.24.0
