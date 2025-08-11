@@ -7,7 +7,7 @@ require (
 	github.com/cappuccinotm/slogx v1.4.2
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/go-chi/chi/v5 v5.2.2
-	github.com/go-pkgz/routegroup v1.4.1
+	github.com/go-pkgz/routegroup v1.5.2
 	github.com/gorilla/feeds v1.2.0
 	github.com/leekchan/gtf v0.0.0-20190214083521-5fba33c5b00b
 	github.com/sethvargo/go-envconfig v1.3.0
