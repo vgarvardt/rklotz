@@ -87,6 +87,9 @@ linters:
     staticcheck:
       checks:
         - all
+        # Incorrect or missing package comment.
+        # https://staticcheck.dev/docs/checks/#ST1000
+        - "-ST1000"
   exclusions:
     generated: lax
     presets:
