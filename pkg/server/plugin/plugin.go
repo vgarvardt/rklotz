@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	// ErrorUnknownPlugin is the error returned when trying to get unknown plugin
-	ErrorUnknownPlugin = errors.New("Unknown plugin")
+	ErrorUnknownPlugin = errors.New("unknown plugin")
 )
 
 var all map[string]Plugin
