@@ -1,10 +1,10 @@
 module github.com/vgarvardt/rklotz
 
-go 1.25
+go 1.26
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/cappuccinotm/slogx v1.4.2
+	github.com/cappuccinotm/slogx v1.5.0
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-pkgz/routegroup v1.6.0
