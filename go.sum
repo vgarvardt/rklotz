@@ -12,8 +12,8 @@ github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeO
 github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
 github.com/go-chi/chi/v5 v5.3.2 h1:5YQkICvTCSZ25hoRsyJazN0scjzKGiu4VAUc7H1o1nY=
 github.com/go-chi/chi/v5 v5.3.2/go.mod h1:R+tYY2hNuVUUjxoPtqUdgBqevM9s9njzkTLutVsOCto=
-github.com/go-pkgz/routegroup v1.6.0 h1:44XHZgF6JIIldRlv+zjg6SygULASmjifnfIQjwCT0e4=
-github.com/go-pkgz/routegroup v1.6.0/go.mod h1:Pmu04fhgWhRtBMIJ8HXppnnzOPjnL/IEPBIdO2zmeqg=
+github.com/go-pkgz/routegroup v1.6.1 h1:6I/0LabazpZsHAI+jYPeyH/KU2cvZF0bFylUScMNi+Q=
+github.com/go-pkgz/routegroup v1.6.1/go.mod h1:Pmu04fhgWhRtBMIJ8HXppnnzOPjnL/IEPBIdO2zmeqg=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=
 github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
