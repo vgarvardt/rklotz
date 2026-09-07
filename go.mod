@@ -1,6 +1,6 @@
 module github.com/vgarvardt/rklotz
 
-go 1.26
+go 1.26.0
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/yuin/goldmark v1.8.5
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 	golang.org/x/sync v0.22.0
 	golang.org/x/text v0.41.0
 )
