@@ -16,7 +16,7 @@ all: test build
 .PHONY: build
 build:
 	@echo "$(OK_COLOR)==> Building (v${VERSION}) ... $(NO_COLOR)"
-	@goreleaser --skip=publish --snapshot --clean
+	@goreleaser release --snapshot --clean
 
 .PHONY: test
 test:

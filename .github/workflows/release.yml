@@ -42,7 +42,7 @@ jobs:
       - name: Set up Docker BuildX
         uses: docker/setup-buildx-action@v4
         with:
-          platforms: linux/amd64,linux/arm64v8
+          platforms: linux/amd64,linux/arm64
 
       - name: Run GoReleaser (Release)
         uses: goreleaser/goreleaser-action@v7
@@ -56,6 +56,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v7
         if: github.event_name == 'pull_request'
         with:
-          args: "--skip=publish --snapshot --clean"
+          args: "release --snapshot --clean"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

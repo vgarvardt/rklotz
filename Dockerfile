@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates tzdata \
   && rm -rf /var/lib/apt/lists/*
 
-COPY rklotz /bin/rklotz
+ARG TARGETPLATFORM
+COPY ${TARGETPLATFORM}/rklotz /bin/rklotz
 RUN chmod a+x /bin/rklotz
 
 COPY static/ /etc/rklotz/static
