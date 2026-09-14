@@ -32,7 +32,7 @@ func (h *Posts) Front(w http.ResponseWriter, r *http.Request) {
 
 	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, "index.tpl", renderer.D{
 		"meta":  h.storage.Meta(),
-		"posts": posts,
+		"posts": posts, //nolint:goconst
 		"page":  page,
 	}))
 }

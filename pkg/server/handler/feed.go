@@ -34,5 +34,5 @@ func (h *Feed) feed(w http.ResponseWriter, r *http.Request, template string) {
 		panic(err)
 	}
 
-	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, template, renderer.D{"posts": posts}))
+	h.renderer.Render(w, http.StatusOK, renderer.NewData(r, template, renderer.D{"posts": posts})) //nolint:goconst
 }
