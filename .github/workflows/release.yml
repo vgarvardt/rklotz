@@ -27,6 +27,7 @@ jobs:
           go-version-file: ./go.mod
 
       - name: Docker Login
+        if: github.event_name == 'release'
         env:
           DOCKER_USERNAME: vgarvardt
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
