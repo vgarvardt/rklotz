@@ -27,7 +27,7 @@ func NewRouter(ph *handler.Posts, fh *handler.Feed, cfgHTTP HTTPConfig, theme st
 
 	mux.Use(
 		middleware.RequestID,
-		middleware.RealIP,
+		middleware.ClientIPFromXFF(),
 		m.NewLogger(logger).Handler,
 		m.NewRequestLogger().Handler,
 		m.Recovery,
